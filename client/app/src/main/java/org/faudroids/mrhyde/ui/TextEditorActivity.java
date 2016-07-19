@@ -458,43 +458,26 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 
 	@Override
 	public void onInsertBoldText(DialogFragment dialog) {
-		int pos = editText.getSelectionStart();
-		String text = editText.getText().toString();
 		String elem = getResources().getString(R.string.markdown_element_bold);
-		StringBuilder sb = new StringBuilder();
-		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
-		editText.setText(text, TextView.BufferType.EDITABLE);
-		editText.setSelection(pos + elem.length()/2);
+		this.insertElement(elem, elem.length() / 2);
 	}
 
 	@Override
 	public void onInsertItalicText(DialogFragment dialog) {
-		int pos = editText.getSelectionStart();
-		String text = editText.getText().toString();
 		String elem = getResources().getString(R.string.markdown_element_italic);
-		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
-		editText.setText(text, TextView.BufferType.EDITABLE);
-		editText.setSelection(pos + elem.length()/2);
+		this.insertElement(elem, elem.length() / 2);
 	}
 
 	@Override
 	public void onInsertLink(DialogFragment dialog) {
-		int pos = editText.getSelectionStart();
-		String text = editText.getText().toString();
 		String elem = getResources().getString(R.string.markdown_element_link);
-		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
-		editText.setText(text, TextView.BufferType.EDITABLE);
-		editText.setSelection(pos + 1);
+		this.insertElement(elem, 1);
 	}
 
 	@Override
 	public void onInsertImage(DialogFragment dialog) {
-		int pos = editText.getSelectionStart();
-		String text = editText.getText().toString();
 		String elem = getResources().getString(R.string.markdown_element_image);
-		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
-		editText.setText(text, TextView.BufferType.EDITABLE);
-		editText.setSelection(pos + 2);
+		this.insertElement(elem, 2);
 	}
 
 	@Override
@@ -577,6 +560,31 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 
 		editText.setText(result, EditText.BufferType.EDITABLE);
 		editText.setSelection(start + sb.toString().length());
+	}
+
+	private void insertElement(String separator, int offset) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		String text = editText.getText().toString();
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+		if(start == end) {
+			sb.append(separator);
+			sb.append(" ");
+		} else {
+			for (String part : edited) {
+				sb.append(separator);
+				sb.append(" ");
+				sb.append(part);
+				sb.append("\n");
+			}
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + offset);
 	}
 
 	private void makeHeading(String heading) {
