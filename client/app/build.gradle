@@ -36,6 +36,8 @@ android {
     }
     packagingOptions {
         exclude 'plugin.properties'
+        exclude 'META-INF/ECLIPSE_.SF'
+        exclude 'META-INF/ECLIPSE_.RSA'
     }
 }
 

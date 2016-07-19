@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.ui;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,7 +53,8 @@ import rx.functions.Func1;
 import timber.log.Timber;
 
 @ContentView(R.layout.activity_text_editor)
-public final class TextEditorActivity extends AbstractActionBarActivity {
+public final class TextEditorActivity extends AbstractActionBarActivity implements
+		MarkdownFragment.MarkdownActionListener {
 
 	private static final int EDITOR_MAX_HISTORY = 100;
 
@@ -91,6 +93,8 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 	private FileManager fileManager;
 	private FileData fileData; // file currently being edited
 	private boolean showingLineNumbers;
+
+	private MarkdownFragment fragment;
 
 
 	@Override
@@ -236,6 +240,10 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 			case R.id.action_preview:
 				saveFile();
 				startActivity(intentFactory.createPreviewIntent(repository));
+				return true;
+
+			case R.id.action_insert_markdown:
+				showOverlay();
 				return true;
 
 		}
@@ -408,6 +416,12 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 	}
 
 
+	private void showOverlay() {
+		MarkdownFragment mdf = new MarkdownFragment();
+		mdf.show(getFragmentManager(), "MarkdownFragment");
+	}
+
+
 	private void updateLineNumbers() {
 		if (showingLineNumbers) {
 			numLinesTextView.setVisibility(View.VISIBLE);
@@ -442,6 +456,185 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 		});
 	}
 
+	@Override
+	public void onInsertBoldText(DialogFragment dialog) {
+		int pos = editText.getSelectionStart();
+		String text = editText.getText().toString();
+		String elem = getResources().getString(R.string.markdown_element_bold);
+		StringBuilder sb = new StringBuilder();
+		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
+		editText.setText(text, TextView.BufferType.EDITABLE);
+		editText.setSelection(pos + elem.length()/2);
+	}
+
+	@Override
+	public void onInsertItalicText(DialogFragment dialog) {
+		int pos = editText.getSelectionStart();
+		String text = editText.getText().toString();
+		String elem = getResources().getString(R.string.markdown_element_italic);
+		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
+		editText.setText(text, TextView.BufferType.EDITABLE);
+		editText.setSelection(pos + elem.length()/2);
+	}
+
+	@Override
+	public void onInsertLink(DialogFragment dialog) {
+		int pos = editText.getSelectionStart();
+		String text = editText.getText().toString();
+		String elem = getResources().getString(R.string.markdown_element_link);
+		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
+		editText.setText(text, TextView.BufferType.EDITABLE);
+		editText.setSelection(pos + 1);
+	}
+
+	@Override
+	public void onInsertQuote(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_quote);
+		this.insertElement(elem);
+	}
+
+	@Override
+	public void onInsertCode(DialogFragment dialog) {
+		this.insertElement("    ");
+	}
+
+	@Override
+	public void onInsertUnorderedList(DialogFragment dialog) {
+		this.createList(false);
+	}
+
+	@Override
+	public void onInsertOrderedList(DialogFragment dialog) {
+		this.createList(true);
+	}
+
+	@Override
+	public void onInsertH1(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_h1);
+		this.makeHeading(elem);
+	}
+
+	@Override
+	public void onInsertH2(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_h2);
+		this.makeHeading(elem);
+	}
+
+	@Override
+	public void onInsertH3(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_h3);
+		this.makeHeading(elem);
+	}
+
+	@Override
+	public void onInsertH4(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_h4);
+		this.makeHeading(elem);
+	}
+
+	@Override
+	public void onInsertH5(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_h5);
+		this.makeHeading(elem);
+	}
+
+	@Override
+	public void onInsertH6(DialogFragment dialog) {
+		String elem = getResources().getString(R.string.markdown_element_h6);
+		this.makeHeading(elem);
+	}
+
+	private void insertElement(String separator) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		String text = editText.getText().toString();
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+		if(start == end) {
+			sb.append(separator);
+			sb.append(" ");
+		} else {
+			for (String part : edited) {
+				sb.append(separator);
+				sb.append(" ");
+				sb.append(part);
+				sb.append("\n");
+			}
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + sb.toString().length());
+	}
+
+	private void makeHeading(String heading) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		String text = editText.getText().toString();
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+		if (start == end) {
+			sb.append(heading);
+			sb.append(" ");
+		} else {
+			sb.append(heading);
+			for (String part : edited) {
+				sb.append(" ");
+				sb.append(part);
+			}
+			sb.append("\n");
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + sb.toString().length());
+	}
+
+	private void createList(boolean ordered) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		String text = editText.getText().toString();
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+
+		if(start == end) {
+			if(ordered) {
+				sb.append("1.");
+				sb.append(" ");
+			} else {
+				String elem = getResources().getString(R.string.markdown_element_list);
+				sb.append(elem);
+				sb.append(" ");
+			}
+		} else {
+			if (ordered) {
+				for (int idx = 0; idx < edited.length; ++idx) {
+					sb.append(String.valueOf(idx + 1));
+					sb.append(". ");
+					sb.append(edited[idx]);
+					sb.append("\n");
+				}
+			} else {
+				String elem = getResources().getString(R.string.markdown_element_list);
+				for (String part : edited) {
+					sb.append(elem);
+					sb.append(" ");
+					sb.append(part);
+					sb.append("\n");
+				}
+			}
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + sb.toString().length());
+	}
 
 	/**
 	 * State of the {@link EditText}. Public because required by Parceler.

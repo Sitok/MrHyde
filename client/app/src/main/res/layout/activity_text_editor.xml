@@ -66,8 +66,12 @@
         fab:fab_plusIconColor="@android:color/white"
         fab:fab_icon="@drawable/ic_mode_edit_large"
         />
+    
+    <FrameLayout
+        android:id="@+id/frame_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </FrameLayout>
 
     <include layout="@layout/spinner"/>
-
 </RelativeLayout>
-

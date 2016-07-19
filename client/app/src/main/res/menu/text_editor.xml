@@ -40,4 +40,9 @@
         app:showAsAction="never"
         />
 
+    <item
+        android:id="@+id/action_insert_markdown"
+        android:title="@string/action_insert_markdown"
+        app:showAsAction="ifRoom"
+        />
 </menu>
