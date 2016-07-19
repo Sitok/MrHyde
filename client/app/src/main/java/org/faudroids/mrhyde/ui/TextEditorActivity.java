@@ -42,6 +42,7 @@ import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -458,37 +459,32 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 
 	@Override
 	public void onInsertBoldText(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_bold);
-		this.insertElement(elem, elem.length() / 2);
+		this.insertElement(R.string.markdown_element_bold);
 	}
 
 	@Override
 	public void onInsertItalicText(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_italic);
-		this.insertElement(elem, elem.length() / 2);
+		this.insertElement(R.string.markdown_element_italic);
 	}
 
 	@Override
 	public void onInsertLink(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_link);
-		this.insertElement(elem, 1);
+		this.insertElement(R.string.markdown_element_link);
 	}
 
 	@Override
 	public void onInsertImage(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_image);
-		this.insertElement(elem, 2);
+		this.insertElement(R.string.markdown_element_image);
 	}
 
 	@Override
 	public void onInsertQuote(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_quote);
-		this.insertElement(elem);
+		this.insertElement(R.string.markdown_element_quote);
 	}
 
 	@Override
 	public void onInsertCode(DialogFragment dialog) {
-		this.insertElement("    ");
+		this.insertElement(R.string.markdown_element_code);
 	}
 
 	@Override
@@ -503,80 +499,104 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 
 	@Override
 	public void onInsertH1(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_h1);
-		this.makeHeading(elem);
+		this.makeHeading(R.string.markdown_element_h1);
 	}
 
 	@Override
 	public void onInsertH2(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_h2);
-		this.makeHeading(elem);
+		this.makeHeading(R.string.markdown_element_h2);
 	}
 
 	@Override
 	public void onInsertH3(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_h3);
-		this.makeHeading(elem);
+		this.makeHeading(R.string.markdown_element_h3);
 	}
 
 	@Override
 	public void onInsertH4(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_h4);
-		this.makeHeading(elem);
+		this.makeHeading(R.string.markdown_element_h4);
 	}
 
 	@Override
 	public void onInsertH5(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_h5);
-		this.makeHeading(elem);
+		this.makeHeading(R.string.markdown_element_h5);
 	}
 
 	@Override
 	public void onInsertH6(DialogFragment dialog) {
-		String elem = getResources().getString(R.string.markdown_element_h6);
-		this.makeHeading(elem);
+		this.makeHeading(R.string.markdown_element_h6);
 	}
 
-	private void insertElement(String separator) {
+	private void insertElement(int separatorString) {
 		int start = editText.getSelectionStart();
 		int end = editText.getSelectionEnd();
+		int offset = 0;
+
+		String separator = getResources().getString(separatorString);
 		String text = editText.getText().toString();
 		String[] edited = text.substring(start, end).split("\n");
 		StringBuilder sb = new StringBuilder();
 		if(start == end) {
-			sb.append(separator);
-			sb.append(" ");
-		} else {
-			for (String part : edited) {
-				sb.append(separator);
-				sb.append(" ");
-				sb.append(part);
-				sb.append("\n");
+			switch(separatorString) {
+				case R.string.markdown_element_bold:
+				case R.string.markdown_element_italic:
+					sb.append(separator);
+					sb.append(separator);
+					offset = sb.length()/2;
+					break;
+				case R.string.markdown_element_image:
+					sb.append(separator);
+					sb.append(" ");
+					offset = 2;
+					break;
+				case R.string.markdown_element_link:
+					sb.append(separator);
+					sb.append(" ");
+					offset = 1;
+					break;
+				case R.string.markdown_element_code:
+				case R.string.markdown_element_quote:
+					sb.append("\n");
+                    sb.append(separator);
+                    sb.append(" ");
+					offset = sb.length();
+					break;
+				default:
+					break;
 			}
-		}
-
-		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
-				.length());
-
-		editText.setText(result, EditText.BufferType.EDITABLE);
-		editText.setSelection(start + sb.toString().length());
-	}
-
-	private void insertElement(String separator, int offset) {
-		int start = editText.getSelectionStart();
-		int end = editText.getSelectionEnd();
-		String text = editText.getText().toString();
-		String[] edited = text.substring(start, end).split("\n");
-		StringBuilder sb = new StringBuilder();
-		if(start == end) {
-			sb.append(separator);
-			sb.append(" ");
 		} else {
-			for (String part : edited) {
-				sb.append(separator);
-				sb.append(" ");
-				sb.append(part);
-				sb.append("\n");
+			switch(separatorString) {
+				case R.string.markdown_element_bold:
+				case R.string.markdown_element_italic:
+					sb.append(separator);
+					sb.append(text.substring(start, end));
+					sb.append(separator);
+					offset = sb.length();
+					break;
+				case R.string.markdown_element_image:
+					sb.append(separator);
+					sb.append(" ");
+					offset = 2;
+					break;
+				case R.string.markdown_element_link:
+                    sb.append(separator);
+                    sb.append(" ");
+					offset = 1;
+					break;
+				case R.string.markdown_element_code:
+				case R.string.markdown_element_quote:
+                    sb.append("\n");
+					for (String part : edited) {
+						sb.append(separator);
+						sb.append(" ");
+						sb.append(part);
+						sb.append("\n");
+					}
+					sb.append("\n");
+					offset = sb.length();
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -587,22 +607,26 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 		editText.setSelection(start + offset);
 	}
 
-	private void makeHeading(String heading) {
+	private void makeHeading(int headingString) {
 		int start = editText.getSelectionStart();
 		int end = editText.getSelectionEnd();
 		String text = editText.getText().toString();
+		String heading = getResources().getString(headingString);
 		String[] edited = text.substring(start, end).split("\n");
 		StringBuilder sb = new StringBuilder();
+
 		if (start == end) {
+			sb.append("\n");
 			sb.append(heading);
 			sb.append(" ");
 		} else {
+			sb.append("\n");
 			sb.append(heading);
 			for (String part : edited) {
 				sb.append(" ");
 				sb.append(part);
 			}
-			sb.append("\n");
+			sb.append("\n\n");
 		}
 
 		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
@@ -619,6 +643,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 		String[] edited = text.substring(start, end).split("\n");
 		StringBuilder sb = new StringBuilder();
 
+		sb.append("\n");
 		if(start == end) {
 			if(ordered) {
 				sb.append("1.");
@@ -636,6 +661,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 					sb.append(edited[idx]);
 					sb.append("\n");
 				}
+				sb.append("\n");
 			} else {
 				String elem = getResources().getString(R.string.markdown_element_list);
 				for (String part : edited) {
@@ -644,6 +670,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 					sb.append(part);
 					sb.append("\n");
 				}
+				sb.append("\n");
 			}
 		}
 

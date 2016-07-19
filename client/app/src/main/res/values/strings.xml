@@ -208,8 +208,8 @@
     <string name="markdown_quote">Quote selection</string>
     <string name="markdown_code">Create code block from selection</string>
 
-    <string name="markdown_element_bold">****</string>
-    <string name="markdown_element_italic">**</string>
+    <string name="markdown_element_bold">**</string>
+    <string name="markdown_element_italic">_</string>
     <string name="markdown_element_link">[]()</string>
     <string name="markdown_element_image">![]()</string>
     <string name="markdown_element_list">*</string>
@@ -220,4 +220,5 @@
     <string name="markdown_element_h5">#####</string>
     <string name="markdown_element_h6">######</string>
     <string name="markdown_element_quote">></string>
+    <string name="markdown_element_code">&#160;&#160;&#160;&#160;</string>
 </resources>
