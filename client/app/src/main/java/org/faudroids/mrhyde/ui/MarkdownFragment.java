@@ -22,6 +22,7 @@ public class MarkdownFragment extends DialogFragment {
         void onInsertBoldText(DialogFragment dialog);
         void onInsertItalicText(DialogFragment dialog);
         void onInsertLink(DialogFragment dialog);
+        void onInsertImage(DialogFragment dialog);
         void onInsertQuote(DialogFragment dialog);
         void onInsertCode(DialogFragment dialog);
         void onInsertUnorderedList(DialogFragment dialog);
@@ -58,6 +59,9 @@ public class MarkdownFragment extends DialogFragment {
                         break;
                     case R.id.btn_markdown_link:
                         mListener.onInsertLink(MarkdownFragment.this);
+                        break;
+                    case R.id.btn_markdown_image:
+                        mListener.onInsertImage(MarkdownFragment.this);
                         break;
                     case R.id.btn_markdown_ul:
                         mListener.onInsertUnorderedList(MarkdownFragment.this);
@@ -118,6 +122,7 @@ public class MarkdownFragment extends DialogFragment {
         buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_italic));
         buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_bold));
         buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_link));
+        buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_image));
         buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_quote));
         buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_code));
         buttonArrayList.add((Button) rootView.findViewById(R.id.btn_markdown_ul));

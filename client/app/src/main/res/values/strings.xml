@@ -196,6 +196,7 @@
     <string name="markdown_bold">Bold font</string>
     <string name="markdown_italic">Italic font</string>
     <string name="markdown_link">Insert link</string>
+    <string name="markdown_image">Insert an image</string>
     <string name="markdown_h1">Insert H1 heading</string>
     <string name="markdown_h2">Insert H2 heading</string>
     <string name="markdown_h3">Insert H3 heading</string>
@@ -210,6 +211,7 @@
     <string name="markdown_element_bold">****</string>
     <string name="markdown_element_italic">**</string>
     <string name="markdown_element_link">[]()</string>
+    <string name="markdown_element_image">![]()</string>
     <string name="markdown_element_list">*</string>
     <string name="markdown_element_h1">#</string>
     <string name="markdown_element_h2">##</string>

@@ -32,6 +32,12 @@
             android:text="@string/markdown_link"
             style="?android:attr/borderlessButtonStyle"/>
         <Button
+            android:id="@+id/btn_markdown_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/markdown_image"
+            style="?android:attr/borderlessButtonStyle"/>
+        <Button
             android:id="@+id/btn_markdown_quote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

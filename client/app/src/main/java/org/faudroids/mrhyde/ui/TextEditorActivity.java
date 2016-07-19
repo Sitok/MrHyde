@@ -488,6 +488,16 @@ public final class TextEditorActivity extends AbstractActionBarActivity implemen
 	}
 
 	@Override
+	public void onInsertImage(DialogFragment dialog) {
+		int pos = editText.getSelectionStart();
+		String text = editText.getText().toString();
+		String elem = getResources().getString(R.string.markdown_element_image);
+		text = text.substring(0, pos) + elem + text.substring(pos, text.length());
+		editText.setText(text, TextView.BufferType.EDITABLE);
+		editText.setSelection(pos + 2);
+	}
+
+	@Override
 	public void onInsertQuote(DialogFragment dialog) {
 		String elem = getResources().getString(R.string.markdown_element_quote);
 		this.insertElement(elem);
