@@ -8,7 +8,6 @@ import org.eclipse.egit.github.core.Commit;
 import org.eclipse.egit.github.core.CommitUser;
 import org.eclipse.egit.github.core.Reference;
 import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.RepositoryCommit;
 import org.eclipse.egit.github.core.Tree;
 import org.eclipse.egit.github.core.TreeEntry;
 import org.eclipse.egit.github.core.TypedResource;
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
-import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import timber.log.Timber;
@@ -72,36 +70,27 @@ public final class FileManager {
 				.flatMap(new LoadLocalFilesFunc());
 
 		else return gitHubApiWrapper.getCommits(repository)
-				.flatMap(new Func1<List<RepositoryCommit>, Observable<Tree>>() {
-					@Override
-					public Observable<Tree> call(List<RepositoryCommit> repositoryCommits) {
-						Timber.d("loaded last commit");
-						cache.cacheBaseCommitSha(repositoryCommits.get(0).getSha());
-						return gitHubApiWrapper.getTree(repository, cache.getBaseCommitSha().get(), true);
-					}
+				.flatMap(repositoryCommits -> {
+					Timber.d("loaded last commit");
+					cache.cacheBaseCommitSha(repositoryCommits.get(0).getSha());
+					return gitHubApiWrapper.getTree(repository, cache.getBaseCommitSha().get(), true);
 				})
-				.flatMap(new Func1<Tree, Observable<Tree>>() {
-					@Override
-					public Observable<Tree> call(Tree tree) {
-						Timber.d("loaded tree");
-						cache.cacheTree(tree);
-						return Observable.just(tree);
-					}
+				.flatMap(tree -> {
+					Timber.d("loaded tree");
+					cache.cacheTree(tree);
+					return Observable.just(tree);
 				})
 				.compose(new InitRepoTransformer<Tree>())
 				.flatMap(new GitHubParseFunc())
 				.flatMap(new LoadLocalFilesFunc())
-				.onErrorReturn(new Func1<Throwable, DirNode>() {
-					@Override
-					public DirNode call(Throwable throwable) {
-						if (throwable.getCause() instanceof RequestException) {
-							// if repository is empty, return null
-							RequestException exception = (RequestException) throwable.getCause();
-							if (exception.getMessage().toLowerCase().contains("git repository is empty"))
-								return null;
-						}
-						throw new RuntimeException(throwable);
+				.onErrorReturn(throwable -> {
+					if (throwable.getCause() instanceof RequestException) {
+						// if repository is empty, return null
+						RequestException exception = (RequestException) throwable.getCause();
+						if (exception.getMessage().toLowerCase().contains("git repository is empty"))
+							return null;
 					}
+					throw new RuntimeException(throwable);
 				});
 	}
 
@@ -114,33 +103,25 @@ public final class FileManager {
 		final File file = new File(rootDir, treeEntry.getPath());
 
 		if (file.exists()) {
-			return Observable.defer(new Func0<Observable<FileData>>() {
-				@Override
-				public Observable<FileData> call() {
-					return Observable.just(new FileData(fileNode, readFile(file)));
-				}
-			});
+			return Observable.defer(() -> Observable.just(new FileData(fileNode, readFile(file))));
 
 		} else {
 			Timber.d("getting file with sha " + treeEntry.getSha());
 			return gitHubApiWrapper.getBlob(repository, treeEntry.getSha())
-					.flatMap(new Func1<Blob, Observable<FileData>>() {
-						@Override
-						public Observable<FileData> call(Blob blob) {
-							byte[] content;
-							if (blob.getEncoding().equals(Blob.ENCODING_UTF8)) {
-								content = blob.getContent().getBytes();
-							} else {
-								content = Base64.decode(blob.getContent().getBytes(), Base64.DEFAULT);
-							}
-
-							try {
-								writeFile(file, content);
-							} catch (IOException e) {
-								return Observable.error(e);
-							}
-							return Observable.just(new FileData(fileNode, content));
+					.flatMap(blob -> {
+						byte[] content;
+						if (blob.getEncoding().equals(Blob.ENCODING_UTF8)) {
+							content = blob.getContent().getBytes();
+						} else {
+							content = Base64.decode(blob.getContent().getBytes(), Base64.DEFAULT);
 						}
+
+						try {
+							writeFile(file, content);
+						} catch (IOException e) {
+							return Observable.error(e);
+						}
+						return Observable.just(new FileData(fileNode, content));
 					})
 					.flatMap(gitManager.<FileData>commit(file));
 		}
@@ -153,24 +134,21 @@ public final class FileManager {
 	 */
 	public Observable<FileNode> renameFile(final FileNode oldFileNode, final String newFileName) {
 		return readFile(oldFileNode)
-				.flatMap(new Func1<FileData, Observable<FileNode>>() {
-					@Override
-					public Observable<FileNode> call(FileData data) {
-						final FileNode newFileNode = createNewFile(oldFileNode.getParent(), newFileName);
-						FileData newData = new FileData(newFileNode, data.getData());
-						try {
-							writeFile(newData);
-						} catch (IOException ioe) {
-							return Observable.error(ioe);
-						}
-						return deleteFile(oldFileNode)
-								.flatMap(new Func1<Void, Observable<FileNode>>() {
-									@Override
-									public Observable<FileNode> call(Void aVoid) {
-										return Observable.just(newFileNode);
-									}
-								});
+				.flatMap(data -> {
+					final FileNode newFileNode = createNewFile(oldFileNode.getParent(), newFileName);
+					FileData newData = new FileData(newFileNode, data.getData());
+					try {
+						writeFile(newData);
+					} catch (IOException ioe) {
+						return Observable.error(ioe);
 					}
+					return deleteFile(oldFileNode)
+							.flatMap(new Func1<Void, Observable<FileNode>>() {
+								@Override
+								public Observable<FileNode> call(Void aVoid) {
+									return Observable.just(newFileNode);
+								}
+							});
 				});
 	}
 

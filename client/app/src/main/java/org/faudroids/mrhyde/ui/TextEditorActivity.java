@@ -385,7 +385,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 
 	private void stopEditMode() {
 		inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-		getSupportActionBar().setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+		getSupportActionBar().setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_material);
 		editText.setFocusable(false);
 		editText.setFocusableInTouchMode(false);
 		editButton.setVisibility(View.VISIBLE);
