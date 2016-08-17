@@ -1,7 +1,8 @@
 package org.faudroids.mrhyde.git;
 
+import com.google.common.base.Optional;
+
 import org.eclipse.egit.github.core.Tree;
-import org.roboguice.shaded.goole.common.base.Optional;
 
 /**
  * Collection of various attributes which can be cached.

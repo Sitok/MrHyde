@@ -1,7 +1,8 @@
 package org.faudroids.mrhyde.jekyll;
 
+import com.google.common.base.Objects;
+
 import org.faudroids.mrhyde.git.FileNode;
-import org.roboguice.shaded.goole.common.base.Objects;
 
 /**
  * General Jeklly content.

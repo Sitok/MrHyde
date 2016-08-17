@@ -1,8 +1,9 @@
 package org.faudroids.mrhyde.jekyll;
 
-import com.google.inject.Inject;
 
 import org.faudroids.mrhyde.git.FileManager;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.functions.Func1;

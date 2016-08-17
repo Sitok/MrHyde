@@ -2,6 +2,7 @@ package org.faudroids.mrhyde.ui.utils;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,17 +11,16 @@ import org.faudroids.mrhyde.R;
 
 import javax.inject.Inject;
 
-import roboguice.activity.RoboActionBarActivity;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 import rx.subscriptions.CompositeSubscription;
 
 
-public abstract class AbstractActionBarActivity extends RoboActionBarActivity {
+public abstract class AbstractActionBarActivity extends AppCompatActivity {
 
 	protected final CompositeSubscription compositeSubscription = new CompositeSubscription();
 	@Inject protected UiUtils uiUtils;
-	@InjectView(R.id.spinner) protected View spinnerContainerView;
-	@InjectView(R.id.spinner_image) protected ImageView spinnerImageView;
+	@BindView(R.id.spinner) protected View spinnerContainerView;
+	@BindView(R.id.spinner_image) protected ImageView spinnerImageView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileManagerFactory;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
@@ -28,14 +29,13 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func3;
 import timber.log.Timber;
 
-@ContentView(R.layout.activity_commit)
 public final class CommitActivity extends AbstractActionBarActivity {
 
 	static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
@@ -45,26 +45,29 @@ public final class CommitActivity extends AbstractActionBarActivity {
 			STATE_DIFF_EXPAND = "STATE_DIFF_EXPAND",
 			STATE_MESSAGE_EXPAND = "STATE_MESSAGE_EXPAND";
 
-	@Inject private FileManagerFactory fileManagerFactory;
+	@Inject FileManagerFactory fileManagerFactory;
 
-	@InjectView(R.id.changed_files_expand) private ImageButton changedFilesExpandButton;
-	@InjectView(R.id.changed_files_title) private TextView changedFilesTitleView;
-	@InjectView(R.id.changed_files) private TextView changedFilesView;
+	@BindView(R.id.changed_files_expand) protected ImageButton changedFilesExpandButton;
+	@BindView(R.id.changed_files_title) protected TextView changedFilesTitleView;
+	@BindView(R.id.changed_files) protected TextView changedFilesView;
 
-	@InjectView(R.id.diff_expand) private ImageButton diffExpandButton;
-	@InjectView(R.id.diff_title) private TextView diffTitleView;
-	@InjectView(R.id.diff) private TextView diffView;
+	@BindView(R.id.diff_expand) protected ImageButton diffExpandButton;
+	@BindView(R.id.diff_title) protected TextView diffTitleView;
+	@BindView(R.id.diff) protected TextView diffView;
 
-	@InjectView(R.id.message_expand) private ImageButton messageExpandButton;
-	@InjectView(R.id.message_title) private TextView messageTitleView;
-	@InjectView(R.id.message) private EditText messageView;
+	@BindView(R.id.message_expand) protected ImageButton messageExpandButton;
+	@BindView(R.id.message_title) protected TextView messageTitleView;
+	@BindView(R.id.message) protected  EditText messageView;
 
-	@InjectView(R.id.commit_button) private Button commitButton;
+	@BindView(R.id.commit_button) protected Button commitButton;
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_commit);
+    ButterKnife.bind(this);
 
 		setTitle(getString(R.string.title_commit));
 		changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));

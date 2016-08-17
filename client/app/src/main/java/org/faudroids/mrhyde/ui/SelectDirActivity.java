@@ -7,27 +7,30 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileNode;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import timber.log.Timber;
 
-@ContentView(R.layout.dialog_select_dir)
 public final class SelectDirActivity extends AbstractDirActivity {
 
 	static final String EXTRA_SELECTED_DIR = "EXTRA_SELECTED_DIR";	// part of result of this activity
 
-	@InjectView(R.id.back) private View backView;
-	@InjectView(R.id.cancel) private View cancelView;
-	@InjectView(R.id.confirm) private View confirmView;
+	@BindView(R.id.back) protected View backView;
+	@BindView(R.id.cancel) protected View cancelView;
+	@BindView(R.id.confirm) protected View confirmView;
 
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.dialog_select_dir);
+    ButterKnife.bind(this);
 
 		// hide action bar
 		if (getSupportActionBar() != null) getSupportActionBar().hide();

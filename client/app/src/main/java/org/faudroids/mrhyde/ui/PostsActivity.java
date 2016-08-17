@@ -1,15 +1,18 @@
 package org.faudroids.mrhyde.ui;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.common.base.Optional;
+
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.Post;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
-import org.roboguice.shaded.goole.common.base.Optional;
 
 import java.util.List;
 
@@ -26,6 +29,12 @@ public class PostsActivity extends AbstractJekyllActivity<Post> {
 				R.string.unpublish_post_title,
 				R.string.unpublish_post_message);
 	}
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
+    super.onCreate(savedInstanceState);
+  }
 
 	@Override
 	protected void onAddClicked(JekyllUiUtils.OnContentCreatedListener<Post> contentListener) {

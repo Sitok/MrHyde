@@ -12,12 +12,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import timber.log.Timber;
 
 /**
  * Responsible for storing and clearing (e.g. on logout) the GitHub user credentials.
  */
+@Singleton
 public final class LoginManager {
 
 	private static final String

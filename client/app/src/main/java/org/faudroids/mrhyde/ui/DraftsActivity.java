@@ -5,26 +5,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.common.base.Optional;
+
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.Post;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
-import org.roboguice.shaded.goole.common.base.Optional;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 import rx.Observable;
 
 public class DraftsActivity extends AbstractJekyllActivity<Draft> {
 
 	private static final String HELP_PUBLISH_DRAFTS = "HELP_PUBLISH_DRAFTS";
 
-	@Inject private HelpManager helpManager;
-	@InjectView(R.id.card_help) private View helpView;
+	@Inject HelpManager helpManager;
+	@BindView(R.id.card_help) protected View helpView;
 
 	public DraftsActivity() {
 		super(
@@ -38,6 +40,7 @@ public class DraftsActivity extends AbstractJekyllActivity<Draft> {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
 
 		// setup help for publishing drafts

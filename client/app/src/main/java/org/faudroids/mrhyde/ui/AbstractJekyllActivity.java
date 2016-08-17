@@ -34,12 +34,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 
-@ContentView(R.layout.activity_posts_or_drafts)
 abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparable<T>>
 		extends AbstractActionBarActivity
 		implements JekyllActionModeListener.ActionSelectionListener<T>  {
@@ -49,18 +48,18 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 	static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
 
 
-	@InjectView(R.id.list) private RecyclerView recyclerView;
+	@BindView(R.id.list) protected RecyclerView recyclerView;
 	protected AbstractAdapter adapter;
 	@Inject protected JekyllUiUtils jekyllUiUtils;
 
-	@InjectView(R.id.empty) private TextView emptyView;
-	@InjectView(R.id.add) private AddFloatingActionButton addButton;
+	@BindView(R.id.empty) protected TextView emptyView;
+	@BindView(R.id.add) protected AddFloatingActionButton addButton;
 
 	protected Repository repository;
-	@Inject private JekyllManagerFactory jekyllManagerFactory;
+	@Inject JekyllManagerFactory jekyllManagerFactory;
 	protected JekyllManager jekyllManager;
 
-	@Inject private ActivityIntentFactory intentFactory;
+	@Inject ActivityIntentFactory intentFactory;
 
 	private JekyllActionModeListener<T> actionModeListener;
 
@@ -100,6 +99,8 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_posts_or_drafts);
+    ButterKnife.bind(this);
 
 		// get arguments
 		repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);

@@ -1,78 +1,67 @@
 package org.faudroids.mrhyde.github;
 
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-
 import org.eclipse.egit.github.core.service.CommitService;
 import org.eclipse.egit.github.core.service.DataService;
 import org.eclipse.egit.github.core.service.GitHubService;
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import dagger.Module;
+import dagger.Provides;
 import retrofit.RestAdapter;
 
-public final class GitHubModule implements Module {
+@Module
+public class GitHubModule {
 
-	@Override
-	public void configure(Binder binder) {
-		// nothing to do for now
-	}
+  @Singleton
+  @Provides
+  public GitHubAuthApi provideAuthApi() {
+    return new RestAdapter.Builder()
+        .setEndpoint("https://github.com")
+        .build()
+        .create(GitHubAuthApi.class);
+  }
 
+  @Singleton
+  @Provides
+  public GitHubEmailsApi provideEmailsApi(final LoginManager loginManager) {
+    return new RestAdapter.Builder()
+        .setEndpoint("https://api.github.com")
+        .build()
+        .create(GitHubEmailsApi.class);
+  }
 
-	@Provides
-	public GitHubAuthApi provideAuthApi() {
-		return new RestAdapter.Builder()
-				.setEndpoint("https://github.com")
-				.build()
-				.create(GitHubAuthApi.class);
-	}
+  @Singleton
+  @Provides
+  public RepositoryService provideRepositoryService(LoginManager loginManager) {
+    return setAuthToken(new RepositoryService(), loginManager);
+  }
 
+  @Singleton
+  @Provides
+  public CommitService provideCommitService(LoginManager loginManager) {
+    return setAuthToken(new CommitService(), loginManager);
+  }
 
-	@Provides
-	@Inject
-	public GitHubEmailsApi provideEmailsApi(final LoginManager loginManager) {
-		return new RestAdapter.Builder()
-				.setEndpoint("https://api.github.com")
-				.build()
-				.create(GitHubEmailsApi.class);
-	}
+  @Singleton
+  @Provides
+  public DataService provideDataService(LoginManager loginManager) {
+    return setAuthToken(new DataService(), loginManager);
+  }
 
-
-	@Provides
-	@Inject
-	public RepositoryService provideRepositoryService(LoginManager loginManager) {
-		return setAuthToken(new RepositoryService(), loginManager);
-	}
-
-
-	@Provides
-	@Inject
-	public CommitService provideCommitService(LoginManager loginManager) {
-		return setAuthToken(new CommitService(), loginManager);
-	}
-
-
-	@Provides
-	@Inject
-	public DataService provideDataService(LoginManager loginManager) {
-		return setAuthToken(new DataService(), loginManager);
-	}
+  @Singleton
+  @Provides
+  public OrganizationService provideOrganizationService(LoginManager loginManager) {
+    return setAuthToken(new OrganizationService(), loginManager);
+  }
 
 
-	@Provides
-	@Inject
-	public OrganizationService provideOrganizationService(LoginManager loginManager) {
-		return setAuthToken(new OrganizationService(), loginManager);
-	}
-
-
-	private <T extends GitHubService> T setAuthToken(T service, LoginManager loginManager) {
-		service.getClient().setOAuth2Token(loginManager.getAccount().getAccessToken());
-		return service;
-	}
+  private <T extends GitHubService> T setAuthToken(T service, LoginManager loginManager) {
+    service.getClient().setOAuth2Token(loginManager.getAccount().getAccessToken());
+    return service;
+  }
 
 }

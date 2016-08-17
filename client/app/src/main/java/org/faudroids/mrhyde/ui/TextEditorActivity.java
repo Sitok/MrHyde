@@ -23,6 +23,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileManager;
@@ -35,26 +36,23 @@ import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
-import org.parceler.Parcel;
-import org.parceler.ParcelConstructor;
-import org.parceler.Parcels;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 import javax.inject.Inject;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import timber.log.Timber;
 
-@ContentView(R.layout.activity_text_editor)
 public final class TextEditorActivity extends AbstractActionBarActivity {
 
-	private static final int EDITOR_MAX_HISTORY = 100;
+  private static final int EDITOR_MAX_HISTORY = 100;
 
 	static final String
 			EXTRA_REPOSITORY = "EXTRA_REPOSITORY",
@@ -76,17 +74,17 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 	private static final String
 			KEY_SHOW_LINE_NUMBERS = "KEY_SHOW_LINE_NUMBERS";
 
-	@Inject private ActivityIntentFactory intentFactory;
-	@Inject private FileManagerFactory fileManagerFactory;
-	@Inject private InputMethodManager inputMethodManager;
+	@Inject ActivityIntentFactory intentFactory;
+	@Inject FileManagerFactory fileManagerFactory;
+	@Inject InputMethodManager inputMethodManager;
 
-	@InjectView(R.id.content) private EditText editText;
+	@BindView(R.id.content) protected EditText editText;
 	private UndoRedoEditText undoRedoEditText;
 
-	@InjectView(R.id.edit) private FloatingActionButton editButton;
-	@InjectView(R.id.line_numbers) private TextView numLinesTextView;
+	@BindView(R.id.edit) protected FloatingActionButton editButton;
+	@BindView(R.id.line_numbers) protected TextView numLinesTextView;
 
-	@Inject private NodeUtils nodeUtils;
+	@Inject NodeUtils nodeUtils;
 	private Repository repository;
 	private FileManager fileManager;
 	private FileData fileData; // file currently being edited
@@ -95,7 +93,11 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_text_editor);
+    ButterKnife.bind(this);
+
 		// load arguments
 		final boolean isNewFile = getIntent().getBooleanExtra(EXTRA_IS_NEW_FILE, false);
 		repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
@@ -149,7 +151,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 				public void run() {
 					fileData = (FileData) savedInstanceState.getSerializable(STATE_FILE_DATA);
 					boolean startEditMode = savedInstanceState.getBoolean(STATE_EDIT_MODE);
-					EditTextState editTextState = Parcels.unwrap(savedInstanceState.getParcelable(STATE_EDIT_TEXT));
+					EditTextState editTextState = (EditTextState) savedInstanceState.getSerializable(STATE_EDIT_TEXT);
 					showContent(startEditMode, editTextState);
 					undoRedoEditText.restoreInstanceState(savedInstanceState, STATE_UNDO_REDO);
 				}
@@ -168,7 +170,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 		outState.putSerializable(STATE_FILE_DATA, fileData);
 		outState.putBoolean(STATE_EDIT_MODE, isEditMode());
 		EditTextState editTextState = new EditTextState(editText.getText().toString(), editText.getSelectionStart());
-		outState.putParcelable(STATE_EDIT_TEXT, Parcels.wrap(editTextState));
+		outState.putSerializable(STATE_EDIT_TEXT, editTextState);
 		undoRedoEditText.saveInstanceState(outState, STATE_UNDO_REDO);
 	}
 
@@ -444,15 +446,13 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 
 
 	/**
-	 * State of the {@link EditText}. Public because required by Parceler.
+	 * State of the {@link EditText}.
 	 */
-	@Parcel
-	public static class EditTextState {
+	public static class EditTextState implements Serializable {
 
 		public final String text;
 		public final int cursorPosition;
 
-		@ParcelConstructor
 		public EditTextState(String text, int cursorPosition) {
 			this.text = text;
 			this.cursorPosition = cursorPosition;

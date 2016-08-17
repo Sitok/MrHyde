@@ -24,7 +24,7 @@ import org.faudroids.mrhyde.ui.ActivityIntentFactory;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
-import org.roboguice.shaded.goole.common.base.Optional;
+import com.google.common.base.Optional;
 
 import java.text.DateFormat;
 

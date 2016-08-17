@@ -1,7 +1,7 @@
 package org.faudroids.mrhyde.git;
 
 
-import org.roboguice.shaded.goole.common.base.Objects;
+import com.google.common.base.Objects;
 
 import java.io.Serializable;
 

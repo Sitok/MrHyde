@@ -36,7 +36,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 import rx.functions.Action1;
 
 /**
@@ -48,16 +48,16 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 
 	private final String STATE_SELECTED_NODE = "STATE_SELECTED_NODE"; // which file is currently selected
 
-	@InjectView(R.id.list) private RecyclerView recyclerView;
+	@BindView(R.id.list) protected RecyclerView recyclerView;
 	protected PathNodeAdapter pathNodeAdapter;
 
-	@Inject private FileManagerFactory fileManagerFactory;
+	@Inject FileManagerFactory fileManagerFactory;
 	protected Repository repository;
 	protected FileManager fileManager;
 	@Inject protected NodeUtils nodeUtils;
 	@Inject protected FileUtils fileUtils;
 
-	@Inject private JekyllManagerFactory jekyllManagerFactory;
+	@Inject JekyllManagerFactory jekyllManagerFactory;
 	protected JekyllManager jekyllManager;
 
 

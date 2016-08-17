@@ -8,7 +8,7 @@ import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileNode;
-import org.roboguice.shaded.goole.common.base.Optional;
+import com.google.common.base.Optional;
 
 import java.io.IOException;
 import java.text.DateFormat;

@@ -15,8 +15,10 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.common.base.Optional;
 
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
@@ -30,18 +32,16 @@ import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
-import org.roboguice.shaded.goole.common.base.Optional;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.functions.Action1;
 import timber.log.Timber;
 
-@ContentView(R.layout.activity_dir)
 public final class DirActivity extends AbstractDirActivity implements DirActionModeListener.ActionSelectionListener {
 
 	private static final String EXTRA_NODE_TO_MOVE = "EXTRA_NODE_TO_MOVE"; // marks which file should be moved
@@ -52,25 +52,28 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 			REQUEST_SELECT_PHOTO = 44,
 			REQUEST_SELECT_DIR = 45;
 
-	@InjectView(R.id.tint) private View tintView;
-	@InjectView(R.id.add) private FloatingActionsMenu addButton;
-	@InjectView(R.id.add_file) private FloatingActionButton addFileButton;
-	@InjectView(R.id.add_image) private FloatingActionButton addImageButton;
-	@InjectView(R.id.add_folder) private FloatingActionButton addFolderButton;
-	@InjectView(R.id.add_post) private FloatingActionButton addPostButton;
-	@InjectView(R.id.add_draft) private FloatingActionButton addDraftButton;
+	@BindView(R.id.tint) protected View tintView;
+	@BindView(R.id.add) protected FloatingActionsMenu addButton;
+	@BindView(R.id.add_file) protected FloatingActionButton addFileButton;
+	@BindView(R.id.add_image) protected FloatingActionButton addImageButton;
+	@BindView(R.id.add_folder) protected FloatingActionButton addFolderButton;
+	@BindView(R.id.add_post) protected FloatingActionButton addPostButton;
+	@BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
 
-	@Inject private ActivityIntentFactory intentFactory;
-	@Inject private ImageUtils imageUtils;
+	@Inject ActivityIntentFactory intentFactory;
+	@Inject ImageUtils imageUtils;
 
-	@Inject private JekyllUiUtils jekyllUiUtils;
+	@Inject JekyllUiUtils jekyllUiUtils;
 
 	private DirActionModeListener actionModeListener = null;
 
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_dir);
+    ButterKnife.bind(this);
 		setTitle(repository.getName());
 
 		// setup add buttons

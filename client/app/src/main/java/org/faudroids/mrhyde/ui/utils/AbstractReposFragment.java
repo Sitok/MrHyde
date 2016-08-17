@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 
 public abstract class AbstractReposFragment extends AbstractFragment {
 
@@ -39,7 +39,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 	@Inject protected RepositoryManager repositoryManager;
 	@Inject protected GitHubUtils gitHubUtils;
 
-	@InjectView(R.id.list) protected RecyclerView recyclerView;
+	@BindView(R.id.list) protected RecyclerView recyclerView;
 	protected RepositoryAdapter repoAdapter;
 	private RecyclerView.LayoutManager layoutManager;
 

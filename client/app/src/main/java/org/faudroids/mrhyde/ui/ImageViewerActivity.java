@@ -8,6 +8,7 @@ import com.ortiz.touch.TouchImageView;
 
 import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileManager;
@@ -22,13 +23,12 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import javax.inject.Inject;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-@ContentView(R.layout.activity_image_viewer)
 public final class ImageViewerActivity extends AbstractActionBarActivity {
 
 	static final String
@@ -37,17 +37,20 @@ public final class ImageViewerActivity extends AbstractActionBarActivity {
 
 	private static final String STATE_CONTENT = "STATE_CONTENT";
 
-	@InjectView(R.id.image) private TouchImageView imageView;
+	@BindView(R.id.image) protected TouchImageView imageView;
 
-	@Inject private FileManagerFactory fileManagerFactory;
-	@Inject private NodeUtils nodeUtils;
+	@Inject FileManagerFactory fileManagerFactory;
+	@Inject NodeUtils nodeUtils;
 	private FileManager fileManager;
 	private FileData fileData; // image currently being viewed
 
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_image_viewer);
+    ButterKnife.bind(this);
 
 		// load arguments
 		final Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);

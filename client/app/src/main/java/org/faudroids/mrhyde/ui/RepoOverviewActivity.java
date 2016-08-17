@@ -24,10 +24,12 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 
 import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.RepositoryManager;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
@@ -42,20 +44,18 @@ import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
-import org.roboguice.shaded.goole.common.base.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func2;
 
-@ContentView(R.layout.activity_repo_overview)
 public final class RepoOverviewActivity extends AbstractActionBarActivity {
 
 	public static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
@@ -64,42 +64,45 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 			REQUEST_SHOW_LIST = 42,
 			REQUEST_SHOW_ALL_FILES = 43;
 
-	@InjectView(R.id.scroll_view) private ObservableScrollView scrollView;
-	@InjectView(R.id.image_overview_background) private ImageView overviewBackgroundImage;
-	@InjectView(R.id.image_repo_owner) private ImageView repoOwnerImage;
-	@InjectView(R.id.text_post_count) private TextView postDraftCountView;
-	@InjectView(R.id.button_favourite) private ImageButton favouriteButton;
+	@BindView(R.id.scroll_view) protected ObservableScrollView scrollView;
+	@BindView(R.id.image_overview_background) protected ImageView overviewBackgroundImage;
+	@BindView(R.id.image_repo_owner) protected ImageView repoOwnerImage;
+	@BindView(R.id.text_post_count) protected TextView postDraftCountView;
+	@BindView(R.id.button_favourite) protected ImageButton favouriteButton;
 	private Drawable actionBarDrawable;
 
 	@Inject JekyllUiUtils jekyllUiUtils;
-	@InjectView(R.id.header_posts) private View postsHeader;
-	@InjectView(R.id.list_posts) private ListView postsListView;
+	@BindView(R.id.header_posts) protected View postsHeader;
+	@BindView(R.id.list_posts) protected ListView postsListView;
 	private PostsListAdapter postsListAdapter;
-	@InjectView(R.id.item_no_posts) private View noPostsView;
+	@BindView(R.id.item_no_posts) protected View noPostsView;
 
-	@InjectView(R.id.card_drafts) private View draftsCard;
-	@InjectView(R.id.header_drafts) private View draftsHeader;
-	@InjectView(R.id.list_drafts) private ListView draftsListView;
+	@BindView(R.id.card_drafts) protected View draftsCard;
+	@BindView(R.id.header_drafts) protected View draftsHeader;
+	@BindView(R.id.list_drafts) protected ListView draftsListView;
 	private DraftsListAdapter draftsListAdapter;
 
-	@InjectView(R.id.card_all_files) private View allFilesView;
+	@BindView(R.id.card_all_files) protected View allFilesView;
 
-	@InjectView(R.id.add) private FloatingActionsMenu addButton;
-	@InjectView(R.id.add_post) private FloatingActionButton addPostButton;
-	@InjectView(R.id.add_draft) private FloatingActionButton addDraftButton;
-	@InjectView(R.id.tint) private View tintView;
+	@BindView(R.id.add) protected FloatingActionsMenu addButton;
+	@BindView(R.id.add_post) protected FloatingActionButton addPostButton;
+	@BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
+	@BindView(R.id.tint) protected View tintView;
 
 	private Repository repository;
-	@Inject private JekyllManagerFactory jekyllManagerFactory;
-	@Inject private RepositoryManager repositoryManager;
+	@Inject JekyllManagerFactory jekyllManagerFactory;
+	@Inject RepositoryManager repositoryManager;
 	private JekyllManager jekyllManager;
 
-	@Inject private ActivityIntentFactory intentFactory;
+	@Inject ActivityIntentFactory intentFactory;
 
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_repo_overview);
+    ButterKnife.bind(this);
 
 		// get arguments
 		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);

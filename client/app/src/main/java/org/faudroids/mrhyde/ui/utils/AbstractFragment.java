@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.ui.utils;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,18 +11,18 @@ import org.faudroids.mrhyde.R;
 
 import javax.inject.Inject;
 
-import roboguice.fragment.provided.RoboFragment;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
 
 
-public abstract class AbstractFragment extends RoboFragment {
+public abstract class AbstractFragment extends Fragment {
 
 	private final int layoutResource;
 	protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 	@Inject protected UiUtils uiUtils;
-	@InjectView(R.id.spinner) protected View spinnerContainerView;
-	@InjectView(R.id.spinner_image) protected ImageView spinnerImageView;
+	@BindView(R.id.spinner) protected View spinnerContainerView;
+	@BindView(R.id.spinner_image) protected ImageView spinnerImageView;
 
 	protected AbstractFragment(int layoutResource) {
 		this.layoutResource = layoutResource;
@@ -30,7 +31,9 @@ public abstract class AbstractFragment extends RoboFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(layoutResource, container, false);
+		View view = inflater.inflate(layoutResource, container, false);
+    ButterKnife.bind(this, view);
+    return view;
 	}
 
 

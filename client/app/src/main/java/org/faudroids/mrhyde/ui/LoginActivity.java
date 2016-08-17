@@ -16,6 +16,7 @@ import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.service.UserService;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MigrationManager;
+import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.github.Email;
 import org.faudroids.mrhyde.github.GitHubAuthApi;
 import org.faudroids.mrhyde.github.GitHubEmailsApi;
@@ -36,25 +37,24 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
 
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import timber.log.Timber;
 
 
-@ContentView(R.layout.activity_login)
 public final class LoginActivity extends AbstractActionBarActivity {
 
 	private static final String STATE_LOGIN_RUNNING = "STATE_LOGIN_RUNNING";
 	private static final String GITHUB_LOGIN_STATE = UUID.randomUUID().toString();
 
-	@InjectView(R.id.login_button) private Button loginButton;
-	@Inject private GitHubAuthApi gitHubAuthApi;
-	@Inject private GitHubEmailsApi gitHubEmailsApi;
-	@Inject private LoginManager loginManager;
-	@Inject private MigrationManager migrationManager;
+	@BindView(R.id.login_button) protected Button loginButton;
+	@Inject GitHubAuthApi gitHubAuthApi;
+	@Inject GitHubEmailsApi gitHubEmailsApi;
+	@Inject LoginManager loginManager;
+	@Inject MigrationManager migrationManager;
 
 	private Dialog loginDialog = null;
 	private WebView loginView = null;
@@ -63,6 +63,9 @@ public final class LoginActivity extends AbstractActionBarActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_login);
+    ButterKnife.bind(this);
+    ((MrHydeApp) getApplication()).getComponent().inject(this);
 
 		// start migration if necessary
 		migrationManager.doMigration();
