@@ -35,7 +35,7 @@ import timber.log.Timber;
 public final class FileManager {
 
 	private final LoginManager loginManager;
-	private final GitManager gitManager;
+	private final GitManager_Deprecated gitManagerDeprecated;
 	private final GitHubApiWrapper gitHubApiWrapper;
 	private final GitHubRepository repository;
 	private final FileUtils fileUtils;
@@ -55,7 +55,7 @@ public final class FileManager {
 		this.repository = repository;
 		this.rootDir = new File(context.getFilesDir(), repository.getOwner().getLogin() + "/" + repository.getName());
 		this.fileUtils = fileUtils;
-		this.gitManager = new GitManager(rootDir);
+		this.gitManagerDeprecated = new GitManager_Deprecated(rootDir);
 	}
 
 
@@ -127,7 +127,7 @@ public final class FileManager {
 						}
 						return Observable.just(new FileData(fileNode, content));
 					})
-					.flatMap(gitManager.<FileData>commit(file));
+					.flatMap(gitManagerDeprecated.<FileData>commit(file));
 		}
 	}
 
@@ -297,7 +297,7 @@ public final class FileManager {
 				// wait for all blobs
 				.toList()
 				// construct the final tree
-				.zipWith(gitManager.getDeletedFiles(), (savedBlobs, deletedFiles) -> {
+				.zipWith(gitManagerDeprecated.getDeletedFiles(), (savedBlobs, deletedFiles) -> {
           // send the full tree, everything not included will be marked as deleted
           Map<String, SavedBlob> blobsMap = new HashMap<>();
           for (SavedBlob blob : savedBlobs) {
@@ -385,7 +385,7 @@ public final class FileManager {
 	 * Returns a regular Git diff.
 	 */
 	public Observable<String> getDiff() {
-		return gitManager.diff();
+		return gitManagerDeprecated.diff();
 	}
 
 
@@ -394,12 +394,12 @@ public final class FileManager {
 	 */
 	public Observable<String> getNonBinaryDiff() {
 		return getChangedBinaryFiles()
-				.flatMap(changedBinaryFiles -> gitManager.diff(changedBinaryFiles));
+				.flatMap(changedBinaryFiles -> gitManagerDeprecated.diff(changedBinaryFiles));
 	}
 
 
 	public Observable<Set<String>> getChangedFiles() {
-		return gitManager.getChangedFiles();
+		return gitManagerDeprecated.getChangedFiles();
 	}
 
 
@@ -423,7 +423,7 @@ public final class FileManager {
 
 
 	public Observable<Set<String>> getDeletedFiles() {
-		return gitManager.getDeletedFiles();
+		return gitManagerDeprecated.getDeletedFiles();
 	}
 
 
@@ -513,8 +513,8 @@ public final class FileManager {
 			if (!rootDir.exists() && !rootDir.mkdirs()) {
 				Timber.w("failed to create root dir");
 			}
-			if (!gitManager.exists()) {
-				return gitManager.init()
+			if (!gitManagerDeprecated.exists()) {
+				return gitManagerDeprecated.init()
 						.flatMap(new Func1<Void, Observable<T>>() {
 							@Override
 							public Observable<T> call(Void aVoid) {
@@ -601,7 +601,7 @@ public final class FileManager {
 		}
 
 		private Observable<DirNode> removeDeletedNodes(final DirNode rootNode) {
-			return gitManager.getDeletedFiles()
+			return gitManagerDeprecated.getDeletedFiles()
 					.flatMap(deletedFiles -> {
             for (String file : deletedFiles) {
               Timber.d("deleting file " + file + " from tree");

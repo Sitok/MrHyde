@@ -1,7 +1,6 @@
 package org.faudroids.mrhyde.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,10 +25,10 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
+import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
@@ -54,8 +52,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func2;
 
 public final class RepoOverviewActivity extends AbstractActionBarActivity {
 
@@ -94,6 +90,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 	@Inject JekyllManagerFactory jekyllManagerFactory;
 	@Inject GitHubManager gitHubManager;
 	private JekyllManager jekyllManager;
+  @Inject GitManagerFactory gitManagerFactory;
 
 	@Inject ActivityIntentFactory intentFactory;
 

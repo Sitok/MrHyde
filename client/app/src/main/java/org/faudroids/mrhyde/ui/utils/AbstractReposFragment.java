@@ -14,9 +14,14 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.RepoOverviewActivity;
+import org.faudroids.mrhyde.utils.DefaultErrorAction;
+import org.faudroids.mrhyde.utils.DefaultTransformer;
+import org.faudroids.mrhyde.utils.ErrorActionBuilder;
+import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -34,10 +39,10 @@ public abstract class AbstractReposFragment extends AbstractFragment {
   private static final DateFormat dateFormat = DateFormat.getDateInstance();
 
   @Inject protected GitHubManager gitHubManager;
+  @Inject GitManagerFactory gitManagerFactory;
 
   @BindView(R.id.list) protected RecyclerView recyclerView;
   protected RepositoryAdapter repoAdapter;
-  private RecyclerView.LayoutManager layoutManager;
 
 
   public AbstractReposFragment() {
@@ -55,7 +60,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
     super.onViewCreated(view, savedInstanceState);
 
     // setup list
-    layoutManager = new LinearLayoutManager(getActivity());
+    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
     recyclerView.setLayoutManager(layoutManager);
     repoAdapter = new RepositoryAdapter();
     recyclerView.setAdapter(repoAdapter);
@@ -77,9 +82,45 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 
 
   protected void onRepositorySelected(GitHubRepository repository) {
-    Intent intent = new Intent(AbstractReposFragment.this.getActivity(), RepoOverviewActivity.class);
-    intent.putExtra(RepoOverviewActivity.EXTRA_REPOSITORY, repository);
-    startActivityForResult(intent, REQUEST_OVERVIEW);
+    gitManagerFactory
+        .hasRepositoryBeenCloned(repository)
+        .compose(new DefaultTransformer<>())
+        .subscribe(
+            hasBeenCloned -> {
+              Intent repoIntent = new Intent(getActivity(), RepoOverviewActivity.class);
+              repoIntent.putExtra(RepoOverviewActivity.EXTRA_REPOSITORY, repository);
+
+              // repo has been clone, open it!
+              if (hasBeenCloned) {
+                startActivityForResult(repoIntent, REQUEST_OVERVIEW);
+                return;
+              }
+
+              // clone repo
+              new AlertDialog.Builder(getActivity())
+                  .setTitle(getActivity().getString(R.string.clone_repo_title))
+                  .setMessage(getActivity().getString(R.string.clone_repo_message))
+                  .setPositiveButton(R.string.clone_repo_confirm, (dialog, which) -> {
+                    showSpinner();
+                    gitManagerFactory
+                        .cloneRepository(repository)
+                        .compose(new DefaultTransformer<>())
+                        .subscribe(
+                            gitManager -> startActivityForResult(repoIntent, REQUEST_OVERVIEW),
+                            new ErrorActionBuilder()
+                                .add(new DefaultErrorAction(getActivity(), "Failed to repo status"))
+                                .add(new HideSpinnerAction(this))
+                                .build()
+                        );
+                  })
+                  .setNegativeButton(android.R.string.cancel, null)
+                  .show();
+            },
+            new ErrorActionBuilder()
+            .add(new DefaultErrorAction(getActivity(), "Failed to repo status"))
+            .build()
+    );
+
   }
 
 
