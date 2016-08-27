@@ -19,7 +19,7 @@
 
     <item
         android:id="@+id/action_discard_changes"
-        android:title="@string/action_discard_changes"
+        android:title="@string/action_delete_repo"
         app:showAsAction="never"
         />
 

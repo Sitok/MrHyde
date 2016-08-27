@@ -30,7 +30,7 @@
     <string name="action_clone">Clone repositoryt</string>
     <string name="action_commit">Commit</string>
     <string name="action_preview">Preview</string>
-    <string name="action_discard_changes">Discard changes</string>
+    <string name="action_delete_repo">Delete local repository</string>
     <string name="action_close">Close</string>
     <string name="action_show_line_numbers">Line numbers</string>
     <string name="action_undo">Undo</string>
@@ -38,7 +38,7 @@
     <string name="action_publish_draft">Publish draft</string>
     <string name="action_unpublish_post">Unpublish post</string>
 
-    <string name="clone_repo_title">Clone repository?</string>
+    <string name="clone_repo_title">Clone repository</string>
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
     <string name="clone_repo_confirm">Clone</string>
 
@@ -97,8 +97,8 @@
     <string name="dir_empty">Empty</string>
     <string name="rename_title">Rename</string>
 
-    <string name="discard_changes_title">Discard changes</string>
-    <string name="discard_changes_message">Undo all local changes to this repository? Cannot be undone!</string>
+    <string name="delete_repo_title">Delete local repository</string>
+    <string name="delete_repo_message">Delete all local content of this repository? Cannot be undone!</string>
 
     <string name="delete_title">Delete file</string>
     <string name="delete_message">Do you want to delete %1$s?</string>

@@ -28,6 +28,7 @@ import com.squareup.picasso.Picasso;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
+import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.github.GitHubRepository;
@@ -88,9 +89,11 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 
 	private GitHubRepository repository;
 	@Inject JekyllManagerFactory jekyllManagerFactory;
-	@Inject GitHubManager gitHubManager;
 	private JekyllManager jekyllManager;
+  @Inject GitHubManager gitHubManager;
   @Inject GitManagerFactory gitManagerFactory;
+  private GitManager gitManager;
+
 
 	@Inject ActivityIntentFactory intentFactory;
 
@@ -107,9 +110,16 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
 		setTitle(repository.getName());
 
-		// setup posts lists
-		postsListAdapter = new PostsListAdapter(this);
-		postsListView.setAdapter(postsListAdapter);
+    // open git repo
+    gitManagerFactory
+        .openRepository(repository)
+        .subscribe(gitManager1 -> {
+          RepoOverviewActivity.this.gitManager = gitManager1;
+        });
+
+    // setup posts lists
+    postsListAdapter = new PostsListAdapter(this);
+    postsListView.setAdapter(postsListAdapter);
 
 		// setup drafts lists
 		draftsListAdapter = new DraftsListAdapter(this);
@@ -298,7 +308,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		if (isSpinnerVisible()) {
 			menu.findItem(R.id.action_commit).setVisible(false);
 			menu.findItem(R.id.action_preview).setVisible(false);
-			menu.findItem(R.id.action_discard_changes).setVisible(false);
+			menu.findItem(R.id.action_delete_repo).setVisible(false);
 		}
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -315,14 +325,22 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 				startActivity(intentFactory.createPreviewIntent(repository));
 				return true;
 
-			case R.id.action_discard_changes:
+      case R.id.action_delete_repo:
 				new AlertDialog.Builder(this)
-						.setTitle(R.string.discard_changes_title)
-						.setMessage(R.string.discard_changes_message)
+						.setTitle(R.string.delete_repo_title)
+						.setMessage(R.string.delete_repo_message)
 						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-              jekyllManager.resetRepository();
               showSpinner();
-              loadJekyllContent();
+              gitManager
+                  .deleteAllLocalContent()
+                  .compose(new DefaultTransformer<>())
+                  .subscribe(
+                      aVoid -> finish(),
+                      new ErrorActionBuilder()
+                          .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to delete repo"))
+                          .add(new HideSpinnerAction(RepoOverviewActivity.this))
+                          .build()
+                  );
             })
 						.setNegativeButton(android.R.string.cancel, null)
 						.show();

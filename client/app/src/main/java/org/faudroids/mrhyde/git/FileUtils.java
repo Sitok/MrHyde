@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * Helper methods for dealing with files.
  */
@@ -47,5 +49,20 @@ public class FileUtils {
 		}
 		return false;
 	}
+
+
+  /**
+   * Deletes a file or directory recursively.
+   */
+  public void delete(File file) throws IOException {
+    if (file.isDirectory()) {
+      for (File f : file.listFiles()) {
+        delete(f);
+      }
+    }
+    if (!file.delete()) {
+      Timber.w("Failed to delete \"%s\"", file.getAbsolutePath());
+    }
+  }
 
 }

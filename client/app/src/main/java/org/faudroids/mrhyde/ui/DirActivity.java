@@ -159,8 +159,8 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 			case R.id.action_discard_changes:
 				new AlertDialog.Builder(this)
-						.setTitle(R.string.discard_changes_title)
-						.setMessage(R.string.discard_changes_message)
+						.setTitle(R.string.delete_repo_title)
+						.setMessage(R.string.delete_repo_message)
 						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {

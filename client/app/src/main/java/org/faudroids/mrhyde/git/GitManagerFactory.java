@@ -25,17 +25,20 @@ public class GitManagerFactory {
 
   private final Context context;
   private final LoginManager loginManager;
+  private final FileUtils fileUtils;
 
   @Inject
-  public GitManagerFactory(Context context, LoginManager loginManager) {
+  public GitManagerFactory(Context context, LoginManager loginManager, FileUtils fileUtils) {
     this.context = context;
     this.loginManager = loginManager;
+    this.fileUtils = fileUtils;
   }
 
   public Observable<GitManager> openRepository(@NonNull final GitHubRepository repository) {
     return ObservableUtils.fromSynchronousCall(() -> {
-      Git client = Git.open(getRepoRootDir(repository));
-      return new GitManager(repository, client);
+      File rootDir = getRepoRootDir(repository);
+      Git client = Git.open(rootDir);
+      return new GitManager(repository, client, rootDir, fileUtils);
     });
   }
 
@@ -45,12 +48,13 @@ public class GitManagerFactory {
           + loginManager.getAccount().getAccessToken()
           + ":x-oauth-basic@"
           + repository.getCloneUrl().replaceFirst("https://", "");
+      File rootDir = getRepoRootDir(repository);
       Git client = Git
           .cloneRepository()
           .setURI(cloneUrl)
-          .setDirectory(getRepoRootDir(repository))
+          .setDirectory(rootDir)
           .call();
-      return new GitManager(repository, client);
+      return new GitManager(repository, client, rootDir, fileUtils);
     });
   }
 
@@ -67,7 +71,7 @@ public class GitManagerFactory {
     });
   }
 
-  private File getRepoRootDir(@NonNull  GitHubRepository repository) {
+  private File getRepoRootDir(@NonNull GitHubRepository repository) {
     return new File(context.getFilesDir(), repository.getFullName());
   }
 
