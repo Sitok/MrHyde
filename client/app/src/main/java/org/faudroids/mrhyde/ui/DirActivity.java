@@ -24,7 +24,6 @@ import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.jekyll.Draft;
-import org.faudroids.mrhyde.jekyll.Post;
 import org.faudroids.mrhyde.ui.utils.ImageUtils;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
 import org.faudroids.mrhyde.ui.utils.UiUtils;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import rx.functions.Action1;
 import timber.log.Timber;
 
@@ -71,9 +69,8 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
     ((MrHydeApp) getApplication()).getComponent().inject(this);
-		super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_dir);
-    ButterKnife.bind(this);
+		super.onCreate(savedInstanceState);
 		setTitle(repository.getName());
 
 		// setup add buttons
@@ -88,67 +85,42 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				tintView.animate().alpha(0).setDuration(200).start();
 			}
 		});
-		addFileButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				addAndOpenFile();
-			}
-		});
-		addImageButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-				photoPickerIntent.setType("image/*");
-				startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
-			}
-		});
-		addFolderButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				addDirectory();
-			}
-		});
-		addPostButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				jekyllUiUtils.showNewPostDialog(
-						jekyllManager,
-						repository,
-						Optional.of(pathNodeAdapter.getSelectedNode()),
-						new JekyllUiUtils.OnContentCreatedListener<Post>() {
-					@Override
-					public void onContentCreated(Post content) {
-						refreshTree();
-					}
-				});
-			}
-		});
-		addDraftButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				jekyllUiUtils.showNewDraftDialog(
-						jekyllManager,
-						repository,
-						Optional.of(pathNodeAdapter.getSelectedNode()),
-						new JekyllUiUtils.OnContentCreatedListener<Draft>() {
-					@Override
-					public void onContentCreated(Draft content) {
-						refreshTree();
-					}
-				});
-			}
-		});
-		tintView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-			}
-		});
+		addFileButton.setOnClickListener(v -> {
+      addButton.collapse();
+      addAndOpenFile();
+    });
+		addImageButton.setOnClickListener(v -> {
+      addButton.collapse();
+      Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+      photoPickerIntent.setType("image/*");
+      startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
+    });
+		addFolderButton.setOnClickListener(v -> {
+      addButton.collapse();
+      addDirectory();
+    });
+		addPostButton.setOnClickListener(v -> {
+      addButton.collapse();
+      jekyllUiUtils.showNewPostDialog(
+          jekyllManager,
+          repository,
+          Optional.of(pathNodeAdapter.getSelectedNode()),
+          content -> refreshTree());
+    });
+		addDraftButton.setOnClickListener(v -> {
+      addButton.collapse();
+      jekyllUiUtils.showNewDraftDialog(
+          jekyllManager,
+          repository,
+          Optional.of(pathNodeAdapter.getSelectedNode()),
+          new JekyllUiUtils.OnContentCreatedListener<Draft>() {
+        @Override
+        public void onContentCreated(Draft content) {
+          refreshTree();
+        }
+      });
+    });
+		tintView.setOnClickListener(v -> addButton.collapse());
 
 		// prepare action mode
 		actionModeListener = new DirActionModeListener(this, this, uiUtils);

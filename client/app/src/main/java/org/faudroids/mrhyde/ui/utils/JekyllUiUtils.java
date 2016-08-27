@@ -13,10 +13,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.eclipse.egit.github.core.Repository;
+import com.google.common.base.Optional;
+
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileNode;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.Post;
@@ -24,7 +26,6 @@ import org.faudroids.mrhyde.ui.ActivityIntentFactory;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
-import com.google.common.base.Optional;
 
 import java.text.DateFormat;
 
@@ -58,7 +59,7 @@ public class JekyllUiUtils {
 	}
 
 
-	public void setDraftOverview(View view, final Draft draft, final Repository repository) {
+	public void setDraftOverview(View view, final Draft draft) {
 		// set title
 		TextView titleView = (TextView) view.findViewById(R.id.text_title);
 		titleView.setText(draft.getTitle());
@@ -66,7 +67,7 @@ public class JekyllUiUtils {
 	}
 
 
-	public void setPostOverview(View view, final Post post, final Repository repository) {
+	public void setPostOverview(View view, final Post post) {
 		// set title
 		TextView titleView = (TextView) view.findViewById(R.id.text_title);
 		titleView.setText(post.getTitle());
@@ -78,9 +79,13 @@ public class JekyllUiUtils {
 	}
 
 
-	public void showNewPostDialog(final JekyllManager jekyllManager, final Repository repository, final Optional<DirNode> postDir, final OnContentCreatedListener<Post> postListener) {
-		showNewJekyllContentDialog(new NewJekyllContentStrategy<Post>(R.string.new_post, postListener) {
-			@Override
+	public void showNewPostDialog(
+      final JekyllManager jekyllManager,
+      final GitHubRepository repository,
+      final Optional<DirNode> postDir,
+      final OnContentCreatedListener<Post> postListener) {
+    showNewJekyllContentDialog(new NewJekyllContentStrategy<Post>(R.string.new_post, postListener) {
+      @Override
 			public String formatTitle(String title) {
 				return jekyllManager.postTitleToFilename(title);
 			}
@@ -99,7 +104,11 @@ public class JekyllUiUtils {
 	}
 
 
-	public void showNewDraftDialog(final JekyllManager jekyllManager, Repository repository, final Optional<DirNode> draftDir, OnContentCreatedListener<Draft> draftListener) {
+	public void showNewDraftDialog(
+      final JekyllManager jekyllManager,
+      GitHubRepository repository,
+      final Optional<DirNode> draftDir,
+      OnContentCreatedListener<Draft> draftListener) {
 		showNewJekyllContentDialog(new NewJekyllContentStrategy<Draft>(R.string.new_draft, draftListener) {
 			@Override
 			public String formatTitle(String title) {
@@ -120,7 +129,9 @@ public class JekyllUiUtils {
 	}
 
 
-	private <T> void showNewJekyllContentDialog(final NewJekyllContentStrategy<T> strategy, final Repository repository) {
+	private <T> void showNewJekyllContentDialog(
+      final NewJekyllContentStrategy<T> strategy,
+      final GitHubRepository repository) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context)
 				.setTitle(strategy.titleResource)
 				.setNegativeButton(android.R.string.cancel, null);

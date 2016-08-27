@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.RepositoryManager;
+import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.github.LoginManager;
 
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ import timber.log.Timber;
 public class MainDrawerActivity extends MaterialNavigationDrawer<Fragment> {
 
   @Inject LoginManager loginManager;
-  @Inject RepositoryManager repositoryManager;
+  @Inject GitHubManager gitHubManager;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainDrawerActivity extends MaterialNavigationDrawer<Fragment> {
     addSection(newSection(getString(R.string.section_all_repositories), R.drawable.ic_list, new AllReposFragment()));
 
     // show favourites repo per default if not empty
-    if (repositoryManager.hasFavouriteRepositories()) setDefaultSectionLoaded(0);
+    if (gitHubManager.hasFavouriteRepositories()) setDefaultSectionLoaded(0);
     else setDefaultSectionLoaded(1);
 
     //account information

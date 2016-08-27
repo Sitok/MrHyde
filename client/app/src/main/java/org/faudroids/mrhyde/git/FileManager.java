@@ -7,12 +7,12 @@ import org.eclipse.egit.github.core.Blob;
 import org.eclipse.egit.github.core.Commit;
 import org.eclipse.egit.github.core.CommitUser;
 import org.eclipse.egit.github.core.Reference;
-import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.Tree;
 import org.eclipse.egit.github.core.TreeEntry;
 import org.eclipse.egit.github.core.TypedResource;
 import org.eclipse.egit.github.core.client.RequestException;
 import org.faudroids.mrhyde.github.GitHubApiWrapper;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.github.LoginManager;
 
 import java.io.File;
@@ -30,7 +30,6 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.functions.Func1;
-import rx.functions.Func2;
 import timber.log.Timber;
 
 public final class FileManager {
@@ -38,14 +37,19 @@ public final class FileManager {
 	private final LoginManager loginManager;
 	private final GitManager gitManager;
 	private final GitHubApiWrapper gitHubApiWrapper;
-	private final Repository repository;
+	private final GitHubRepository repository;
 	private final FileUtils fileUtils;
 	private final File rootDir;
 
 	private final MetaDataCache cache = new MetaDataCache();
 
 
-	FileManager(Context context, LoginManager loginManager, GitHubApiWrapper gitHubApiWrapper, Repository repository, FileUtils fileUtils) {
+	FileManager(
+      Context context,
+      LoginManager loginManager,
+      GitHubApiWrapper gitHubApiWrapper,
+      GitHubRepository repository,
+      FileUtils fileUtils) {
 		this.loginManager = loginManager;
 		this.gitHubApiWrapper = gitHubApiWrapper;
 		this.repository = repository;
@@ -55,7 +59,7 @@ public final class FileManager {
 	}
 
 
-	public Repository getRepository() {
+	public GitHubRepository getRepository() {
 		return repository;
 	}
 
@@ -168,24 +172,16 @@ public final class FileManager {
 	public Observable<FileNode> moveFile(final FileNode oldFileNode, DirNode parentNode, String newFileName) {
 		final FileNode newFileNode = createNewFile(parentNode, newFileName);
 		return readFile(oldFileNode)
-				.flatMap(new Func1<FileData, Observable<FileNode>>() {
-					@Override
-					public Observable<FileNode> call(FileData oldData) {
-						FileData newData = new FileData(newFileNode, oldData.getData());
-						try {
-							writeFile(newData);
-							return deleteFile(oldFileNode)
-									.flatMap(new Func1<Void, Observable<FileNode>>() {
-										@Override
-										public Observable<FileNode> call(Void aVoid) {
-											return Observable.just(newFileNode);
-										}
-									});
-						} catch (IOException e) {
-							return Observable.error(e);
-						}
-					}
-				});
+				.flatMap(oldData -> {
+          FileData newData = new FileData(newFileNode, oldData.getData());
+          try {
+            writeFile(newData);
+            return deleteFile(oldFileNode)
+                .flatMap(aVoid -> Observable.just(newFileNode));
+          } catch (IOException e) {
+            return Observable.error(e);
+          }
+        });
 	}
 
 
@@ -286,133 +282,102 @@ public final class FileManager {
 	public Observable<Void> commit(final String commitMessage) {
 		return getChangedFiles()
 				// get changed files
-				.flatMap(new Func1<Set<String>, Observable<String>>() {
-					@Override
-					public Observable<String> call(Set<String> filePaths) {
-						for (String file : filePaths) Timber.d("committing file " + file);
-						return Observable.from(filePaths);
-					}
-				})
+				.flatMap(filePaths -> {
+          for (String file : filePaths) Timber.d("committing file " + file);
+          return Observable.from(filePaths);
+        })
 				// store blobs on GitHub
-				.flatMap(new Func1<String, Observable<SavedBlob>>() {
-					@Override
-					public Observable<SavedBlob> call(final String filePath) {
-						final Blob blob = new Blob();
-						File file = new File(rootDir, filePath);
-						blob.setContent(new String(Base64.encode(readFile(file), Base64.DEFAULT))).setEncoding(Blob.ENCODING_BASE64);
-						return gitHubApiWrapper.createBlob(repository, blob)
-								.flatMap(new Func1<String, Observable<SavedBlob>>() {
-									 @Override
-									 public Observable<SavedBlob> call(String blobSha) {
-										return Observable.just(new SavedBlob(filePath, blobSha, blob));
-								}
-							});
-					}
-				})
+				.flatMap(filePath -> {
+          final Blob blob = new Blob();
+          File file = new File(rootDir, filePath);
+          blob.setContent(new String(Base64.encode(readFile(file), Base64.DEFAULT))).setEncoding(Blob.ENCODING_BASE64);
+          return gitHubApiWrapper.createBlob(repository, blob)
+              .flatMap(blobSha -> Observable.just(new SavedBlob(filePath, blobSha, blob)));
+        })
 				// wait for all blobs
 				.toList()
 				// construct the final tree
-				.zipWith(gitManager.getDeletedFiles(), new Func2<List<SavedBlob>, Set<String>, Collection<TreeEntry>>() {
-					@Override
-					public Collection<TreeEntry> call(List<SavedBlob> savedBlobs, Set<String> deletedFiles) {
-						// send the full tree, everything not included will be marked as deleted
-						Map<String, SavedBlob> blobsMap = new HashMap<>();
-						for (SavedBlob blob : savedBlobs) {
-							blobsMap.put(blob.path, blob);
-						}
+				.zipWith(gitManager.getDeletedFiles(), (savedBlobs, deletedFiles) -> {
+          // send the full tree, everything not included will be marked as deleted
+          Map<String, SavedBlob> blobsMap = new HashMap<>();
+          for (SavedBlob blob : savedBlobs) {
+            blobsMap.put(blob.path, blob);
+          }
 
-						// update existing files
-						Collection<TreeEntry> treeEntries = new ArrayList<>();
-						for (TreeEntry entry : cache.getTree().get().getTree()) {
-							SavedBlob blob = blobsMap.remove(entry.getPath());
+          // update existing files
+          Collection<TreeEntry> treeEntries = new ArrayList<>();
+          for (TreeEntry entry : cache.getTree().get().getTree()) {
+            SavedBlob blob = blobsMap.remove(entry.getPath());
 
-							// do not add deleted files
-							if (deletedFiles.contains(entry.getPath())) {
-								Timber.d("ignoring " + entry.getPath() + " during commit");
-								continue;
-							}
+            // do not add deleted files
+            if (deletedFiles.contains(entry.getPath())) {
+              Timber.d("ignoring " + entry.getPath() + " during commit");
+              continue;
+            }
 
-							// ignore existing trees (creates new ones on GitHub)
-							if (entry.getMode().equals(TreeEntry.MODE_DIRECTORY)) {
-								Timber.d("ignoring " + entry.getPath() + " during commit");
-								continue;
-							}
+            // ignore existing trees (creates new ones on GitHub)
+            if (entry.getMode().equals(TreeEntry.MODE_DIRECTORY)) {
+              Timber.d("ignoring " + entry.getPath() + " during commit");
+              continue;
+            }
 
-							TreeEntry newEntry;
-							if (blob != null) {
-								blobsMap.remove(entry.getPath());
-								newEntry = createTreeEntryFromBlob(blob);
-							} else {
-								newEntry = entry;
-							}
-							Timber.d("adding " + newEntry.getPath() + " to commit");
-							treeEntries.add(newEntry);
-						}
+            TreeEntry newEntry;
+            if (blob != null) {
+              blobsMap.remove(entry.getPath());
+              newEntry = createTreeEntryFromBlob(blob);
+            } else {
+              newEntry = entry;
+            }
+            Timber.d("adding " + newEntry.getPath() + " to commit");
+            treeEntries.add(newEntry);
+          }
 
-						// add new files
-						for (SavedBlob blob : blobsMap.values()) {
-							Timber.d("adding " + blob.path + " to commit");
-							treeEntries.add(createTreeEntryFromBlob(blob));
-						}
+          // add new files
+          for (SavedBlob blob : blobsMap.values()) {
+            Timber.d("adding " + blob.path + " to commit");
+            treeEntries.add(createTreeEntryFromBlob(blob));
+          }
 
-						return treeEntries;
-					}
-				})
+          return treeEntries;
+        })
 				// create tree on GitHub
-				.flatMap(new Func1<Collection<TreeEntry>, Observable<Tree>>() {
-					@Override
-					public Observable<Tree> call(Collection<TreeEntry> treeEntries) {
-						return gitHubApiWrapper.createTree(repository, treeEntries);
-					}
-				})
+				.flatMap(treeEntries -> gitHubApiWrapper.createTree(repository, treeEntries))
 				// create new commit on GitHub
-				.flatMap(new Func1<Tree, Observable<Commit>>() {
-					@Override
-					public Observable<Commit> call(Tree newTree) {
-						Commit commit = new Commit();
-						commit.setMessage(commitMessage);
-						commit.setTree(newTree);
+				.flatMap(newTree -> {
+          Commit commit = new Commit();
+          commit.setMessage(commitMessage);
+          commit.setTree(newTree);
 
-						CommitUser author = new CommitUser();
-						author.setName(loginManager.getAccount().getLogin());
-						author.setEmail(loginManager.getAccount().getEmail());
-						author.setDate(Calendar.getInstance().getTime());
-						commit.setAuthor(author);
-						commit.setCommitter(author);
+          CommitUser author = new CommitUser();
+          author.setName(loginManager.getAccount().getLogin());
+          author.setEmail(loginManager.getAccount().getEmail());
+          author.setDate(Calendar.getInstance().getTime());
+          commit.setAuthor(author);
+          commit.setCommitter(author);
 
-						List<Commit> commitList = new ArrayList<>();
-						commitList.add(new Commit().setSha(cache.getBaseCommitSha().get()));
-						commit.setParents(commitList);
-						return gitHubApiWrapper.createCommit(repository, commit);
-					}
-				})
+          List<Commit> commitList = new ArrayList<>();
+          commitList.add(new Commit().setSha(cache.getBaseCommitSha().get()));
+          commit.setParents(commitList);
+          return gitHubApiWrapper.createCommit(repository, commit);
+        })
 				// get and update reference from GitHub
-				.flatMap(new Func1<Commit, Observable<Reference>>() {
-					@Override
-					public Observable<Reference> call(Commit commit) {
-						final TypedResource commitResource = new TypedResource();
-						commitResource.setSha(commit.getSha());
-						commitResource.setType(TypedResource.TYPE_COMMIT);
-						commitResource.setUrl(commit.getUrl());
+				.flatMap(commit -> {
+          final TypedResource commitResource = new TypedResource();
+          commitResource.setSha(commit.getSha());
+          commitResource.setType(TypedResource.TYPE_COMMIT);
+          commitResource.setUrl(commit.getUrl());
 
-						return gitHubApiWrapper.getReference(repository, "heads/" + repository.getDefaultBranch())
-								.flatMap(new Func1<Reference, Observable<Reference>>() {
-									@Override
-									public Observable<Reference> call(Reference reference) {
-										reference.setObject(commitResource);
-										return gitHubApiWrapper.editReference(repository, reference);
-									}
-								});
-					}
-				})
+          return gitHubApiWrapper.getReference(repository, "heads/" + repository.getDefaultBranch())
+              .flatMap(reference -> {
+                reference.setObject(commitResource);
+                return gitHubApiWrapper.editReference(repository, reference);
+              });
+        })
 				// cleanup
-				.flatMap(new Func1<Reference, Observable<Void>>() {
-					@Override
-					public Observable<Void> call(Reference reference) {
-						resetRepository();
-						return Observable.just(null);
-					}
-				});
+				.flatMap((Func1<Reference, Observable<Void>>) reference -> {
+          resetRepository();
+          return Observable.just(null);
+        });
 	}
 
 
@@ -429,12 +394,7 @@ public final class FileManager {
 	 */
 	public Observable<String> getNonBinaryDiff() {
 		return getChangedBinaryFiles()
-				.flatMap(new Func1<Set<String>, Observable<String>>() {
-					@Override
-					public Observable<String> call(Set<String> changedBinaryFiles) {
-						return gitManager.diff(changedBinaryFiles);
-					}
-				});
+				.flatMap(changedBinaryFiles -> gitManager.diff(changedBinaryFiles));
 	}
 
 
@@ -445,23 +405,20 @@ public final class FileManager {
 
 	public Observable<Set<String>> getChangedBinaryFiles() {
 		return getChangedFiles()
-				.flatMap(new Func1<Set<String>, Observable<Set<String>>>() {
-					@Override
-					public Observable<Set<String>> call(Set<String> changedFiles) {
-						Set<String> binaryFiles = new HashSet<>();
-						for (String changedFile : changedFiles) {
-							try {
-								if (fileUtils.isBinary(new File(rootDir, changedFile))) {
-									binaryFiles.add(changedFile);
-								}
-							} catch (IOException ioe) {
-								return Observable.error(ioe);
-							}
-						}
+				.flatMap(changedFiles -> {
+          Set<String> binaryFiles = new HashSet<>();
+          for (String changedFile : changedFiles) {
+            try {
+              if (fileUtils.isBinary(new File(rootDir, changedFile))) {
+                binaryFiles.add(changedFile);
+              }
+            } catch (IOException ioe) {
+              return Observable.error(ioe);
+            }
+          }
 
-						return Observable.just(binaryFiles);
-					}
-				});
+          return Observable.just(binaryFiles);
+        });
 	}
 
 
@@ -645,21 +602,18 @@ public final class FileManager {
 
 		private Observable<DirNode> removeDeletedNodes(final DirNode rootNode) {
 			return gitManager.getDeletedFiles()
-					.flatMap(new Func1<Set<String>, Observable<DirNode>>() {
-						@Override
-						public Observable<DirNode> call(Set<String> deletedFiles) {
-							for (String file : deletedFiles) {
-								Timber.d("deleting file " + file + " from tree");
-								DirNode iter = rootNode;
-								String[] paths = file.split("/");
-								for (int i = 0; i < paths.length - 1; ++i) {
-									iter = (DirNode) iter.getEntries().get(paths[i]);
-								}
-								iter.getEntries().remove(paths[paths.length - 1]);
-							}
-							return Observable.just(rootNode);
-						}
-					});
+					.flatMap(deletedFiles -> {
+            for (String file : deletedFiles) {
+              Timber.d("deleting file " + file + " from tree");
+              DirNode iter = rootNode;
+              String[] paths = file.split("/");
+              for (int i = 0; i < paths.length - 1; ++i) {
+                iter = (DirNode) iter.getEntries().get(paths[i]);
+              }
+              iter.getEntries().remove(paths[paths.length - 1]);
+            }
+            return Observable.just(rootNode);
+          });
 		}
 
 

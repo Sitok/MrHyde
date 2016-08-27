@@ -90,7 +90,7 @@ public class DraftsActivity extends AbstractJekyllActivity<Draft> {
 
 			@Override
 			protected void doSetItem(Draft item) {
-				jekyllUiUtils.setDraftOverview(view, item, repository);
+				jekyllUiUtils.setDraftOverview(view, item);
 			}
 
 		}

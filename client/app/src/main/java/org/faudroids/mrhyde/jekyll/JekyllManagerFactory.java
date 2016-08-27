@@ -4,6 +4,7 @@ import android.content.Context;
 
 import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.git.FileManagerFactory;
+import org.faudroids.mrhyde.github.GitHubRepository;
 
 import javax.inject.Inject;
 
@@ -19,7 +20,7 @@ public class JekyllManagerFactory {
 	}
 
 
-	public JekyllManager createJekyllManager(Repository repository) {
+	public JekyllManager createJekyllManager(GitHubRepository repository) {
 		return new JekyllManager(context, fileManagerFactory.createFileManager(repository));
 	}
 

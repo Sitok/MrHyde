@@ -12,10 +12,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileManagerFactory;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.PreviewManager;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
 import timber.log.Timber;
 
 public class PreviewActivity extends AbstractActionBarActivity {
@@ -52,7 +51,7 @@ public class PreviewActivity extends AbstractActionBarActivity {
     ButterKnife.bind(this);
 
     // load arguments
-    Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPO);
+    GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPO);
 
     // setup preview view
     webView.getSettings().setJavaScriptEnabled(true);
@@ -80,14 +79,11 @@ public class PreviewActivity extends AbstractActionBarActivity {
       compositeSubscription.add(previewManager
           .loadPreview(fileManagerFactory.createFileManager(repository))
           .compose(new DefaultTransformer<String>())
-          .subscribe(new Action1<String>() {
-                       @Override
-                       public void call(String previewUrl) {
-                         Timber.d("getting url " + previewUrl);
-                         webView.loadUrl(previewUrl);
-                         hideSpinner();
-                       }
-                     },
+          .subscribe(previewUrl1 -> {
+            Timber.d("getting url " + previewUrl1);
+            webView.loadUrl(previewUrl1);
+            hideSpinner();
+          },
               new ErrorActionBuilder()
                   .add(new DefaultErrorAction(this, "failed to get preview from server"))
                   .add(new HideSpinnerAction(this))

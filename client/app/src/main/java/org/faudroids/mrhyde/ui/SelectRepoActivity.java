@@ -3,9 +3,9 @@ package org.faudroids.mrhyde.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -17,8 +17,6 @@ import java.util.Collection;
 
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func2;
 
 public class SelectRepoActivity extends AbstractActionBarActivity {
 
@@ -34,7 +32,7 @@ public class SelectRepoActivity extends AbstractActionBarActivity {
   }
 
 
-  protected void returnRepository(Repository repository) {
+  protected void returnRepository(GitHubRepository repository) {
     Intent data = new Intent();
     data.putExtra(RESULT_REPOSITORY, repository);
     setResult(RESULT_OK, data);
@@ -49,33 +47,27 @@ public class SelectRepoActivity extends AbstractActionBarActivity {
       showSpinner();
       compositeSubscription.add(
           Observable.zip(
-              repositoryManager.getAllRepositories(),
-              repositoryManager.getFavouriteRepositories(),
-              new Func2<Collection<Repository>, Collection<Repository>, Collection<Repository>>() {
-                @Override
-                public Collection<Repository> call(Collection<Repository> allRepos, Collection<Repository> favouriteRepos) {
-                  // show only not favourite repositories
-                  Collection<Repository> filteredRepos = new ArrayList<>();
-                  for (Repository repo : allRepos) {
-                    boolean found = false;
-                    for (Repository favouriteRepo : favouriteRepos) {
-                      if (repo.getId() == favouriteRepo.getId()) {
-                        found = true;
-                        break;
-                      }
+              gitHubManager.getAllRepositories(),
+              gitHubManager.getFavouriteRepositories(),
+              (allRepos, favouriteRepos) -> {
+                // show only not favourite repositories
+                Collection<GitHubRepository> filteredRepos = new ArrayList<>();
+                for (GitHubRepository repo : allRepos) {
+                  boolean found = false;
+                  for (GitHubRepository favouriteRepo : favouriteRepos) {
+                    if (repo.getId() == favouriteRepo.getId()) {
+                      found = true;
+                      break;
                     }
-                    if (!found) filteredRepos.add(repo);
                   }
-                  return filteredRepos;
+                  if (!found) filteredRepos.add(repo);
                 }
+                return filteredRepos;
               })
-              .compose(new DefaultTransformer<Collection<Repository>>())
-              .subscribe(new Action1<Collection<Repository>>() {
-                @Override
-                public void call(Collection<Repository> repositories) {
-                  hideSpinner();
-                  repoAdapter.setItems(repositories);
-                }
+              .compose(new DefaultTransformer<Collection<GitHubRepository>>())
+              .subscribe(repositories -> {
+                hideSpinner();
+                repoAdapter.setItems(repositories);
               }, new ErrorActionBuilder()
                   .add(new DefaultErrorAction(this.getActivity(), "failed to get repos"))
                   .add(new HideSpinnerAction(this))
@@ -83,7 +75,7 @@ public class SelectRepoActivity extends AbstractActionBarActivity {
     }
 
     @Override
-    protected void onRepositorySelected(Repository repository) {
+    protected void onRepositorySelected(GitHubRepository repository) {
       ((SelectRepoActivity) getActivity()).returnRepository(repository);
     }
 

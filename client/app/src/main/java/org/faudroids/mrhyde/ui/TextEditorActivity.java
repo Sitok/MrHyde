@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
@@ -30,6 +29,7 @@ import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileManagerFactory;
 import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.git.NodeUtils;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.ui.utils.UndoRedoEditText;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -85,7 +85,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 	@BindView(R.id.line_numbers) protected TextView numLinesTextView;
 
 	@Inject NodeUtils nodeUtils;
-	private Repository repository;
+	private GitHubRepository repository;
 	private FileManager fileManager;
 	private FileData fileData; // file currently being edited
 	private boolean showingLineNumbers;
@@ -100,21 +100,18 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 
 		// load arguments
 		final boolean isNewFile = getIntent().getBooleanExtra(EXTRA_IS_NEW_FILE, false);
-		repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		fileManager = fileManagerFactory.createFileManager(repository);
 
 		// hide line numbers by default
 		showingLineNumbers = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_SHOW_LINE_NUMBERS, false);
 
 		// start editing on long click
-		editText.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				if (isEditMode()) return false;
-				startEditMode();
-				return true;
-			}
-		});
+		editText.setOnLongClickListener(v -> {
+      if (isEditMode()) return false;
+      startEditMode();
+      return true;
+    });
 
 		// setup line numbers
 		editText.addTextChangedListener(new TextWatcher() {

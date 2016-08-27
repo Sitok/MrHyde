@@ -31,7 +31,8 @@ import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.DirNode;
-import org.faudroids.mrhyde.git.RepositoryManager;
+import org.faudroids.mrhyde.github.GitHubManager;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
@@ -89,9 +90,9 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 	@BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
 	@BindView(R.id.tint) protected View tintView;
 
-	private Repository repository;
+	private GitHubRepository repository;
 	@Inject JekyllManagerFactory jekyllManagerFactory;
-	@Inject RepositoryManager repositoryManager;
+	@Inject GitHubManager gitHubManager;
 	private JekyllManager jekyllManager;
 
 	@Inject ActivityIntentFactory intentFactory;
@@ -105,7 +106,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
     ButterKnife.bind(this);
 
 		// get arguments
-		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
 		setTitle(repository.getName());
 
@@ -122,30 +123,21 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		loadJekyllContent();
 
 		// setup posts clicks
-		postsHeader.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivityForResult(intentFactory.createPostsIntent(repository), REQUEST_SHOW_LIST);
-			}
-		});
+		postsHeader.setOnClickListener(
+        v -> startActivityForResult(intentFactory.createPostsIntent(repository), REQUEST_SHOW_LIST)
+    );
 
 		// setup drafts clicks
-		draftsHeader.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivityForResult(intentFactory.createDraftsIntent(repository), REQUEST_SHOW_LIST);
-			}
-		});
+		draftsHeader.setOnClickListener(
+        v -> startActivityForResult(intentFactory.createDraftsIntent(repository), REQUEST_SHOW_LIST)
+    );
 
 		// setup all files card
-		allFilesView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(RepoOverviewActivity.this, DirActivity.class);
-				intent.putExtra(DirActivity.EXTRA_REPOSITORY, repository);
-				startActivityForResult(intent, REQUEST_SHOW_ALL_FILES);
-			}
-		});
+		allFilesView.setOnClickListener(v -> {
+      Intent intent = new Intent(RepoOverviewActivity.this, DirActivity.class);
+      intent.putExtra(DirActivity.EXTRA_REPOSITORY, repository);
+      startActivityForResult(intent, REQUEST_SHOW_ALL_FILES);
+    });
 
 		// setup add buttons
 		addButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
@@ -159,36 +151,25 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 				tintView.animate().alpha(0).setDuration(200).start();
 			}
 		});
-		addPostButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				jekyllUiUtils.showNewPostDialog(jekyllManager, repository, Optional.<DirNode>absent(), new JekyllUiUtils.OnContentCreatedListener<Post>() {
-					@Override
-					public void onContentCreated(Post post) {
-						loadJekyllContent();
-					}
-				});
-			}
-		});
-		addDraftButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-				jekyllUiUtils.showNewDraftDialog(jekyllManager, repository, Optional.<DirNode>absent(), new JekyllUiUtils.OnContentCreatedListener<Draft>() {
-					@Override
-					public void onContentCreated(Draft draft) {
-						loadJekyllContent();
-					}
-				});
-			}
-		});
-		tintView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addButton.collapse();
-			}
-		});
+		addPostButton.setOnClickListener(v -> {
+      addButton.collapse();
+      jekyllUiUtils.showNewPostDialog(
+          jekyllManager,
+          repository,
+          Optional.<DirNode>absent(),
+          (JekyllUiUtils.OnContentCreatedListener<Post>) post -> loadJekyllContent()
+      );
+    });
+		addDraftButton.setOnClickListener(v -> {
+      addButton.collapse();
+      jekyllUiUtils.showNewDraftDialog(jekyllManager, repository, Optional.<DirNode>absent(), new JekyllUiUtils.OnContentCreatedListener<Draft>() {
+        @Override
+        public void onContentCreated(Draft draft) {
+          loadJekyllContent();
+        }
+      });
+    });
+		tintView.setOnClickListener(v -> addButton.collapse());
 
 		// load owner image
 		Picasso.with(this)
@@ -200,31 +181,23 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		// setup scroll partially hides top image
 		actionBarDrawable = new ColorDrawable(getResources().getColor(R.color.colorPrimary));
 		getSupportActionBar().setBackgroundDrawable(actionBarDrawable);
-		scrollView.setOnScrollListener(new ObservableScrollView.OnScrollListener() {
-			@Override
-			public void onScrollChanged(ScrollView scrollView, int l, int t, int oldL, int oldT) {
-				RepoOverviewActivity.this.onScrollChanged();
-			}
-		});
+		scrollView.setOnScrollListener((scrollView1, l, t, oldL, oldT) -> RepoOverviewActivity.this.onScrollChanged());
 
 		// setup favourite button
-		if (repositoryManager.isRepositoryFavourite(repository)) {
+		if (gitHubManager.isRepositoryFavourite(repository)) {
 			favouriteButton.setSelected(true);
 		}
-		favouriteButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (favouriteButton.isSelected()) {
-					repositoryManager.unmarkRepositoryAsFavourite(repository);
-					favouriteButton.setSelected(false);
-					Toast.makeText(RepoOverviewActivity.this, getString(R.string.unmarked_toast), Toast.LENGTH_SHORT).show();
-				} else {
-					repositoryManager.markRepositoryAsFavourite(repository);
-					favouriteButton.setSelected(true);
-					Toast.makeText(RepoOverviewActivity.this, getString(R.string.marked_toast), Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
+		favouriteButton.setOnClickListener(v -> {
+      if (favouriteButton.isSelected()) {
+        gitHubManager.unmarkRepositoryAsFavourite(repository);
+        favouriteButton.setSelected(false);
+        Toast.makeText(RepoOverviewActivity.this, getString(R.string.unmarked_toast), Toast.LENGTH_SHORT).show();
+      } else {
+        gitHubManager.markRepositoryAsFavourite(repository);
+        favouriteButton.setSelected(true);
+        Toast.makeText(RepoOverviewActivity.this, getString(R.string.marked_toast), Toast.LENGTH_SHORT).show();
+      }
+    });
 	}
 
 
@@ -232,41 +205,33 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		compositeSubscription.add(Observable.zip(
 				jekyllManager.getAllPosts(),
 				jekyllManager.getAllDrafts(),
-				new Func2<List<Post>, List<Draft>, JekyllContent>() {
-					@Override
-					public JekyllContent call(List<Post> posts, List<Draft> drafts) {
-						return new JekyllContent(posts, drafts);
-					}
-				})
+        (posts, drafts) -> new JekyllContent(posts, drafts))
 				.compose(new DefaultTransformer<JekyllContent>())
-				.subscribe(new Action1<JekyllContent>() {
-					@Override
-					public void call(JekyllContent jekyllContent) {
-						if (isSpinnerVisible()) hideSpinner();
-						actionBarDrawable.setAlpha(0); // delay until spinner is hidden
-						invalidateOptionsMenu(); // re-enable options menu
+				.subscribe(jekyllContent -> {
+          if (isSpinnerVisible()) hideSpinner();
+          actionBarDrawable.setAlpha(0); // delay until spinner is hidden
+          invalidateOptionsMenu(); // re-enable options menu
 
-						// setup header
-						postDraftCountView.setText(getString(
-								R.string.post_darft_count,
-								getResources().getQuantityString(R.plurals.posts_count, jekyllContent.posts.size(), jekyllContent.posts.size()),
-								getResources().getQuantityString(R.plurals.drafts_count, jekyllContent.drafts.size(), jekyllContent.drafts.size())));
+          // setup header
+          postDraftCountView.setText(getString(
+              R.string.post_darft_count,
+              getResources().getQuantityString(R.plurals.posts_count, jekyllContent.posts.size(), jekyllContent.posts.size()),
+              getResources().getQuantityString(R.plurals.drafts_count, jekyllContent.drafts.size(), jekyllContent.drafts.size())));
 
-						// setup cards
-						setupFirstThreeEntries(jekyllContent.posts, postsListAdapter);
-						setupFirstThreeEntries(jekyllContent.drafts, draftsListAdapter);
+          // setup cards
+          setupFirstThreeEntries(jekyllContent.posts, postsListAdapter);
+          setupFirstThreeEntries(jekyllContent.drafts, draftsListAdapter);
 
-						// setup empty views
-						if (!jekyllContent.posts.isEmpty()) noPostsView.setVisibility(View.GONE);
-						else noPostsView.setVisibility(View.VISIBLE);
-						if (jekyllContent.drafts.isEmpty()) draftsCard.setVisibility(View.GONE);
-						else draftsCard.setVisibility(View.VISIBLE);
+          // setup empty views
+          if (!jekyllContent.posts.isEmpty()) noPostsView.setVisibility(View.GONE);
+          else noPostsView.setVisibility(View.VISIBLE);
+          if (jekyllContent.drafts.isEmpty()) draftsCard.setVisibility(View.GONE);
+          else draftsCard.setVisibility(View.VISIBLE);
 
-						// refresh action bar backgroud drawable
-						onScrollChanged();
+          // refresh action bar backgroud drawable
+          onScrollChanged();
 
-					}
-				}, new ErrorActionBuilder()
+        }, new ErrorActionBuilder()
 						.add(new DefaultErrorAction(RepoOverviewActivity.this, "failed to load posts"))
 						.add(new HideSpinnerAction(RepoOverviewActivity.this))
 						.build()));
@@ -357,32 +322,20 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 				new AlertDialog.Builder(this)
 						.setTitle(R.string.discard_changes_title)
 						.setMessage(R.string.discard_changes_message)
-						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								jekyllManager.resetRepository();
-								showSpinner();
-								loadJekyllContent();
-							}
-						})
+						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+              jekyllManager.resetRepository();
+              showSpinner();
+              loadJekyllContent();
+            })
 						.setNegativeButton(android.R.string.cancel, null)
 						.show();
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
+  }
 
 
-	private <T> List<T> getAllItemsFromAdapter(ArrayAdapter<T> adapter) {
-		List<T> items = new ArrayList<>();
-		for (int i = 0; i < adapter.getCount(); ++i) {
-			items.add(adapter.getItem(i));
-		}
-		return items;
-	}
-
-
-	private abstract class AbstractListAdapter<T extends AbstractJekyllContent> extends ArrayAdapter<T> {
+  private abstract class AbstractListAdapter<T extends AbstractJekyllContent> extends ArrayAdapter<T> {
 
 		private final int viewResource;
 
@@ -399,12 +352,9 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 			View view = inflater.inflate(viewResource, parent, false);
 
 			// setup click to edit
-			view.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
-				}
-			});
+			view.setOnClickListener(
+          v -> startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false))
+      );
 
 			doGetView(view, item);
 			return view;
@@ -425,7 +375,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 
 		@Override
 		protected void doGetView(View view, Post post) {
-			jekyllUiUtils.setPostOverview(view, post, repository);
+			jekyllUiUtils.setPostOverview(view, post);
 		}
 	}
 
@@ -441,7 +391,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 
 		@Override
 		protected void doGetView(View view, Draft draft) {
-			jekyllUiUtils.setDraftOverview(view, draft, repository);
+			jekyllUiUtils.setDraftOverview(view, draft);
 		}
 	}
 

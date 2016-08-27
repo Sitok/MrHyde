@@ -13,7 +13,6 @@ import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileNode;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public final class SelectDirActivity extends AbstractDirActivity {
@@ -28,39 +27,25 @@ public final class SelectDirActivity extends AbstractDirActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
     ((MrHydeApp) getApplication()).getComponent().inject(this);
-		super.onCreate(savedInstanceState);
     setContentView(R.layout.dialog_select_dir);
-    ButterKnife.bind(this);
+		super.onCreate(savedInstanceState);
 
 		// hide action bar
 		if (getSupportActionBar() != null) getSupportActionBar().hide();
 
 		// setup buttons
-		backView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-		cancelView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-		confirmView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// return result
-				for (String key : getIntent().getExtras().keySet()) Timber.d("found key " + key);
-				Intent resultIntent = new Intent(getIntent());
-				for (String key : resultIntent.getExtras().keySet()) Timber.d("found key " + key);
-				nodeUtils.saveNode(EXTRA_SELECTED_DIR, resultIntent, pathNodeAdapter.getSelectedNode());
-				for (String key : getIntent().getExtras().keySet()) Timber.d("found key " + key);
-				setResult(RESULT_OK, resultIntent);
-				finish();
-			}
-		});
+		backView.setOnClickListener(v -> finish());
+		cancelView.setOnClickListener(v -> finish());
+		confirmView.setOnClickListener(v -> {
+      // return result
+      for (String key : getIntent().getExtras().keySet()) Timber.d("found key " + key);
+      Intent resultIntent = new Intent(getIntent());
+      for (String key : resultIntent.getExtras().keySet()) Timber.d("found key " + key);
+      nodeUtils.saveNode(EXTRA_SELECTED_DIR, resultIntent, pathNodeAdapter.getSelectedNode());
+      for (String key : getIntent().getExtras().keySet()) Timber.d("found key " + key);
+      setResult(RESULT_OK, resultIntent);
+      finish();
+    });
 	}
 
 

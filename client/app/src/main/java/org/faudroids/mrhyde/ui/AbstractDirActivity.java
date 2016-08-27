@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
@@ -20,6 +19,7 @@ import org.faudroids.mrhyde.git.FileManagerFactory;
 import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.NodeUtils;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
@@ -37,6 +37,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.functions.Action1;
 
 /**
@@ -52,7 +53,7 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 	protected PathNodeAdapter pathNodeAdapter;
 
 	@Inject FileManagerFactory fileManagerFactory;
-	protected Repository repository;
+	protected GitHubRepository repository;
 	protected FileManager fileManager;
 	@Inject protected NodeUtils nodeUtils;
 	@Inject protected FileUtils fileUtils;
@@ -64,9 +65,10 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+    ButterKnife.bind(this);
 
 		// get arguments
-		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		fileManager = fileManagerFactory.createFileManager(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
 

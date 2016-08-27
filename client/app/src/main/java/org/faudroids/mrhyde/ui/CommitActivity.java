@@ -11,11 +11,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileManagerFactory;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -33,7 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
-import rx.functions.Func3;
 import timber.log.Timber;
 
 public final class CommitActivity extends AbstractActionBarActivity {
@@ -71,7 +70,7 @@ public final class CommitActivity extends AbstractActionBarActivity {
 
 		setTitle(getString(R.string.title_commit));
 		changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
-		final Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		final GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		final FileManager fileManager = fileManagerFactory.createFileManager(repository);
 
 		// load file content
@@ -79,63 +78,52 @@ public final class CommitActivity extends AbstractActionBarActivity {
 				fileManager.getChangedFiles(),
 				fileManager.getDeletedFiles(),
 				fileManager.getDiff(),
-				new Func3<Set<String>, Set<String>, String, Change>() {
-					@Override
-					public Change call(Set<String> changedFiles, Set<String> deletedFiles, String diff) {
-						return new Change(changedFiles, deletedFiles, diff);
-					}
-				})
+        (changedFiles, deletedFiles, diff) -> new Change(changedFiles, deletedFiles, diff))
 				.compose(new DefaultTransformer<Change>())
-				.subscribe(new Action1<Change>() {
-					@Override
-					public void call(Change change) {
-						// updated changed files list
-						List<String> filesList = new ArrayList<>();
-						filesList.addAll(change.changedFiles);
-						for (String deletedFile : change.deletedFiles)
-							filesList.add(getString(R.string.commit_deleted, deletedFile));
-						Collections.sort(filesList);
+				.subscribe(change -> {
+          // updated changed files list
+          List<String> filesList = new ArrayList<>();
+          filesList.addAll(change.changedFiles);
+          for (String deletedFile : change.deletedFiles)
+            filesList.add(getString(R.string.commit_deleted, deletedFile));
+          Collections.sort(filesList);
 
-						StringBuilder builder = new StringBuilder();
-						for (String file : filesList) {
-							builder.append(file).append('\n');
-						}
-						changedFilesView.setText(builder.toString());
-						changedFilesTitleView.setText(getString(R.string.commit_changed_files, String.valueOf(filesList.size())));
+          StringBuilder builder = new StringBuilder();
+          for (String file : filesList) {
+            builder.append(file).append('\n');
+          }
+          changedFilesView.setText(builder.toString());
+          changedFilesTitleView.setText(getString(R.string.commit_changed_files, String.valueOf(filesList.size())));
 
-						// update diff
-						diffView.setText(change.diff);
-					}
-				}, new ErrorActionBuilder()
+          // update diff
+          diffView.setText(change.diff);
+        }, new ErrorActionBuilder()
 						.add(new DefaultErrorAction(this, "failed to load git changes"))
 						.build()));
 
 		// setup commit button
-		commitButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showSpinner();
-				String commitMessage = messageView.getText().toString();
-				if ("".equals(commitMessage)) commitMessage = messageView.getHint().toString();
+		commitButton.setOnClickListener(v -> {
+      showSpinner();
+      String commitMessage = messageView.getText().toString();
+      if ("".equals(commitMessage)) commitMessage = messageView.getHint().toString();
 
-				uiUtils.showSpinner(spinnerContainerView, spinnerImageView);
-				compositeSubscription.add(fileManager.commit(commitMessage)
-						.compose(new DefaultTransformer<Void>())
-						.subscribe(new Action1<Void>() {
-							@Override
-							public void call(Void nothing) {
-								hideSpinner();
-								Timber.d("commit success");
-								setResult(RESULT_OK);
-								Toast.makeText(CommitActivity.this, getString(R.string.commit_success), Toast.LENGTH_LONG).show();
-								finish();
-							}
-						}, new ErrorActionBuilder()
-								.add(new DefaultErrorAction(CommitActivity.this, "failed to commit"))
-								.add(new HideSpinnerAction(CommitActivity.this))
-								.build()));
-			}
-		});
+      uiUtils.showSpinner(spinnerContainerView, spinnerImageView);
+      compositeSubscription.add(fileManager.commit(commitMessage)
+          .compose(new DefaultTransformer<Void>())
+          .subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void nothing) {
+              hideSpinner();
+              Timber.d("commit success");
+              setResult(RESULT_OK);
+              Toast.makeText(CommitActivity.this, getString(R.string.commit_success), Toast.LENGTH_LONG).show();
+              finish();
+            }
+          }, new ErrorActionBuilder()
+              .add(new DefaultErrorAction(CommitActivity.this, "failed to commit"))
+              .add(new HideSpinnerAction(CommitActivity.this))
+              .build()));
+    });
 
 		// setup expand buttons
 		changedFilesTitleView.setOnClickListener(new View.OnClickListener() {

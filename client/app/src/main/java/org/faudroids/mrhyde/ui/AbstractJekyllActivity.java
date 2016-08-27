@@ -15,8 +15,8 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
@@ -55,7 +55,7 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 	@BindView(R.id.empty) protected TextView emptyView;
 	@BindView(R.id.add) protected AddFloatingActionButton addButton;
 
-	protected Repository repository;
+	protected GitHubRepository repository;
 	@Inject JekyllManagerFactory jekyllManagerFactory;
 	protected JekyllManager jekyllManager;
 
@@ -103,7 +103,7 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
     ButterKnife.bind(this);
 
 		// get arguments
-		repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
 
 		// set title

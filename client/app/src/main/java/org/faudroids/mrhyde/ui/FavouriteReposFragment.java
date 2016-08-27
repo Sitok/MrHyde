@@ -8,9 +8,9 @@ import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractReposFragment;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -20,7 +20,6 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 import java.util.Collection;
 
 import butterknife.BindView;
-import rx.functions.Action1;
 
 public final class FavouriteReposFragment extends AbstractReposFragment {
 
@@ -59,8 +58,8 @@ public final class FavouriteReposFragment extends AbstractReposFragment {
     }
     switch (requestCode) {
       case REQUEST_SELECT_REPOSITORY:
-        Repository repository = (Repository) data.getSerializableExtra(SelectRepoActivity.RESULT_REPOSITORY);
-        repositoryManager.markRepositoryAsFavourite(repository);
+        GitHubRepository repository = (GitHubRepository) data.getSerializableExtra(SelectRepoActivity.RESULT_REPOSITORY);
+        gitHubManager.markRepositoryAsFavourite(repository);
         loadRepositories();
         return;
     }
@@ -71,20 +70,17 @@ public final class FavouriteReposFragment extends AbstractReposFragment {
   @Override
   protected void loadRepositories() {
     showSpinner();
-    compositeSubscription.add(repositoryManager.getFavouriteRepositories()
-        .compose(new DefaultTransformer<Collection<Repository>>())
-        .subscribe(new Action1<Collection<Repository>>() {
-          @Override
-          public void call(Collection<Repository> repositories) {
-            hideSpinner();
-            if (repositories.size() == 0) {
-              emptyView.setVisibility(View.VISIBLE);
-              recyclerView.setVisibility(View.GONE);
-            } else {
-              emptyView.setVisibility(View.GONE);
-              recyclerView.setVisibility(View.VISIBLE);
-              repoAdapter.setItems(repositories);
-            }
+    compositeSubscription.add(gitHubManager.getFavouriteRepositories()
+        .compose(new DefaultTransformer<Collection<GitHubRepository>>())
+        .subscribe(repositories -> {
+          hideSpinner();
+          if (repositories.size() == 0) {
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+          } else {
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            repoAdapter.setItems(repositories);
           }
         }, new ErrorActionBuilder()
             .add(new DefaultErrorAction(this.getActivity(), "failed to get favourite repos"))

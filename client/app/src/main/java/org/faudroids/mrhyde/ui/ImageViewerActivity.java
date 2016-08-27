@@ -6,15 +6,14 @@ import android.os.Bundle;
 
 import com.ortiz.touch.TouchImageView;
 
-import org.eclipse.egit.github.core.Repository;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileManagerFactory;
 import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.git.NodeUtils;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -25,9 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 public final class ImageViewerActivity extends AbstractActionBarActivity {
 
@@ -53,7 +49,7 @@ public final class ImageViewerActivity extends AbstractActionBarActivity {
     ButterKnife.bind(this);
 
 		// load arguments
-		final Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		final GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		fileManager = fileManagerFactory.createFileManager(repository);
 
 		// load image
@@ -64,22 +60,16 @@ public final class ImageViewerActivity extends AbstractActionBarActivity {
 		} else {
 			showSpinner();
 			compositeSubscription.add(fileManager.getTree()
-					.flatMap(new Func1<DirNode, Observable<FileData>>() {
-						@Override
-						public Observable<FileData> call(DirNode rootNode) {
-							FileNode node = (FileNode) nodeUtils.restoreNode(EXTRA_FILE_NODE, getIntent(), rootNode);
-							return fileManager.readFile(node);
-						}
-					})
+					.flatMap(rootNode -> {
+            FileNode node = (FileNode) nodeUtils.restoreNode(EXTRA_FILE_NODE, getIntent(), rootNode);
+            return fileManager.readFile(node);
+          })
 					.compose(new DefaultTransformer<FileData>())
-					.subscribe(new Action1<FileData>() {
-						@Override
-						public void call(FileData file) {
-							hideSpinner();
-							ImageViewerActivity.this.fileData = file;
-							setupImage();
-						}
-					}, new ErrorActionBuilder()
+					.subscribe(file -> {
+            hideSpinner();
+            ImageViewerActivity.this.fileData = file;
+            setupImage();
+          }, new ErrorActionBuilder()
 							.add(new DefaultErrorAction(this, "failed to get image content"))
 							.add(new HideSpinnerAction(this))
 							.build()));
