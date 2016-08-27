@@ -35,7 +35,7 @@ public class GitManager {
   public Observable<Void> deleteAllLocalContent() {
     return ObservableUtils
         .fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-          fileUtils.delete(rootDir);
+          fileUtils.deleteFile(rootDir);
           return null;
         });
   }

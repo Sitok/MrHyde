@@ -225,7 +225,8 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 
 	@Override
 	public void onEdit(T item) {
-		startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
+    // TODO
+		// startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
 	}
 
 
@@ -308,7 +309,8 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 					@Override
 					public void onClick(View v) {
 						actionModeListener.stopActionMode();
-						startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
+            // TODO
+						// startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
 					}
 				});
 

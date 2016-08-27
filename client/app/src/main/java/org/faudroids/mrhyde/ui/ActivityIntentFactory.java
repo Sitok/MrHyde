@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.faudroids.mrhyde.git.FileNode;
-import org.faudroids.mrhyde.git.NodeUtils;
 import org.faudroids.mrhyde.github.GitHubRepository;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -17,12 +17,10 @@ import javax.inject.Inject;
 public class ActivityIntentFactory {
 
 	private final Context context;
-	private final NodeUtils nodeUtils;
 
 	@Inject
-	ActivityIntentFactory(Context context, NodeUtils nodeUtils) {
+	ActivityIntentFactory(Context context) {
 		this.context = context;
-		this.nodeUtils = nodeUtils;
 	}
 
 
@@ -44,22 +42,22 @@ public class ActivityIntentFactory {
 	}
 
 
-	public Intent createTextEditorIntent(GitHubRepository repository, FileNode fileNode, boolean isNewFile) {
+	public Intent createTextEditorIntent(GitHubRepository repository, File file, boolean isNewFile) {
 		Intent intent = new Intent(context, TextEditorActivity.class);
 		Bundle extras = createFileExtras(
 				TextEditorActivity.EXTRA_REPOSITORY, repository,
-				TextEditorActivity.EXTRA_FILE_NODE, fileNode);
+				TextEditorActivity.EXTRA_FILE, file);
 		extras.putBoolean(TextEditorActivity.EXTRA_IS_NEW_FILE, isNewFile);
 		intent.putExtras(extras);
 		return intent;
 	}
 
 
-	public Intent createImageViewerIntent(GitHubRepository repository, FileNode fileNode) {
+	public Intent createImageViewerIntent(GitHubRepository repository, File file) {
 		Intent intent = new Intent(context, ImageViewerActivity.class);
 		intent.putExtras(createFileExtras(
 				ImageViewerActivity.EXTRA_REPOSITORY, repository,
-				ImageViewerActivity.EXTRA_FILE_NODE, fileNode));
+				ImageViewerActivity.EXTRA_FILE_NODE, file));
 		return intent;
 	}
 
@@ -81,12 +79,12 @@ public class ActivityIntentFactory {
 	private Bundle createFileExtras(
 			String repositoryKey,
 			GitHubRepository repository,
-			String fileNodeKey,
-			FileNode fileNode) {
+			String fileKey,
+			File file) {
 
 		Bundle extras = new Bundle();
 		extras.putSerializable(repositoryKey, repository);
-		nodeUtils.saveNode(fileNodeKey, extras, fileNode);
+    extras.putSerializable(fileKey, file);
 		return extras;
 	}
 

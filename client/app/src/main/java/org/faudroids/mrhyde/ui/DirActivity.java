@@ -10,21 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.DirNode;
-import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.ui.utils.ImageUtils;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
-import org.faudroids.mrhyde.utils.DefaultErrorAction;
-import org.faudroids.mrhyde.utils.DefaultTransformer;
-import org.faudroids.mrhyde.utils.ErrorActionBuilder;
-import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.File;
 
@@ -252,7 +245,9 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
 	@Override
-	public void onDelete(final FileNode fileNode) {
+	public void onDelete(final File file) {
+    // TODO
+    /*
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_title)
 				.setMessage(getString(R.string.delete_message, fileNode.getPath()))
@@ -270,17 +265,20 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
         })
 				.setNegativeButton(android.R.string.cancel, null)
 				.show();
+				*/
 	}
 
 
 	@Override
-	public void onEdit(FileNode fileNode) {
-		startFileActivity(fileNode, false);
+	public void onEdit(File file) {
+		startFileActivity(file, false);
 	}
 
 
 	@Override
-	public void onRename(FileNode fileNode, String newFileName) {
+	public void onRename(File file, String newFileName) {
+    // TODO
+    /*
 		showSpinner();
 		compositeSubscription.add(fileManager.renameFile(fileNode, newFileName)
 				.compose(new DefaultTransformer<FileNode>())
@@ -291,22 +289,25 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 						.add(new DefaultErrorAction(this, "failed to rename file"))
 						.add(new HideSpinnerAction(this))
 						.build()));
+						*/
 	}
 
 
 	@Override
-	public void onMoveTo(FileNode fileNode) {
+	public void onMoveTo(File file) {
 		Intent intent = new Intent(this, SelectDirActivity.class);
 		intent.putExtra(SelectDirActivity.EXTRA_REPOSITORY, repository);
-		nodeUtils.saveNode(EXTRA_NODE_TO_MOVE, intent, fileNode);
+    intent.putExtra(EXTRA_NODE_TO_MOVE, file);
 		for (String key : intent.getExtras().keySet()) Timber.d("found key " + key);
 		startActivityForResult(intent, REQUEST_SELECT_DIR);
 	}
 
 
-	private void moveFile(FileNode fileNodeToMove, DirNode targetDirNode) {
+	private void moveFile(File fileToMove, File targetDir) {
+    // TODO
+    /*
 		showSpinner();
-		compositeSubscription.add(fileManager.moveFile(fileNodeToMove, targetDirNode)
+		compositeSubscription.add(fileManager.moveFile(fileToMove, targetDir)
 				.compose(new DefaultTransformer<FileNode>())
 				.subscribe(newFileNode -> {
           hideSpinner();
@@ -316,6 +317,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 						.add(new DefaultErrorAction(DirActivity.this, "failed to move file"))
 						.add(new HideSpinnerAction(DirActivity.this))
 						.build()));
+						*/
 	}
 
 
@@ -370,18 +372,18 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 	}
 
 
-	private void startFileActivity(FileNode fileNode, boolean isNewFile) {
+	private void startFileActivity(File file, boolean isNewFile) {
 		actionModeListener.stopActionMode();
 
 		// start text or image activity depending on file name
-		if (!fileUtils.isImage(fileNode.getPath())) {
-			// start text editor
-			Intent editorIntent = intentFactory.createTextEditorIntent(repository, fileNode, isNewFile);
+    if (!fileUtils.isImage(file.getName())) {
+      // start text editor
+			Intent editorIntent = intentFactory.createTextEditorIntent(repository, file, isNewFile);
 			startActivityForResult(editorIntent, REQUEST_EDIT_FILE);
 
 		} else {
 			// start image viewer
-			Intent viewerIntent = intentFactory.createImageViewerIntent(repository, fileNode);
+			Intent viewerIntent = intentFactory.createImageViewerIntent(repository, file);
 			startActivity(viewerIntent);
 		}
 
@@ -408,8 +410,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 	@Override
 	protected void onFileSelected(File file) {
-    // TODO
-		// startFileActivity(node, false);
+		startFileActivity(file, false);
 	}
 
 

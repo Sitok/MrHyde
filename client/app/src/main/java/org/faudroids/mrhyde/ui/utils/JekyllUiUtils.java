@@ -3,7 +3,6 @@ package org.faudroids.mrhyde.ui.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -171,9 +170,12 @@ public class JekyllUiUtils {
 								.subscribe(new Action1<T>() {
 									@Override
 									public void call(T item) {
+                    // TODO
+                    /*
 										if (strategy.contentListener != null) strategy.contentListener.onContentCreated(item);
 										Intent newContentIntent = intentFactory.createTextEditorIntent(repository, strategy.getFileNode(item), false);
 										context.startActivity(newContentIntent);
+										*/
 									}
 								}, new ErrorActionBuilder()
 										.add(new DefaultErrorAction(context, "failed to create jekyll content"))

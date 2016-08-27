@@ -362,10 +362,13 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 			LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View view = inflater.inflate(viewResource, parent, false);
 
+      // TODO
+      /*
 			// setup click to edit
 			view.setOnClickListener(
           v -> startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false))
       );
+      */
 
 			doGetView(view, item);
 			return view;

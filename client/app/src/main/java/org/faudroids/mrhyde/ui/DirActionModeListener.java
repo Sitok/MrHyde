@@ -7,8 +7,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.ui.utils.UiUtils;
+
+import java.io.File;
 
 class DirActionModeListener implements ActionMode.Callback {
 
@@ -16,7 +17,7 @@ class DirActionModeListener implements ActionMode.Callback {
 	private final ActionSelectionListener selectionListener;
 	private final UiUtils uiUtils;
 
-	private FileNode selectedNode = null;
+	private File selectedFile = null;
 	private ActionMode actionMode;
 
 
@@ -27,10 +28,10 @@ class DirActionModeListener implements ActionMode.Callback {
 	}
 
 
-	public boolean startActionMode(FileNode selectedNode) {
-		if (this.selectedNode != null) return false;
+	public boolean startActionMode(File selectedFile) {
+		if (this.selectedFile != null) return false;
 		this.actionMode = this.activity.startActionMode(this);
-		this.selectedNode = selectedNode;
+		this.selectedFile = selectedFile;
 		return true;
 	}
 
@@ -40,8 +41,8 @@ class DirActionModeListener implements ActionMode.Callback {
 	}
 
 
-	public FileNode getSelectedNode() {
-		return selectedNode;
+	public File getSelectedFile() {
+		return selectedFile;
 	}
 
 
@@ -63,27 +64,24 @@ class DirActionModeListener implements ActionMode.Callback {
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_edit:
-				selectionListener.onEdit(selectedNode);
+				selectionListener.onEdit(selectedFile);
 				stopActionMode();
 				return true;
 
 			case R.id.action_delete:
-				selectionListener.onDelete(selectedNode);
+				selectionListener.onDelete(selectedFile);
 				stopActionMode();
 				return true;
 
 			case R.id.action_rename:
-				uiUtils.createInputDialog(activity.getString(R.string.rename_title), selectedNode.getPath(), new UiUtils.OnInputListener() {
-					@Override
-					public void onInput(String newFileName) {
-						selectionListener.onRename(selectedNode, newFileName);
-						stopActionMode();
-					}
-				}).show();
+				uiUtils.createInputDialog(activity.getString(R.string.rename_title), selectedFile.getPath(), newFileName -> {
+          selectionListener.onRename(selectedFile, newFileName);
+          stopActionMode();
+        }).show();
 				return true;
 
 			case R.id.action_move:
-				selectionListener.onMoveTo(selectedNode);
+				selectionListener.onMoveTo(selectedFile);
 				stopActionMode();
 				return true;
 		}
@@ -93,7 +91,7 @@ class DirActionModeListener implements ActionMode.Callback {
 
 	@Override
 	public void onDestroyActionMode(ActionMode mode) {
-		this.selectedNode = null;
+		this.selectedFile = null;
 		this.actionMode = null;
 		selectionListener.onStopActionMode();
 	}
@@ -101,10 +99,10 @@ class DirActionModeListener implements ActionMode.Callback {
 
 	public interface ActionSelectionListener {
 
-		void onDelete(FileNode fileNode);
-		void onEdit(FileNode fileNode);
-		void onRename(FileNode fileNode, String newFileName);
-		void onMoveTo(FileNode fileNode);
+		void onDelete(File file);
+		void onEdit(File file);
+		void onRename(File file, String newFileName);
+		void onMoveTo(File file);
 		void onStopActionMode();
 
 	}

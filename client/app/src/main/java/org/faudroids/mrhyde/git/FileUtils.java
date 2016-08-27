@@ -1,13 +1,19 @@
 package org.faudroids.mrhyde.git;
 
+import org.faudroids.mrhyde.utils.ObservableUtils;
+
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -21,6 +27,9 @@ public class FileUtils {
 	FileUtils() { }
 
 
+  /**
+   * Checks the file extension for common image variants.
+   */
 	public boolean isImage(String fileName) {
 		fileName = fileName.toLowerCase();
 		return (fileName.endsWith(".png")
@@ -54,15 +63,46 @@ public class FileUtils {
   /**
    * Deletes a file or directory recursively.
    */
-  public void delete(File file) throws IOException {
+  public void deleteFile(File file) throws IOException {
     if (file.isDirectory()) {
       for (File f : file.listFiles()) {
-        delete(f);
+        deleteFile(f);
       }
     }
     if (!file.delete()) {
       Timber.w("Failed to delete \"%s\"", file.getAbsolutePath());
     }
+  }
+
+
+  /**
+   * Returns the whole content of the given file as a string.
+   */
+  public Observable<String> readFile(File file) {
+    return ObservableUtils.fromSynchronousCall(() -> {
+      StringBuilder builder = new StringBuilder();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        builder.append(line);
+        builder.append('\n');
+      }
+      reader.close();
+      return builder.toString();
+    });
+  }
+
+
+  /**
+   * Writes content to a file.
+   */
+  public Observable<Void> writeFile(File file, String content) {
+    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+      FileOutputStream writer = new FileOutputStream(file);
+      writer.write(content.getBytes());
+      writer.close();
+      return null;
+    });
   }
 
 }
