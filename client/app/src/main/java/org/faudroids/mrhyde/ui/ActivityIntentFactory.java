@@ -57,7 +57,7 @@ public class ActivityIntentFactory {
 		Intent intent = new Intent(context, ImageViewerActivity.class);
 		intent.putExtras(createFileExtras(
 				ImageViewerActivity.EXTRA_REPOSITORY, repository,
-				ImageViewerActivity.EXTRA_FILE_NODE, file));
+				ImageViewerActivity.EXTRA_FILE, file));
 		return intent;
 	}
 
