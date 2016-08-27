@@ -1,7 +1,6 @@
 package org.faudroids.mrhyde.ui.utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -51,27 +50,24 @@ public class UiUtils {
 	 * @param messageResource Default text inside the {@link EditText} field.
 	 * @param inputListener callback that will be called when user input is ready.
 	 */
-	public AlertDialog createInputDialog(int titleResource, int messageResource, final OnInputListener inputListener) {
-		return createInputDialog(context.getString(titleResource), context.getString(messageResource), inputListener);
+	public AlertDialog createInputDialog(Context activityContext, int titleResource, int messageResource, final OnInputListener inputListener) {
+		return createInputDialog(activityContext, context.getString(titleResource), context.getString(messageResource), inputListener);
 	}
 
 
-	public AlertDialog createInputDialog(String title, String message, final OnInputListener inputListener) {
+	public AlertDialog createInputDialog(Context activityContext, String title, String message, final OnInputListener inputListener) {
 		final EditText inputView = new EditText(context);
 		inputView.setInputType(InputType.TYPE_CLASS_TEXT);
 		inputView.setText(message);
 		inputView.setSelectAllOnFocus(true);
 
-		return new AlertDialog.Builder(context)
+    return new AlertDialog.Builder(activityContext, R.style.AlertDialogStyle)
 				.setTitle(title)
 				.setView(inputView)
-				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						String input = inputView.getText().toString();
-						if (inputListener != null) inputListener.onInput(input);
-					}
-				})
+				.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+          String input = inputView.getText().toString();
+          if (inputListener != null) inputListener.onInput(input);
+        })
 				.setNegativeButton(android.R.string.cancel, null)
 				.create();
 	}

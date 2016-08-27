@@ -18,6 +18,8 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.ui.utils.ImageUtils;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
+import org.faudroids.mrhyde.utils.DefaultErrorAction;
+import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 
 import java.io.File;
 
@@ -86,7 +88,6 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       addDirectory();
     });
 		addPostButton.setOnClickListener(v -> {
-      // TODO
       /*)
       addButton.collapse();
       jekyllUiUtils.showNewPostDialog(
@@ -328,38 +329,48 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
 	private void addAndOpenFile() {
-    // TODO
-    /*
 		uiUtils.createInputDialog(
+        this,
 				R.string.file_new_title,
 				R.string.file_new_message,
         input -> {
-          FileNode fileNode = fileManager.createNewFile(fileAdapter.getSelectedDir(), input);
-          startFileActivity(fileNode, true);
+          File file = new File(fileAdapter.getSelectedDir(), input);
+          fileUtils
+              .createNewFile(file)
+              .subscribe(
+                  nothing -> startFileActivity(file, true),
+                  new ErrorActionBuilder()
+                      .add(new DefaultErrorAction(DirActivity.this, "Failed to create file"))
+                      .build()
+              );
         })
 				.show();
-				*/
-	}
+  }
 
 
-	private void addDirectory() {
-    // TODO
-    /*
-		uiUtils.createInputDialog(
+  private void addDirectory() {
+    uiUtils.createInputDialog(
+        this,
 				R.string.dir_new_title,
 				R.string.dir_new_message,
-				new UiUtils.OnInputListener() {
-					@Override
-					public void onInput(String input) {
-						fileManager.createNewDir(fileAdapter.getSelectedDir(), input);
-						Bundle state = new Bundle();
-						fileAdapter.onSaveInstanceState(state);
-						updateTree(state);
-					}
-				})
+        input -> {
+          File directory = new File(fileAdapter.getSelectedDir(), input);
+          fileUtils
+              .createNewDirectory(directory)
+              .subscribe(
+                  nothing -> {
+                    Bundle state = new Bundle();
+                    fileAdapter.onSaveInstanceState(state);
+                    updateTree(state);
+                  },
+                  new ErrorActionBuilder()
+                      .add(new DefaultErrorAction(DirActivity.this, "Failed to create directory"))
+                      .build()
+              );
+
+        })
 				.show();
-				*/
-	}
+  }
 
 
 	/**

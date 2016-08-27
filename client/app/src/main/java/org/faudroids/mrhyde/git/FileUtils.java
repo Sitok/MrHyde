@@ -105,4 +105,18 @@ public class FileUtils {
     });
   }
 
+  public Observable<Void> createNewFile(File file) {
+    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+      if (!file.createNewFile()) Timber.w("Failed to create file %s", file.getAbsolutePath());
+      return null;
+    });
+  }
+
+  public Observable<Void> createNewDirectory(File dir) {
+    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+      if (!dir.mkdir()) Timber.w("Failed to create directory %s", dir.getAbsolutePath());
+      return null;
+    });
+  }
+
 }
