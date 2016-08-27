@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 
 import org.faudroids.mrhyde.git.FileNode;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -13,10 +14,16 @@ public class Post extends AbstractJekyllContent implements Comparable<Post> {
 
 	private final Date date;
 
+  @Deprecated
 	public Post(String title, Date date, FileNode fileNode) {
 		super(title, fileNode);
 		this.date = date;
 	}
+
+  public Post(String title, Date date, File file) {
+    super(title, file);
+    this.date = date;
+  }
 
 
 	public Date getDate() {

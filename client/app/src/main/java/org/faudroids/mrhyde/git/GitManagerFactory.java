@@ -10,6 +10,7 @@ import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,12 +35,15 @@ public class GitManagerFactory {
     this.fileUtils = fileUtils;
   }
 
-  public Observable<GitManager> openRepository(@NonNull final GitHubRepository repository) {
-    return ObservableUtils.fromSynchronousCall(() -> {
+  public GitManager openRepository(@NonNull final GitHubRepository repository) {
+    try {
       File rootDir = getRepoRootDir(repository);
       Git client = Git.open(rootDir);
       return new GitManager(repository, client, rootDir, fileUtils);
-    });
+    } catch (IOException e) {
+      Timber.e(e, "Failed to open local git repository");
+      return null;
+    }
   }
 
   public Observable<GitManager> cloneRepository(@NonNull GitHubRepository repository) {

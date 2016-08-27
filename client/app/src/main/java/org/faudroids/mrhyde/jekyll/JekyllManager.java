@@ -2,14 +2,16 @@ package org.faudroids.mrhyde.jekyll;
 
 import android.content.Context;
 
+import com.google.common.base.Optional;
+
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileNode;
-import com.google.common.base.Optional;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -151,7 +153,8 @@ public class JekyllManager {
 
 
 	public Observable<Post> createNewPost(final String title, final DirNode postDir) {
-		if (!isPostsDirOrSubDir(postDir)) throw new IllegalArgumentException("not a post dir " + postDir.getFullPath());
+    // TODO
+		// if (!isPostsDirOrSubDir(postDir)) throw new IllegalArgumentException("not a post dir " + postDir.getFullPath());
 		FileNode postNode = fileManager.createNewFile(postDir, postTitleToFilename(title));
 		try {
 			// create post file and setup front matter
@@ -178,7 +181,8 @@ public class JekyllManager {
 
 
 	public Observable<Draft> createNewDraft(final String title, DirNode draftDir) {
-		if (!isDraftsDirOrSubDir(draftDir)) throw new IllegalArgumentException("not a draf dir " + draftDir.getFullPath());
+    // TODO
+		// if (!isDraftsDirOrSubDir(draftDir)) throw new IllegalArgumentException("not a draf dir " + draftDir.getFullPath());
 		FileNode draftNode = fileManager.createNewFile(draftDir, draftTitleToFilename(title));
 		try {
 			// create draft file and setup front matter
@@ -255,24 +259,24 @@ public class JekyllManager {
 	/**
 	 * Returns true if the passed in dir is the Jekyll posts dir or sub dir.
 	 */
-	public boolean isPostsDirOrSubDir(DirNode node) {
-		return isSpecialDirOrSubDir(node, DIR_POSTS);
+	public boolean isPostsDirOrSubDir(File directory) {
+		return isSpecialDirOrSubDir(directory, DIR_POSTS);
 	}
 
 
 	/**
 	 * Returns true if the passed in dir is the Jekyll drafts dir or sub dir.
 	 */
-	public boolean isDraftsDirOrSubDir(DirNode node) {
-		return isSpecialDirOrSubDir(node, DIR_DRAFTS);
+	public boolean isDraftsDirOrSubDir(File directory) {
+		return isSpecialDirOrSubDir(directory, DIR_DRAFTS);
 	}
 
 
-	private boolean isSpecialDirOrSubDir(DirNode node, String dirName) {
-		DirNode iter = node;
+	private boolean isSpecialDirOrSubDir(File directory, String dirName) {
+		File iter = directory;
 		while (iter != null) {
-			if (iter.getPath().equals(dirName)) return true;
-			iter = iter.getParent();
+			if (iter.getName().equals(dirName)) return true;
+      iter = iter.getParentFile();
 		}
 		return false;
 	}
@@ -302,11 +306,21 @@ public class JekyllManager {
 	}
 
 
+  @Deprecated
+  public Optional<Post> parsePost(FileNode node) {
+    return Optional.absent();
+  }
+
+  @Deprecated
+  public Optional<Draft> parseDraft(FileNode node) {
+    return Optional.absent();
+  }
+
 	/**
 	 * Tries reading one particular file as a post.
 	 */
-	public Optional<Post> parsePost(FileNode node) {
-		String fileName = node.getPath();
+	public Optional<Post> parsePost(File file) {
+		String fileName = file.getName();
 
 		// check for match
 		Matcher matcher = POST_TITLE_PATTERN.matcher(fileName);
@@ -323,10 +337,10 @@ public class JekyllManager {
 			// get title
 			String title = formatTitle(matcher.group(4));
 
-			return Optional.of(new Post(title, calendar.getTime(), node));
+			return Optional.of(new Post(title, calendar.getTime(), file));
 
-		} catch (NumberFormatException nfe) {
-			Timber.w(nfe, "failed to parse post tile \"" + fileName + "\"");
+		} catch (NumberFormatException e) {
+			Timber.w(e, "failed to parse post tile \"" + fileName + "\"");
 			return Optional.absent();
 		}
 	}
@@ -335,15 +349,15 @@ public class JekyllManager {
 	/**
 	 * Tries reading one particular file as a draft.
 	 */
-	public Optional<Draft> parseDraft(FileNode node) {
+	public Optional<Draft> parseDraft(File file) {
 		// check for match
-		Matcher matcher = DRAFT_TITLE_PATTERN.matcher(node.getPath());
+		Matcher matcher = DRAFT_TITLE_PATTERN.matcher(file.getName());
 		if (!matcher.matches()) return Optional.absent();
 
 		// get title
 		String title = formatTitle(matcher.group(1));
 
-		return Optional.of(new Draft(title, node));
+		return Optional.of(new Draft(title, file));
 	}
 
 

@@ -1,6 +1,5 @@
 package org.faudroids.mrhyde.ui;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,25 +11,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.git.AbstractNode;
-import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileManagerFactory;
-import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.git.FileUtils;
+import org.faudroids.mrhyde.git.GitManager;
+import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.git.NodeUtils;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.ui.utils.DividerItemDecoration;
-import org.faudroids.mrhyde.utils.DefaultErrorAction;
-import org.faudroids.mrhyde.utils.DefaultTransformer;
-import org.faudroids.mrhyde.utils.ErrorActionBuilder;
-import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,7 +32,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
 
 /**
  * Shows list of files in a repo and passes click events to sub classes.
@@ -47,11 +40,13 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 
 	static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY"; // which repo to show
 
-	private final String STATE_SELECTED_NODE = "STATE_SELECTED_NODE"; // which file is currently selected
+	private final String STATE_SELECTED_DIR = "STATE_SELECTED_DIR"; // which dir is currently selected
 
 	@BindView(R.id.list) protected RecyclerView recyclerView;
-	protected PathNodeAdapter pathNodeAdapter;
+	protected FileAdapter fileAdapter;
 
+  @Inject GitManagerFactory gitManagerFactory;
+  protected GitManager gitManager;
 	@Inject FileManagerFactory fileManagerFactory;
 	protected GitHubRepository repository;
 	protected FileManager fileManager;
@@ -71,12 +66,13 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		fileManager = fileManagerFactory.createFileManager(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
+    gitManager = gitManagerFactory.openRepository(repository);
 
 		// setup list
 		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-		pathNodeAdapter = createAdapter();
+		fileAdapter = createAdapter();
 		recyclerView.setLayoutManager(layoutManager);
-		recyclerView.setAdapter(pathNodeAdapter);
+		recyclerView.setAdapter(fileAdapter);
 		recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
 		// get tree
@@ -86,14 +82,14 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		pathNodeAdapter.onSaveInstanceState(outState);
+		fileAdapter.onSaveInstanceState(outState);
 	}
 
 
 	@Override
 	public void onBackPressed() {
 		// only go back when at the top dir
-		if (!pathNodeAdapter.onBackPressed()) {
+		if (!fileAdapter.onBackPressed()) {
 			super.onBackPressed();
 		}
 	}
@@ -103,161 +99,146 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 	 * Recreates the file tree
 	 */
 	protected void updateTree(final Bundle savedInstanceState) {
-		showSpinner();
-		compositeSubscription.add(fileManager.getTree()
-				.compose(new DefaultTransformer<DirNode>())
-				.subscribe(new Action1<DirNode>() {
-					@Override
-					public void call(DirNode rootNode) {
-						hideSpinner();
+    invalidateOptionsMenu();
+    File rootDir = gitManager.getRootDir();
 
-						// re-enable options menu
-						invalidateOptionsMenu();
+    // check for empty repository
+    if (rootDir.listFiles().length == 0) {
+      new AlertDialog.Builder(AbstractDirActivity.this)
+          .setTitle(R.string.error_empty_repo_title)
+          .setMessage(R.string.error_empty_repo_message)
+          .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
+          .setOnCancelListener(dialog -> finish())
+          .show();
+      return;
+    }
 
-						// check for empty repository
-						if (rootNode == null) {
-							new AlertDialog.Builder(AbstractDirActivity.this)
-									.setTitle(R.string.error_empty_repo_title)
-									.setMessage(R.string.error_empty_repo_message)
-									.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											finish();
-										}
-									})
-									.setOnCancelListener(new DialogInterface.OnCancelListener() {
-										@Override
-										public void onCancel(DialogInterface dialog) {
-											finish();
-										}
-									})
-									.show();
-							return;
-						}
-
-						// update files list
-						pathNodeAdapter.setSelectedNode(rootNode);
-						if (savedInstanceState != null)
-							pathNodeAdapter.onRestoreInstanceState(savedInstanceState);
-					}
-				}, new ErrorActionBuilder()
-						.add(new DefaultErrorAction(this, "failed to get tree"))
-						.add(new HideSpinnerAction(this))
-						.build()));
+    if (savedInstanceState != null) {
+      fileAdapter.onRestoreInstanceState(savedInstanceState);
+    } else {
+      fileAdapter.setSelectedDir(rootDir);
+    }
 	}
 
 
-	protected PathNodeAdapter createAdapter() {
-		return new PathNodeAdapter();
+	protected FileAdapter createAdapter() {
+		return new FileAdapter(gitManager.getRootDir());
 	}
 
 
-	protected abstract void onDirSelected(DirNode node);
-	protected abstract void onFileSelected(FileNode node);
+	protected abstract void onDirSelected(File file);
+	protected abstract void onFileSelected(File file);
 
 
-	protected class PathNodeAdapter extends RecyclerView.Adapter<PathNodeAdapter.PathNodeViewHolder> {
+	protected class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
-		private final List<AbstractNode> nodeList = new ArrayList<>();
-		private DirNode selectedNode;
+    private File rootDir;
+    private File selectedDir;
+		private final List<File> files = new ArrayList<>();
 
+
+    public FileAdapter(File rootDir) {
+      this.rootDir = rootDir;
+    }
 
 		@Override
-		public PathNodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		public FileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false);
-			return new PathNodeViewHolder(view);
+			return new FileViewHolder(view);
 		}
 
 
 		@Override
-		public void onBindViewHolder(PathNodeViewHolder holder, int position) {
-			holder.setViewForNode(nodeList.get(position));
+		public void onBindViewHolder(FileViewHolder holder, int position) {
+			holder.setFile(files.get(position));
 		}
 
 
 		@Override
 		public int getItemCount() {
-			return nodeList.size();
+			return files.size();
 		}
 
 
 		public boolean onBackPressed() {
 			// if no parent (or not loaded) let activity handle back press
-			if (selectedNode == null || selectedNode.getParent() == null) return false;
+      if (selectedDir.getParentFile() == null || selectedDir.getParentFile().equals(rootDir.getParentFile())) {
+        return false;
+      }
 			// otherwise navigate up
-			setSelectedNode((DirNode) selectedNode.getParent());
+			setSelectedDir(selectedDir.getParentFile());
 			return true;
 		}
 
 
-		public void setSelectedNode(DirNode newSelectedNode) {
-			if (newSelectedNode.getPath().equals("")) setTitle(repository.getName());
-			else setTitle(newSelectedNode.getPath());
-			selectedNode = newSelectedNode;
-			nodeList.clear();
-			nodeList.addAll(sortEntries(newSelectedNode.getEntries().values()));
+		public void setSelectedDir(File newSelectedDir) {
+      if (newSelectedDir.equals(rootDir)) setTitle(repository.getName());
+			else setTitle(newSelectedDir.getName());
+			selectedDir = newSelectedDir;
+			files.clear();
+      files.addAll(sortFiles(newSelectedDir.listFiles()));
 			notifyDataSetChanged();
-			onDirSelected(newSelectedNode);
+			onDirSelected(newSelectedDir);
 		}
 
 
-		public DirNode getSelectedNode() {
-			return selectedNode;
+		public File getSelectedDir() {
+			return selectedDir;
 		}
 
 
 		public void onSaveInstanceState(Bundle outState) {
-			nodeUtils.saveNode(STATE_SELECTED_NODE, outState, selectedNode);
+      outState.putSerializable(STATE_SELECTED_DIR, selectedDir);
 		}
 
 
 		public void onRestoreInstanceState(Bundle inState) {
-			AbstractNode restoredSelectedNode = nodeUtils.restoreNode(STATE_SELECTED_NODE, inState, selectedNode);
-			if (restoredSelectedNode == null) return;
-
-			setSelectedNode((DirNode) restoredSelectedNode);
+      File selectedDir =  (File) inState.getSerializable(STATE_SELECTED_DIR);
+			if (selectedDir == null) return;
+			setSelectedDir(selectedDir);
 		}
 
 
-		private List<AbstractNode> sortEntries(Collection<AbstractNode> entries) {
-			List<AbstractNode> dirs = new ArrayList<>();
-			List<AbstractNode> files = new ArrayList<>();
-			for (AbstractNode node : entries) {
-				if (node instanceof DirNode) dirs.add(node);
-				else files.add(node);
+		private List<File> sortFiles(File[] files) {
+			List<File> dirs = new ArrayList<>();
+			List<File> regularFiles = new ArrayList<>();
+			for (File file: files) {
+        if (file.isDirectory()) dirs.add(file);
+        else regularFiles.add(file);
 			}
 			Collections.sort(dirs);
-			Collections.sort(files);
-			dirs.addAll(files);
+			Collections.sort(regularFiles);
+			dirs.addAll(regularFiles);
 			return dirs;
 		}
 
 
-		protected class PathNodeViewHolder extends RecyclerView.ViewHolder {
+		protected class FileViewHolder extends RecyclerView.ViewHolder {
 
 			protected final View view;
 			protected final TextView titleView;
 			protected final ImageView iconView;
 
-			public PathNodeViewHolder(View view) {
+			public FileViewHolder(View view) {
 				super(view);
 				this.view = view;
 				this.titleView = (TextView) view.findViewById(R.id.title);
 				this.iconView = (ImageView) view.findViewById(R.id.icon);
 			}
 
-			public void setViewForNode(final AbstractNode pathNode) {
+			public void setFile(final File file) {
 				// setup node content
-				titleView.setText(pathNode.getPath());
+        titleView.setText(file.getName());
 
 				int imageResource = R.drawable.folder;
-				if (pathNode instanceof FileNode) {
-					FileNode fileNode = (FileNode) pathNode;
-					if (fileUtils.isImage(pathNode.getPath())) {
+        if (!file.isDirectory()) {
+					if (fileUtils.isImage(file.getAbsolutePath())) {
 						imageResource = R.drawable.image;
-					} else if (jekyllManager.isPostsDirOrSubDir(pathNode.getParent()) && jekyllManager.parsePost(fileNode).isPresent()) {
+					} else if (jekyllManager.isPostsDirOrSubDir(file.getParentFile())
+              && jekyllManager.parsePost(file).isPresent()) {
 						imageResource = R.drawable.post;
-					} else if (jekyllManager.isDraftsDirOrSubDir(pathNode.getParent()) && jekyllManager.parseDraft(fileNode).isPresent()) {
+					} else if (jekyllManager.isDraftsDirOrSubDir(file.getParentFile())
+              && jekyllManager.parseDraft(file).isPresent()) {
 						imageResource = R.drawable.draft;
 					} else {
 						imageResource = R.drawable.file;
@@ -266,17 +247,14 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 
 				iconView.setImageResource(imageResource);
 
-				view.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if (pathNode instanceof DirNode) {
-							// navigate "down"
-							pathNodeAdapter.setSelectedNode((DirNode) pathNode);
-						} else {
-							onFileSelected((FileNode) pathNode);
-						}
-					}
-				});
+				view.setOnClickListener(v -> {
+          if (file.isDirectory()) {
+            // navigate "down"
+            fileAdapter.setSelectedDir(file);
+          } else {
+            onFileSelected(file);
+          }
+        });
 			}
 		}
 	}

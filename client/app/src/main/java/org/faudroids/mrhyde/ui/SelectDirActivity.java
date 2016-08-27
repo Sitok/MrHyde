@@ -8,12 +8,10 @@ import android.view.ViewGroup;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.AbstractNode;
-import org.faudroids.mrhyde.git.DirNode;
-import org.faudroids.mrhyde.git.FileNode;
+
+import java.io.File;
 
 import butterknife.BindView;
-import timber.log.Timber;
 
 public final class SelectDirActivity extends AbstractDirActivity {
 
@@ -38,11 +36,8 @@ public final class SelectDirActivity extends AbstractDirActivity {
 		cancelView.setOnClickListener(v -> finish());
 		confirmView.setOnClickListener(v -> {
       // return result
-      for (String key : getIntent().getExtras().keySet()) Timber.d("found key " + key);
       Intent resultIntent = new Intent(getIntent());
-      for (String key : resultIntent.getExtras().keySet()) Timber.d("found key " + key);
-      nodeUtils.saveNode(EXTRA_SELECTED_DIR, resultIntent, pathNodeAdapter.getSelectedNode());
-      for (String key : getIntent().getExtras().keySet()) Timber.d("found key " + key);
+      resultIntent.putExtra(EXTRA_SELECTED_DIR, fileAdapter.getSelectedDir());
       setResult(RESULT_OK, resultIntent);
       finish();
     });
@@ -50,41 +45,45 @@ public final class SelectDirActivity extends AbstractDirActivity {
 
 
 	@Override
-	protected PathNodeAdapter createAdapter() {
-		return new AlphaPathNodeAdapter();
+	protected FileAdapter createAdapter() {
+		return new AlphaFileAdapter(gitManager.getRootDir());
 	}
 
 
 	@Override
-	protected void onDirSelected(DirNode node) {
+	protected void onDirSelected(File directory) {
 		// nothing to do
 	}
 
 
 	@Override
-	protected void onFileSelected(FileNode node) {
+	protected void onFileSelected(File file) {
 		// nothing to do
 	}
 
 
-	public class AlphaPathNodeAdapter extends PathNodeAdapter {
+	public class AlphaFileAdapter extends FileAdapter {
+
+    public AlphaFileAdapter(File rootDir) {
+      super(rootDir);
+    }
 
 		@Override
-		public AlphaPathNodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		public AlphaFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false);
-			return new AlphaPathNodeViewHolder(view);
+			return new AlphaFileViewHolder(view);
 		}
 
 
-		public class AlphaPathNodeViewHolder extends PathNodeAdapter.PathNodeViewHolder {
+		public class AlphaFileViewHolder extends FileViewHolder {
 
-			public AlphaPathNodeViewHolder(View view) {
+			public AlphaFileViewHolder(View view) {
 				super(view);
 			}
 
 			@Override
-			public void setViewForNode(final AbstractNode pathNode) {
-				super.setViewForNode(pathNode);
+			public void setFile(final File file) {
+				super.setFile(file);
 
 				// remove left + right margin due to dialog container
 				ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -93,7 +92,7 @@ public final class SelectDirActivity extends AbstractDirActivity {
 				view.setLayoutParams(params);
 
 				// reduce alpha for files
-				float alpha = (pathNode instanceof DirNode) ? 1f : 0.3f;
+				float alpha = (file.isDirectory()) ? 1f : 0.3f;
 				iconView.setAlpha(alpha);
 				titleView.setAlpha(alpha);
 			}

@@ -111,11 +111,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		setTitle(repository.getName());
 
     // open git repo
-    gitManagerFactory
-        .openRepository(repository)
-        .subscribe(gitManager1 -> {
-          RepoOverviewActivity.this.gitManager = gitManager1;
-        });
+    gitManager = gitManagerFactory.openRepository(repository);
 
     // setup posts lists
     postsListAdapter = new PostsListAdapter(this);

@@ -39,4 +39,9 @@ public class GitManager {
           return null;
         });
   }
+
+  public File getRootDir() {
+    return rootDir;
+  }
+
 }

@@ -1,6 +1,5 @@
 package org.faudroids.mrhyde.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,29 +14,23 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.common.base.Optional;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
-import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileNode;
-import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.ui.utils.ImageUtils;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
-import org.faudroids.mrhyde.ui.utils.UiUtils;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
-import java.io.IOException;
+import java.io.File;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import rx.functions.Action1;
 import timber.log.Timber;
 
 public final class DirActivity extends AbstractDirActivity implements DirActionModeListener.ActionSelectionListener {
@@ -100,25 +93,31 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       addDirectory();
     });
 		addPostButton.setOnClickListener(v -> {
+      // TODO
+      /*)
       addButton.collapse();
       jekyllUiUtils.showNewPostDialog(
           jekyllManager,
           repository,
-          Optional.of(pathNodeAdapter.getSelectedNode()),
+          Optional.of(fileAdapter.getSelectedDir()),
           content -> refreshTree());
+          */
     });
 		addDraftButton.setOnClickListener(v -> {
+      // TODO
+      /*
       addButton.collapse();
       jekyllUiUtils.showNewDraftDialog(
           jekyllManager,
           repository,
-          Optional.of(pathNodeAdapter.getSelectedNode()),
+          Optional.of(fileAdapter.getSelectedDir()),
           new JekyllUiUtils.OnContentCreatedListener<Draft>() {
         @Override
         public void onContentCreated(Draft content) {
           refreshTree();
         }
       });
+      */
     });
 		tintView.setOnClickListener(v -> addButton.collapse());
 
@@ -161,13 +160,10 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				new AlertDialog.Builder(this)
 						.setTitle(R.string.delete_repo_title)
 						.setMessage(R.string.delete_repo_message)
-						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								fileManager.resetRepository();
-								updateTree(null);
-							}
-						})
+						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+              fileManager.resetRepository();
+              updateTree(null);
+            })
 						.setNegativeButton(android.R.string.cancel, null)
 						.show();
 				return true;
@@ -190,44 +186,42 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				if (resultCode != RESULT_OK) return;
 				final Uri selectedImage = data.getData();
 				Timber.d(selectedImage.toString());
-
+        // TODO
+        /*
 				// get image name
 				uiUtils.createInputDialog(
 						R.string.image_new_title,
 						R.string.image_new_message,
-						new UiUtils.OnInputListener() {
-							@Override
-							public void onInput(String imageName) {
-								// store image
-								FileNode imageNode = fileManager.createNewFile(pathNodeAdapter.getSelectedNode(), imageName);
-								showSpinner();
-								compositeSubscription.add(imageUtils.loadImage(imageNode, selectedImage)
-										.compose(new DefaultTransformer<FileData>())
-										.subscribe(new Action1<FileData>() {
-											@Override
-											public void call(FileData data) {
-												hideSpinner();
-												try {
-													fileManager.writeFile(data);
-													refreshTree();
-												} catch (IOException ioe) {
-													Timber.e(ioe, "failed to write file");
-												}
-											}
-										}, new ErrorActionBuilder()
-												.add(new DefaultErrorAction(DirActivity.this, "failed to write file"))
-												.add(new HideSpinnerAction(DirActivity.this))
-												.build()));
-							}
-						})
+            imageName -> {
+              // store image
+              FileNode imageNode = fileManager.createNewFile(fileAdapter.getSelectedDir(), imageName);
+              showSpinner();
+              compositeSubscription.add(imageUtils.loadImage(imageNode, selectedImage)
+                  .compose(new DefaultTransformer<FileData>())
+                  .subscribe(data1 -> {
+                    hideSpinner();
+                    try {
+                      fileManager.writeFile(data1);
+                      refreshTree();
+                    } catch (IOException ioe) {
+                      Timber.e(ioe, "failed to write file");
+                    }
+                  }, new ErrorActionBuilder()
+                      .add(new DefaultErrorAction(DirActivity.this, "failed to write file"))
+                      .add(new HideSpinnerAction(DirActivity.this))
+                      .build()));
+            })
 						.show();
+						*/
 				break;
 
 			case REQUEST_SELECT_DIR:
 				if (resultCode != RESULT_OK) return;
 
+        // TODO
+        /*
 				// get root note
-				DirNode rootNode = pathNodeAdapter.getSelectedNode();
+				DirNode rootNode = fileAdapter.getSelectedDir();
 				while (rootNode.getParent() != null) rootNode = rootNode.getParent();
 
 				// get selected dir and file
@@ -250,6 +244,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				} else {
 					moveFile(selectedFile, selectedDir);
 				}
+				*/
 
 				break;
 		}
@@ -261,24 +256,18 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_title)
 				.setMessage(getString(R.string.delete_message, fileNode.getPath()))
-				.setPositiveButton(getString(R.string.action_delete), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						showSpinner();
-						compositeSubscription.add(fileManager.deleteFile(fileNode)
-								.compose(new DefaultTransformer<Void>())
-								.subscribe(new Action1<Void>() {
-									@Override
-									public void call(Void aVoid) {
-										hideSpinner();
-										updateTree(null);
-									}
-								}, new ErrorActionBuilder()
-										.add(new DefaultErrorAction(DirActivity.this, "failed to delete file"))
-										.add(new HideSpinnerAction(DirActivity.this))
-										.build()));
-					}
-				})
+				.setPositiveButton(getString(R.string.action_delete), (dialog, which) -> {
+          showSpinner();
+          compositeSubscription.add(fileManager.deleteFile(fileNode)
+              .compose(new DefaultTransformer<Void>())
+              .subscribe(aVoid -> {
+                hideSpinner();
+                updateTree(null);
+              }, new ErrorActionBuilder()
+                  .add(new DefaultErrorAction(DirActivity.this, "failed to delete file"))
+                  .add(new HideSpinnerAction(DirActivity.this))
+                  .build()));
+        })
 				.setNegativeButton(android.R.string.cancel, null)
 				.show();
 	}
@@ -295,13 +284,10 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 		showSpinner();
 		compositeSubscription.add(fileManager.renameFile(fileNode, newFileName)
 				.compose(new DefaultTransformer<FileNode>())
-				.subscribe(new Action1<FileNode>() {
-					@Override
-					public void call(FileNode newFileNode) {
-						hideSpinner();
-						updateTree(null);
-					}
-				}, new ErrorActionBuilder()
+				.subscribe(newFileNode -> {
+          hideSpinner();
+          updateTree(null);
+        }, new ErrorActionBuilder()
 						.add(new DefaultErrorAction(this, "failed to rename file"))
 						.add(new HideSpinnerAction(this))
 						.build()));
@@ -322,14 +308,11 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 		showSpinner();
 		compositeSubscription.add(fileManager.moveFile(fileNodeToMove, targetDirNode)
 				.compose(new DefaultTransformer<FileNode>())
-				.subscribe(new Action1<FileNode>() {
-					@Override
-					public void call(FileNode newFileNode) {
-						hideSpinner();
-						Toast.makeText(DirActivity.this, getString(R.string.file_moved), Toast.LENGTH_SHORT).show();
-						refreshTree();
-					}
-				}, new ErrorActionBuilder()
+				.subscribe(newFileNode -> {
+          hideSpinner();
+          Toast.makeText(DirActivity.this, getString(R.string.file_moved), Toast.LENGTH_SHORT).show();
+          refreshTree();
+        }, new ErrorActionBuilder()
 						.add(new DefaultErrorAction(DirActivity.this, "failed to move file"))
 						.add(new HideSpinnerAction(DirActivity.this))
 						.build()));
@@ -338,39 +321,42 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 	@Override
 	public void onStopActionMode() {
-		pathNodeAdapter.notifyDataSetChanged();
+		fileAdapter.notifyDataSetChanged();
 	}
 
 
 	private void addAndOpenFile() {
+    // TODO
+    /*
 		uiUtils.createInputDialog(
 				R.string.file_new_title,
 				R.string.file_new_message,
-				new UiUtils.OnInputListener() {
-					@Override
-					public void onInput(String input) {
-						FileNode fileNode = fileManager.createNewFile(pathNodeAdapter.getSelectedNode(), input);
-						startFileActivity(fileNode, true);
-					}
-				})
+        input -> {
+          FileNode fileNode = fileManager.createNewFile(fileAdapter.getSelectedDir(), input);
+          startFileActivity(fileNode, true);
+        })
 				.show();
+				*/
 	}
 
 
 	private void addDirectory() {
+    // TODO
+    /*
 		uiUtils.createInputDialog(
 				R.string.dir_new_title,
 				R.string.dir_new_message,
 				new UiUtils.OnInputListener() {
 					@Override
 					public void onInput(String input) {
-						fileManager.createNewDir(pathNodeAdapter.getSelectedNode(), input);
+						fileManager.createNewDir(fileAdapter.getSelectedDir(), input);
 						Bundle state = new Bundle();
-						pathNodeAdapter.onSaveInstanceState(state);
+						fileAdapter.onSaveInstanceState(state);
 						updateTree(state);
 					}
 				})
 				.show();
+				*/
 	}
 
 
@@ -379,7 +365,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 	 */
 	private void refreshTree() {
 		Bundle tmpSavedState = new Bundle();
-		pathNodeAdapter.onSaveInstanceState(tmpSavedState);
+		fileAdapter.onSaveInstanceState(tmpSavedState);
 		updateTree(tmpSavedState);
 	}
 
@@ -403,26 +389,27 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
 	@Override
-	protected PathNodeAdapter createAdapter() {
-		return new LongClickPathNodeAdapter();
+	protected FileAdapter createAdapter() {
+		return new LongClickFileAdapter(gitManager.getRootDir());
 	}
 
 
 	@Override
-	protected void onDirSelected(DirNode node) {
+	protected void onDirSelected(File directory) {
 		// show / hide posts add button
-		if (jekyllManager.isPostsDirOrSubDir(node)) addPostButton.setVisibility(View.VISIBLE);
+		if (jekyllManager.isPostsDirOrSubDir(directory)) addPostButton.setVisibility(View.VISIBLE);
 		else addPostButton.setVisibility(View.GONE);
 
 		// show / hide drafts add button
-		if (jekyllManager.isDraftsDirOrSubDir(node)) addDraftButton.setVisibility(View.VISIBLE);
+		if (jekyllManager.isDraftsDirOrSubDir(directory)) addDraftButton.setVisibility(View.VISIBLE);
 		else addDraftButton.setVisibility(View.GONE);
 	}
 
 
 	@Override
-	protected void onFileSelected(FileNode node) {
-		startFileActivity(node, false);
+	protected void onFileSelected(File file) {
+    // TODO
+		// startFileActivity(node, false);
 	}
 
 
@@ -434,24 +421,30 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 	}
 
 
-	public class LongClickPathNodeAdapter extends PathNodeAdapter {
+	public class LongClickFileAdapter extends FileAdapter {
+
+    public LongClickFileAdapter(File rootDir) {
+      super(rootDir);
+    }
 
 		@Override
-		public LongClickPathNodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		public LongClickFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false);
-			return new LongClickPathNodeViewHolder(view);
+			return new LongClickFileViewHolder(view);
 		}
 
-		public class LongClickPathNodeViewHolder extends PathNodeViewHolder {
+		public class LongClickFileViewHolder extends FileViewHolder {
 
-			public LongClickPathNodeViewHolder(View view) {
+			public LongClickFileViewHolder(View view) {
 				super(view);
 			}
 
 			@Override
-			public void setViewForNode(final AbstractNode pathNode) {
-				super.setViewForNode(pathNode);
+			public void setFile(File file) {
+				super.setFile(file);
 
+        // TODO
+        /*
 				// check for action mode
 				if (actionModeListener.getSelectedNode() != null && actionModeListener.getSelectedNode().equals(pathNode)) {
 					view.setSelected(true);
@@ -474,6 +467,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				} else {
 					view.setLongClickable(false);
 				}
+				*/
 			}
 		}
 	}
