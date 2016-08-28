@@ -91,8 +91,9 @@
     <string name="file_new_title">New file</string>
     <string name="file_new_message">What do you want to call it?</string>
     <string name="file_new_hint">ducks.md</string>
-    <string name="image_new_title">Image Name</string>
-    <string name="image_new_message">NewImage.png</string>
+    <string name="image_new_title">New image</string>
+    <string name="image_new_message">What do you want to call it?</string>
+    <string name="image_new_hint">duck.png</string>
     <string name="dir_new_title">New directory</string>
     <string name="dir_new_message">What do you want to call it?</string>
     <string name="dir_new_hint">ducks</string>

@@ -23,7 +23,9 @@ import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.ui.utils.ImageUtils;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
+import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
+import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.File;
 
@@ -184,33 +186,34 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
         if (resultCode != RESULT_OK) return;
         final Uri selectedImage = data.getData();
         Timber.d(selectedImage.toString());
-        // TODO
-        /*
-        // get image name
-				uiUtils.createInputDialog(
-						R.string.image_new_title,
-						R.string.image_new_message,
-            imageName -> {
+
+        // get name of new image file
+        new MaterialDialog
+            .Builder(this)
+            .title(R.string.image_new_title)
+            .content(R.string.image_new_message)
+            .inputType(InputType.TYPE_CLASS_TEXT)
+            .alwaysCallInputCallback()
+            .input(R.string.image_new_hint, 0, false, (dialog, input) -> {
+              validateInputFileName(dialog, R.string.image_new_message, input.toString());
+            })
+            .onPositive((dialog, which) -> {
+              String imageName = dialog.getInputEditText().getText().toString();
               // store image
-              FileNode imageNode = fileManager.createNewFile(fileAdapter.getSelectedDir(), imageName);
               showSpinner();
-              compositeSubscription.add(imageUtils.loadImage(imageNode, selectedImage)
-                  .compose(new DefaultTransformer<FileData>())
-                  .subscribe(data1 -> {
+              compositeSubscription.add(imageUtils
+                  .loadAndSaveFile(selectedImage, new File(fileAdapter.getSelectedDir(), imageName))
+                  .compose(new DefaultTransformer<>())
+                  .subscribe(nothing -> {
                     hideSpinner();
-                    try {
-                      fileManager.writeFile(data1);
-                      refreshTree();
-                    } catch (IOException ioe) {
-                      Timber.e(ioe, "failed to write file");
-                    }
+                    refreshTree();
                   }, new ErrorActionBuilder()
-                      .add(new DefaultErrorAction(DirActivity.this, "failed to write file"))
+                      .add(new DefaultErrorAction(DirActivity.this, "Failed to load and save image"))
                       .add(new HideSpinnerAction(DirActivity.this))
                       .build()));
+
             })
-						.show();
-						*/
+            .show();
         break;
 
       case REQUEST_SELECT_DIR:
@@ -376,11 +379,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
           fileUtils
               .createNewDirectory(directory)
               .subscribe(
-                  nothing -> {
-                    Bundle state = new Bundle();
-                    fileAdapter.onSaveInstanceState(state);
-                    updateTree(state);
-                  },
+                  nothing -> refreshTree(),
                   new ErrorActionBuilder()
                       .add(new DefaultErrorAction(DirActivity.this, "Failed to create directory"))
                       .build()
