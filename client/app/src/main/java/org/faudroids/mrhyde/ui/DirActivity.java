@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -36,7 +37,7 @@ import timber.log.Timber;
 
 public final class DirActivity extends AbstractDirActivity implements DirActionModeListener.ActionSelectionListener {
 
-  private static final String EXTRA_NODE_TO_MOVE = "EXTRA_NODE_TO_MOVE"; // marks which file should be moved
+  private static final String EXTRA_FILE_T0_MOVE = "EXTRA_FILE_TO_MOVE"; // marks which file should be moved
 
   private static final int
       REQUEST_COMMIT = 42,
@@ -219,34 +220,24 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       case REQUEST_SELECT_DIR:
         if (resultCode != RESULT_OK) return;
 
-        // TODO
-        /*
-				// get root note
-				DirNode rootNode = fileAdapter.getSelectedDir();
-				while (rootNode.getParent() != null) rootNode = rootNode.getParent();
-
 				// get selected dir and file
-				final DirNode selectedDir = (DirNode) nodeUtils.restoreNode(SelectDirActivity.EXTRA_SELECTED_DIR, data, rootNode);
-				final FileNode selectedFile = (FileNode) nodeUtils.restoreNode(EXTRA_NODE_TO_MOVE, data, rootNode);
+				final File selectedDir = (File) data.getSerializableExtra(SelectDirActivity.EXTRA_SELECTED_DIR);
+				final File fileToMove = (File) data.getSerializableExtra(EXTRA_FILE_T0_MOVE);
+        final File targetFile = new File(selectedDir, fileToMove.getName());
 
 				// confirm overwriting files
-				if (selectedDir.getEntries().containsKey(selectedFile.getPath())) {
-					new AlertDialog.Builder(this)
-							.setTitle(getString(R.string.overwrite_file_title))
-							.setMessage(getString(R.string.overwrite_file_message, selectedFile.getPath()))
-							.setPositiveButton(getString(R.string.overwrite_confirm), new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									moveFile(selectedFile, selectedDir);
-								}
-							})
-							.setNegativeButton(android.R.string.cancel, null)
-							.show();
-				} else {
-					moveFile(selectedFile, selectedDir);
-				}
-				*/
+        if (targetFile.exists()) {
+          new MaterialDialog.Builder(this)
+              .title(R.string.overwrite_file_title)
+              .content(getString(R.string.overwrite_file_message, targetFile.getName()))
+              .positiveText(R.string.overwrite_confirm)
+              .negativeText(android.R.string.cancel)
+              .onPositive((dialog, which) -> moveFile(fileToMove, targetFile))
+              .show();
+          return;
+        }
 
+        moveFile(fileToMove, targetFile);
         break;
     }
   }
@@ -315,27 +306,25 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
   public void onMoveTo(File file) {
     Intent intent = new Intent(this, SelectDirActivity.class);
     intent.putExtra(SelectDirActivity.EXTRA_REPOSITORY, repository);
-    intent.putExtra(EXTRA_NODE_TO_MOVE, file);
+    intent.putExtra(EXTRA_FILE_T0_MOVE, file);
     for (String key : intent.getExtras().keySet()) Timber.d("found key " + key);
     startActivityForResult(intent, REQUEST_SELECT_DIR);
   }
 
 
-  private void moveFile(File fileToMove, File targetDir) {
-    // TODO
-    /*
-		showSpinner();
-		compositeSubscription.add(fileManager.moveFile(fileToMove, targetDir)
-				.compose(new DefaultTransformer<FileNode>())
-				.subscribe(newFileNode -> {
-          hideSpinner();
-          Toast.makeText(DirActivity.this, getString(R.string.file_moved), Toast.LENGTH_SHORT).show();
-          refreshTree();
-        }, new ErrorActionBuilder()
-						.add(new DefaultErrorAction(DirActivity.this, "failed to move file"))
-						.add(new HideSpinnerAction(DirActivity.this))
-						.build()));
-						*/
+  private void moveFile(File fileToMove, File targetFile) {
+		compositeSubscription.add(fileUtils
+        .renameFile(fileToMove, targetFile, true)
+        .compose(new DefaultTransformer<>())
+        .subscribe(
+            nothing -> {
+              Toast.makeText(DirActivity.this, getString(R.string.file_moved), Toast.LENGTH_SHORT).show();
+              refreshTree();
+            }, new ErrorActionBuilder()
+                .add(new DefaultErrorAction(DirActivity.this, "Failed to move file"))
+                .build()
+        )
+    );
   }
 
 

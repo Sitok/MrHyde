@@ -114,13 +114,22 @@ public class FileUtils {
   /**
    * Renames a file.
    */
-  public Observable<Void> renameFile(@NonNull  File file, @NonNull File targetFile) {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+  public Observable<Void> renameFile(@NonNull File file, @NonNull File targetFile) {
+    return renameFile(file, targetFile, false);
+  }
+
+
+  public Observable<Void> renameFile(@NonNull  File file, @NonNull File targetFile, boolean overwrite) {
+    Observable<Void> renameObservable = ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
       if (!file.renameTo(targetFile)) {
         Timber.w("Failed to rename file %s to %s", file.getAbsolutePath(), targetFile.getAbsolutePath());
       }
       return null;
     });
+
+    if (overwrite && !targetFile.exists()) return renameObservable;
+    return deleteFile(file)
+        .flatMap(nothing -> renameObservable);
   }
 
   /**
