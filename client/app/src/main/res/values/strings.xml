@@ -89,15 +89,14 @@
     <string name="default_front_matter">---\nlayout: post\ntitle: %1$s\n---\n</string>
 
     <string name="file_new_title">New file</string>
-    <string name="file_new_message">What do you want to call the file?</string>
+    <string name="file_new_message">What do you want to call it?</string>
     <string name="file_new_hint">ducks.md</string>
-    <string name="file_new_prefill">newFile</string>
     <string name="image_new_title">Image Name</string>
     <string name="image_new_message">NewImage.png</string>
     <string name="dir_new_title">New directory</string>
-    <string name="dir_new_message">What do you want to call the directory?</string>
+    <string name="dir_new_message">What do you want to call it?</string>
     <string name="dir_new_hint">ducks</string>
-    <string name="dir_new_prefill">newDir</string>
+    <string name="file_already_exists">File already exists</string>
     <string name="dir_empty">Empty</string>
     <string name="rename_title">Rename</string>
 

@@ -3,6 +3,7 @@ package org.faudroids.mrhyde.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -32,64 +34,64 @@ import timber.log.Timber;
 
 public final class DirActivity extends AbstractDirActivity implements DirActionModeListener.ActionSelectionListener {
 
-	private static final String EXTRA_NODE_TO_MOVE = "EXTRA_NODE_TO_MOVE"; // marks which file should be moved
+  private static final String EXTRA_NODE_TO_MOVE = "EXTRA_NODE_TO_MOVE"; // marks which file should be moved
 
-	private static final int
-			REQUEST_COMMIT = 42,
-			REQUEST_EDIT_FILE = 43,
-			REQUEST_SELECT_PHOTO = 44,
-			REQUEST_SELECT_DIR = 45;
+  private static final int
+      REQUEST_COMMIT = 42,
+      REQUEST_EDIT_FILE = 43,
+      REQUEST_SELECT_PHOTO = 44,
+      REQUEST_SELECT_DIR = 45;
 
-	@BindView(R.id.tint) protected View tintView;
-	@BindView(R.id.add) protected FloatingActionsMenu addButton;
-	@BindView(R.id.add_file) protected FloatingActionButton addFileButton;
-	@BindView(R.id.add_image) protected FloatingActionButton addImageButton;
-	@BindView(R.id.add_folder) protected FloatingActionButton addFolderButton;
-	@BindView(R.id.add_post) protected FloatingActionButton addPostButton;
-	@BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
+  @BindView(R.id.tint) protected View tintView;
+  @BindView(R.id.add) protected FloatingActionsMenu addButton;
+  @BindView(R.id.add_file) protected FloatingActionButton addFileButton;
+  @BindView(R.id.add_image) protected FloatingActionButton addImageButton;
+  @BindView(R.id.add_folder) protected FloatingActionButton addFolderButton;
+  @BindView(R.id.add_post) protected FloatingActionButton addPostButton;
+  @BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
 
-	@Inject ActivityIntentFactory intentFactory;
-	@Inject ImageUtils imageUtils;
+  @Inject ActivityIntentFactory intentFactory;
+  @Inject ImageUtils imageUtils;
 
-	@Inject JekyllUiUtils jekyllUiUtils;
+  @Inject JekyllUiUtils jekyllUiUtils;
 
-	private DirActionModeListener actionModeListener = null;
+  private DirActionModeListener actionModeListener = null;
 
 
-	@Override
-	public void onCreate(final Bundle savedInstanceState) {
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
     ((MrHydeApp) getApplication()).getComponent().inject(this);
     setContentView(R.layout.activity_dir);
-		super.onCreate(savedInstanceState);
-		setTitle(repository.getName());
+    super.onCreate(savedInstanceState);
+    setTitle(repository.getName());
 
-		// setup add buttons
-		addButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
-			@Override
-			public void onMenuExpanded() {
-				tintView.animate().alpha(1).setDuration(200).start();
-			}
+    // setup add buttons
+    addButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+      @Override
+      public void onMenuExpanded() {
+        tintView.animate().alpha(1).setDuration(200).start();
+      }
 
-			@Override
-			public void onMenuCollapsed() {
-				tintView.animate().alpha(0).setDuration(200).start();
-			}
-		});
-		addFileButton.setOnClickListener(v -> {
+      @Override
+      public void onMenuCollapsed() {
+        tintView.animate().alpha(0).setDuration(200).start();
+      }
+    });
+    addFileButton.setOnClickListener(v -> {
       addButton.collapse();
       addAndOpenFile();
     });
-		addImageButton.setOnClickListener(v -> {
+    addImageButton.setOnClickListener(v -> {
       addButton.collapse();
       Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
       photoPickerIntent.setType("image/*");
       startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
     });
-		addFolderButton.setOnClickListener(v -> {
+    addFolderButton.setOnClickListener(v -> {
       addButton.collapse();
       addDirectory();
     });
-		addPostButton.setOnClickListener(v -> {
+    addPostButton.setOnClickListener(v -> {
       /*)
       addButton.collapse();
       jekyllUiUtils.showNewPostDialog(
@@ -99,7 +101,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
           content -> refreshTree());
           */
     });
-		addDraftButton.setOnClickListener(v -> {
+    addDraftButton.setOnClickListener(v -> {
       // TODO
       /*
       addButton.collapse();
@@ -115,76 +117,76 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       });
       */
     });
-		tintView.setOnClickListener(v -> addButton.collapse());
+    tintView.setOnClickListener(v -> addButton.collapse());
 
-		// prepare action mode
-		actionModeListener = new DirActionModeListener(this, this, uiUtils);
-	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.files, menu);
-		return true;
-	}
+    // prepare action mode
+    actionModeListener = new DirActionModeListener(this, this, uiUtils);
+  }
 
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (isSpinnerVisible()) {
-			menu.findItem(R.id.action_commit).setVisible(false);
-			menu.findItem(R.id.action_preview).setVisible(false);
-			menu.findItem(R.id.action_discard_changes).setVisible(false);
-		}
-		return super.onPrepareOptionsMenu(menu);
-	}
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.files, menu);
+    return true;
+  }
 
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_commit:
-				startActivityForResult(intentFactory.createCommitIntent(repository), REQUEST_COMMIT);
-				return true;
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    if (isSpinnerVisible()) {
+      menu.findItem(R.id.action_commit).setVisible(false);
+      menu.findItem(R.id.action_preview).setVisible(false);
+      menu.findItem(R.id.action_discard_changes).setVisible(false);
+    }
+    return super.onPrepareOptionsMenu(menu);
+  }
 
-			case R.id.action_preview:
-				startActivity(intentFactory.createPreviewIntent(repository));
-				return true;
 
-			case R.id.action_discard_changes:
-				new AlertDialog.Builder(this)
-						.setTitle(R.string.delete_repo_title)
-						.setMessage(R.string.delete_repo_message)
-						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_commit:
+        startActivityForResult(intentFactory.createCommitIntent(repository), REQUEST_COMMIT);
+        return true;
+
+      case R.id.action_preview:
+        startActivity(intentFactory.createPreviewIntent(repository));
+        return true;
+
+      case R.id.action_discard_changes:
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.delete_repo_title)
+            .setMessage(R.string.delete_repo_message)
+            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
               fileManager.resetRepository();
               updateTree(null);
             })
-						.setNegativeButton(android.R.string.cancel, null)
-						.show();
-				return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
+  }
 
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case REQUEST_COMMIT:
-				if (resultCode != RESULT_OK) return;
-			case REQUEST_EDIT_FILE:
-				// refresh tree after successful commit or updated file (in case of new files)
-				refreshTree();
-				break;
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case REQUEST_COMMIT:
+        if (resultCode != RESULT_OK) return;
+      case REQUEST_EDIT_FILE:
+        // refresh tree after successful commit or updated file (in case of new files)
+        refreshTree();
+        break;
 
-			case REQUEST_SELECT_PHOTO:
-				if (resultCode != RESULT_OK) return;
-				final Uri selectedImage = data.getData();
-				Timber.d(selectedImage.toString());
+      case REQUEST_SELECT_PHOTO:
+        if (resultCode != RESULT_OK) return;
+        final Uri selectedImage = data.getData();
+        Timber.d(selectedImage.toString());
         // TODO
         /*
-				// get image name
+        // get image name
 				uiUtils.createInputDialog(
 						R.string.image_new_title,
 						R.string.image_new_message,
@@ -209,10 +211,10 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
             })
 						.show();
 						*/
-				break;
+        break;
 
-			case REQUEST_SELECT_DIR:
-				if (resultCode != RESULT_OK) return;
+      case REQUEST_SELECT_DIR:
+        if (resultCode != RESULT_OK) return;
 
         // TODO
         /*
@@ -242,13 +244,13 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				}
 				*/
 
-				break;
-		}
-	}
+        break;
+    }
+  }
 
 
-	@Override
-	public void onDelete(final File file) {
+  @Override
+  public void onDelete(final File file) {
     // TODO
     /*
 		new AlertDialog.Builder(this)
@@ -269,17 +271,17 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 				.setNegativeButton(android.R.string.cancel, null)
 				.show();
 				*/
-	}
+  }
 
 
-	@Override
-	public void onEdit(File file) {
-		startFileActivity(file, false);
-	}
+  @Override
+  public void onEdit(File file) {
+    startFileActivity(file, false);
+  }
 
 
-	@Override
-	public void onRename(File file, String newFileName) {
+  @Override
+  public void onRename(File file, String newFileName) {
     // TODO
     /*
 		showSpinner();
@@ -293,20 +295,20 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 						.add(new HideSpinnerAction(this))
 						.build()));
 						*/
-	}
+  }
 
 
-	@Override
-	public void onMoveTo(File file) {
-		Intent intent = new Intent(this, SelectDirActivity.class);
-		intent.putExtra(SelectDirActivity.EXTRA_REPOSITORY, repository);
+  @Override
+  public void onMoveTo(File file) {
+    Intent intent = new Intent(this, SelectDirActivity.class);
+    intent.putExtra(SelectDirActivity.EXTRA_REPOSITORY, repository);
     intent.putExtra(EXTRA_NODE_TO_MOVE, file);
-		for (String key : intent.getExtras().keySet()) Timber.d("found key " + key);
-		startActivityForResult(intent, REQUEST_SELECT_DIR);
-	}
+    for (String key : intent.getExtras().keySet()) Timber.d("found key " + key);
+    startActivityForResult(intent, REQUEST_SELECT_DIR);
+  }
 
 
-	private void moveFile(File fileToMove, File targetDir) {
+  private void moveFile(File fileToMove, File targetDir) {
     // TODO
     /*
 		showSpinner();
@@ -321,33 +323,38 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 						.add(new HideSpinnerAction(DirActivity.this))
 						.build()));
 						*/
-	}
+  }
 
 
-	@Override
-	public void onStopActionMode() {
-		fileAdapter.notifyDataSetChanged();
-	}
+  @Override
+  public void onStopActionMode() {
+    fileAdapter.notifyDataSetChanged();
+  }
 
 
-	private void addAndOpenFile() {
+  private void addAndOpenFile() {
     new MaterialDialog
         .Builder(this)
         .title(R.string.file_new_title)
         .content(R.string.file_new_message)
         .inputType(InputType.TYPE_CLASS_TEXT)
-        .input(R.string.file_new_hint, R.string.file_new_prefill, false, (dialog, input) -> {
-              File file = new File(fileAdapter.getSelectedDir(), input.toString());
-              fileUtils
-                  .createNewFile(file)
-                  .subscribe(
-                      nothing -> startFileActivity(file, true),
-                      new ErrorActionBuilder()
-                          .add(new DefaultErrorAction(DirActivity.this, "Failed to create file"))
-                          .build()
-                  );
-            }
-        )
+        .alwaysCallInputCallback()
+        .input(R.string.file_new_hint, 0, false, (dialog, input) -> {
+          validateInputFileName(dialog, R.string.file_new_message, input.toString());
+        })
+        .onPositive((dialog, which) -> {
+          // create file
+          String newFileName = dialog.getInputEditText().getText().toString();
+          File file = new File(fileAdapter.getSelectedDir(), newFileName);
+          fileUtils
+              .createNewFile(file)
+              .subscribe(
+                  nothing -> startFileActivity(file, true),
+                  new ErrorActionBuilder()
+                      .add(new DefaultErrorAction(DirActivity.this, "Failed to create file"))
+                      .build()
+              );
+        })
         .show();
   }
 
@@ -358,8 +365,14 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
         .title(R.string.dir_new_title)
         .content(R.string.dir_new_message)
         .inputType(InputType.TYPE_CLASS_TEXT)
-        .input(R.string.dir_new_hint, R.string.dir_new_prefill, false, (dialog, input) -> {
-          File directory = new File(fileAdapter.getSelectedDir(), input.toString());
+        .alwaysCallInputCallback()
+        .input(R.string.dir_new_hint, 0, false, (dialog, input) -> {
+          validateInputFileName(dialog, R.string.dir_new_message, input.toString());
+        })
+        .onPositive((dialog, which) -> {
+          // create directory
+          String newDirName = dialog.getInputEditText().getText().toString();
+          File directory = new File(fileAdapter.getSelectedDir(), newDirName);
           fileUtils
               .createNewDirectory(directory)
               .subscribe(
@@ -376,88 +389,112 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
         .show();
   }
 
+  private boolean validateInputFileName(MaterialDialog dialog, @StringRes int content, String fileName) {
+    boolean isValid = true;
 
-	/**
-	 * Recreates the file tree without changing directory
-	 */
-	private void refreshTree() {
-		Bundle tmpSavedState = new Bundle();
-		fileAdapter.onSaveInstanceState(tmpSavedState);
-		updateTree(tmpSavedState);
-	}
+    // check for empty file name
+    if (fileName.length() == 0) {
+      isValid = false;
+    }
+
+    // check if file already exists
+    if (isValid) {
+      for (File file : fileAdapter.getSelectedDir().listFiles()) {
+        if (file.getName().equals(fileName)) {
+          isValid = false;
+          content = R.string.file_already_exists;
+          break;
+        }
+      }
+    }
+
+    dialog.getActionButton(DialogAction.POSITIVE).setEnabled(isValid);
+    dialog.setContent(content);
+    return isValid;
+  }
 
 
-	private void startFileActivity(File file, boolean isNewFile) {
-		actionModeListener.stopActionMode();
+  /**
+   * Recreates the file tree without changing directory
+   */
+  private void refreshTree() {
+    Bundle tmpSavedState = new Bundle();
+    fileAdapter.onSaveInstanceState(tmpSavedState);
+    updateTree(tmpSavedState);
+  }
 
-		// start text or image activity depending on file name
+
+  private void startFileActivity(File file, boolean isNewFile) {
+    actionModeListener.stopActionMode();
+
+    // start text or image activity depending on file name
     if (!fileUtils.isImage(file.getName())) {
       // start text editor
-			Intent editorIntent = intentFactory.createTextEditorIntent(repository, file, isNewFile);
-			startActivityForResult(editorIntent, REQUEST_EDIT_FILE);
+      Intent editorIntent = intentFactory.createTextEditorIntent(repository, file, isNewFile);
+      startActivityForResult(editorIntent, REQUEST_EDIT_FILE);
 
-		} else {
-			// start image viewer
-			Intent viewerIntent = intentFactory.createImageViewerIntent(repository, file);
-			startActivity(viewerIntent);
-		}
+    } else {
+      // start image viewer
+      Intent viewerIntent = intentFactory.createImageViewerIntent(repository, file);
+      startActivity(viewerIntent);
+    }
 
-	}
-
-
-	@Override
-	protected FileAdapter createAdapter() {
-		return new LongClickFileAdapter(gitManager.getRootDir());
-	}
+  }
 
 
-	@Override
-	protected void onDirSelected(File directory) {
-		// show / hide posts add button
-		if (jekyllManager.isPostsDirOrSubDir(directory)) addPostButton.setVisibility(View.VISIBLE);
-		else addPostButton.setVisibility(View.GONE);
-
-		// show / hide drafts add button
-		if (jekyllManager.isDraftsDirOrSubDir(directory)) addDraftButton.setVisibility(View.VISIBLE);
-		else addDraftButton.setVisibility(View.GONE);
-	}
+  @Override
+  protected FileAdapter createAdapter() {
+    return new LongClickFileAdapter(gitManager.getRootDir());
+  }
 
 
-	@Override
-	protected void onFileSelected(File file) {
-		startFileActivity(file, false);
-	}
+  @Override
+  protected void onDirSelected(File directory) {
+    // show / hide posts add button
+    if (jekyllManager.isPostsDirOrSubDir(directory)) addPostButton.setVisibility(View.VISIBLE);
+    else addPostButton.setVisibility(View.GONE);
+
+    // show / hide drafts add button
+    if (jekyllManager.isDraftsDirOrSubDir(directory)) addDraftButton.setVisibility(View.VISIBLE);
+    else addDraftButton.setVisibility(View.GONE);
+  }
 
 
-	@Override
-	public void onBackPressed() {
-		// hide open add buttons
-		if (addButton.isExpanded()) addButton.collapse();
-		else super.onBackPressed();
-	}
+  @Override
+  protected void onFileSelected(File file) {
+    startFileActivity(file, false);
+  }
 
 
-	public class LongClickFileAdapter extends FileAdapter {
+  @Override
+  public void onBackPressed() {
+    // hide open add buttons
+    if (addButton.isExpanded()) addButton.collapse();
+    else super.onBackPressed();
+  }
+
+
+  public class LongClickFileAdapter extends FileAdapter {
 
     public LongClickFileAdapter(File rootDir) {
       super(rootDir);
     }
 
-		@Override
-		public LongClickFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false);
-			return new LongClickFileViewHolder(view);
-		}
+    @Override
+    public LongClickFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false);
+      return new LongClickFileViewHolder(view);
+    }
 
-		public class LongClickFileViewHolder extends FileViewHolder {
+    public class LongClickFileViewHolder extends FileViewHolder {
 
-			public LongClickFileViewHolder(View view) {
-				super(view);
-			}
+      public LongClickFileViewHolder(View view) {
+        super(view);
+      }
 
-			@Override
-			public void setFile(File file) {
-				super.setFile(file);
+      @Override
+      public void setFile(File file) {
+        super.setFile(file);
 
         // TODO
         /*
@@ -484,8 +521,8 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 					view.setLongClickable(false);
 				}
 				*/
-			}
-		}
-	}
+      }
+    }
+  }
 
 }
