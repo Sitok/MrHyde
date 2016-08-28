@@ -267,7 +267,8 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
                     nothing -> refreshTree(),
                     new ErrorActionBuilder()
                         .add(new DefaultErrorAction(DirActivity.this, "Failed to delete file"))
-                        .build())
+                        .build()
+                )
         ))
         .show();
   }
@@ -280,20 +281,33 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
   @Override
-  public void onRename(File file, String newFileName) {
-    // TODO
-    /*
-		showSpinner();
-		compositeSubscription.add(fileManager.renameFile(fileNode, newFileName)
-				.compose(new DefaultTransformer<FileNode>())
-				.subscribe(newFileNode -> {
-          hideSpinner();
-          updateTree(null);
-        }, new ErrorActionBuilder()
-						.add(new DefaultErrorAction(this, "failed to rename file"))
-						.add(new HideSpinnerAction(this))
-						.build()));
-						*/
+  public void onRename(File file) {
+    new MaterialDialog
+        .Builder(this)
+        .title(R.string.rename_title)
+        .content(R.string.rename_message)
+        .inputType(InputType.TYPE_CLASS_TEXT)
+        .alwaysCallInputCallback()
+        .input(getString(R.string.rename_hint), file.getName(), false, (dialog, input) -> {
+          validateInputFileName(dialog, R.string.rename_message, input.toString());
+        })
+        .onPositive((dialog, which) -> {
+          File targetFile = new File(
+              fileAdapter.getSelectedDir(),
+              dialog.getInputEditText().getText().toString()
+          );
+          compositeSubscription.add(fileUtils
+              .renameFile(file, targetFile)
+              .compose(new DefaultTransformer<>())
+              .subscribe(
+                  nothing -> refreshTree(),
+                  new ErrorActionBuilder()
+                      .add(new DefaultErrorAction(DirActivity.this, "Failed to rename file"))
+                      .build()
+              )
+          );
+        })
+        .show();
   }
 
 

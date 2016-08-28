@@ -74,14 +74,9 @@ class DirActionModeListener implements ActionMode.Callback {
 				return true;
 
 			case R.id.action_rename:
-        // TODO
-        /*
-				uiUtils.createInputDialog(activity, activity.getString(R.string.rename_title), selectedFile.getPath(), newFileName -> {
-          selectionListener.onRename(selectedFile, newFileName);
-          stopActionMode();
-        }).show();
-        */
-				return true;
+        selectionListener.onRename(selectedFile);
+        stopActionMode();
+        return true;
 
 			case R.id.action_move:
 				selectionListener.onMoveTo(selectedFile);
@@ -104,7 +99,7 @@ class DirActionModeListener implements ActionMode.Callback {
 
 		void onDelete(File file);
 		void onEdit(File file);
-		void onRename(File file, String newFileName);
+		void onRename(File file);
 		void onMoveTo(File file);
 		void onStopActionMode();
 

@@ -99,7 +99,9 @@
     <string name="dir_new_hint">ducks</string>
     <string name="file_already_exists">File already exists</string>
     <string name="dir_empty">Empty</string>
-    <string name="rename_title">Rename</string>
+    <string name="rename_title">Rename File</string>
+    <string name="rename_message">What do you want to call it?</string>
+    <string name="rename_hint">ducks.md</string>
 
     <string name="delete_repo_title">Delete local repository</string>
     <string name="delete_repo_message">Delete all local content of this repository? Cannot be undone!</string>

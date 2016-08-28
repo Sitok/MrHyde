@@ -1,5 +1,7 @@
 package org.faudroids.mrhyde.git;
 
+import android.support.annotation.NonNull;
+
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.BufferedReader;
@@ -30,7 +32,7 @@ public class FileUtils {
   /**
    * Checks the file extension for common image variants.
    */
-	public boolean isImage(String fileName) {
+	public boolean isImage(@NonNull String fileName) {
 		fileName = fileName.toLowerCase();
 		return (fileName.endsWith(".png")
 				|| fileName.endsWith(".jpg")
@@ -44,7 +46,7 @@ public class FileUtils {
 	 * Checks if a file is binary by scanning the max first few bytes and searching for a NUL byte.
 	 * Courtesy to http://stackoverflow.com/a/6134127
 	 */
-	public boolean isBinary(File file) throws IOException {
+	public boolean isBinary(@NonNull File file) throws IOException {
 		DataInputStream in = new DataInputStream(new FileInputStream(file));
 		int count = 0;
 		while (count < FIRST_FEW_BYTES) {
@@ -63,7 +65,7 @@ public class FileUtils {
   /**
    * Deletes a file or directory recursively.
    */
-  public Observable<Void> deleteFile(File file) {
+  public Observable<Void> deleteFile(@NonNull File file) {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
       if (file.isDirectory()) {
         for (File f : file.listFiles()) {
@@ -81,7 +83,7 @@ public class FileUtils {
   /**
    * Returns the whole content of the given file as a string.
    */
-  public Observable<String> readFile(File file) {
+  public Observable<String> readFile(@NonNull File file) {
     return ObservableUtils.fromSynchronousCall(() -> {
       StringBuilder builder = new StringBuilder();
       BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
@@ -99,7 +101,7 @@ public class FileUtils {
   /**
    * Writes content to a file.
    */
-  public Observable<Void> writeFile(File file, String content) {
+  public Observable<Void> writeFile(@NonNull File file, @NonNull String content) {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
       FileOutputStream writer = new FileOutputStream(file);
       writer.write(content.getBytes());
@@ -108,14 +110,34 @@ public class FileUtils {
     });
   }
 
-  public Observable<Void> createNewFile(File file) {
+
+  /**
+   * Renames a file.
+   */
+  public Observable<Void> renameFile(@NonNull  File file, @NonNull File targetFile) {
+    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+      if (!file.renameTo(targetFile)) {
+        Timber.w("Failed to rename file %s to %s", file.getAbsolutePath(), targetFile.getAbsolutePath());
+      }
+      return null;
+    });
+  }
+
+  /**
+   * Creates a single new plain file.
+   */
+  public Observable<Void> createNewFile(@NonNull File file) {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
       if (!file.createNewFile()) Timber.w("Failed to create file %s", file.getAbsolutePath());
       return null;
     });
   }
 
-  public Observable<Void> createNewDirectory(File dir) {
+
+  /**
+   * Creates a single new empty directory.
+   */
+  public Observable<Void> createNewDirectory(@NonNull File dir) {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
       if (!dir.mkdir()) Timber.w("Failed to create directory %s", dir.getAbsolutePath());
       return null;
