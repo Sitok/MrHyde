@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import org.eclipse.jgit.api.Git;
 import org.faudroids.mrhyde.github.GitHubRepository;
-import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.File;
 
@@ -33,11 +32,7 @@ public class GitManager {
 
 
   public Observable<Void> deleteAllLocalContent() {
-    return ObservableUtils
-        .fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-          fileUtils.deleteFile(rootDir);
-          return null;
-        });
+    return fileUtils.deleteFile(rootDir);
   }
 
   public File getRootDir() {

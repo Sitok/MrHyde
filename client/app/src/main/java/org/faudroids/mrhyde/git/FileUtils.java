@@ -52,26 +52,29 @@ public class FileUtils {
 				byte data = in.readByte();
 				if (data == 0) return true;
 			} catch (EOFException eof) {
-				return false;
-			}
-			++count;
-		}
-		return false;
-	}
+        return false;
+      }
+      ++count;
+    }
+    return false;
+  }
 
 
   /**
    * Deletes a file or directory recursively.
    */
-  public void deleteFile(File file) throws IOException {
-    if (file.isDirectory()) {
-      for (File f : file.listFiles()) {
-        deleteFile(f);
+  public Observable<Void> deleteFile(File file) {
+    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+      if (file.isDirectory()) {
+        for (File f : file.listFiles()) {
+          deleteFile(f);
+        }
       }
-    }
-    if (!file.delete()) {
-      Timber.w("Failed to delete \"%s\"", file.getAbsolutePath());
-    }
+      if (!file.delete()) {
+        Timber.w("Failed to delete \"%s\"", file.getAbsolutePath());
+      }
+      return null;
+    });
   }
 
 

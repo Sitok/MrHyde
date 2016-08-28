@@ -253,27 +253,23 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
   @Override
-  public void onDelete(final File file) {
-    // TODO
-    /*
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.delete_title)
-				.setMessage(getString(R.string.delete_message, fileNode.getPath()))
-				.setPositiveButton(getString(R.string.action_delete), (dialog, which) -> {
-          showSpinner();
-          compositeSubscription.add(fileManager.deleteFile(fileNode)
-              .compose(new DefaultTransformer<Void>())
-              .subscribe(aVoid -> {
-                hideSpinner();
-                updateTree(null);
-              }, new ErrorActionBuilder()
-                  .add(new DefaultErrorAction(DirActivity.this, "failed to delete file"))
-                  .add(new HideSpinnerAction(DirActivity.this))
-                  .build()));
-        })
-				.setNegativeButton(android.R.string.cancel, null)
-				.show();
-				*/
+  public void onDelete(File file) {
+    new MaterialDialog.Builder(this)
+        .title(R.string.delete_title)
+        .content(getString(R.string.delete_message, file.getName()))
+        .positiveText(R.string.action_delete)
+        .negativeText(android.R.string.cancel)
+        .onPositive((dialog, which) -> compositeSubscription.add(
+            fileUtils
+                .deleteFile(file)
+                .compose(new DefaultTransformer<>())
+                .subscribe(
+                    nothing -> refreshTree(),
+                    new ErrorActionBuilder()
+                        .add(new DefaultErrorAction(DirActivity.this, "Failed to delete file"))
+                        .build())
+        ))
+        .show();
   }
 
 
@@ -495,31 +491,26 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       public void setFile(File file) {
         super.setFile(file);
 
-        // TODO
-        /*
 				// check for action mode
-				if (actionModeListener.getSelectedNode() != null && actionModeListener.getSelectedNode().equals(pathNode)) {
+        File selectedFile = actionModeListener.getSelectedFile();
+				if (selectedFile != null && selectedFile.equals(file)) {
 					view.setSelected(true);
 				} else {
 					view.setSelected(false);
 				}
 
 				// setup long click
-				if (pathNode instanceof FileNode) {
-					view.setOnLongClickListener(new View.OnLongClickListener() {
-						@Override
-						public boolean onLongClick(View v) {
-							// only highlight item when selection was successful
-							if (actionModeListener.startActionMode((FileNode) pathNode)) {
-								view.setSelected(true);
-							}
-							return true;
-						}
-					});
+				if (!file.isDirectory()) {
+					view.setOnLongClickListener(v -> {
+            // only highlight item when selection was successful
+            if (actionModeListener.startActionMode(file)) {
+              view.setSelected(true);
+            }
+            return true;
+          });
 				} else {
 					view.setLongClickable(false);
 				}
-				*/
       }
     }
   }
