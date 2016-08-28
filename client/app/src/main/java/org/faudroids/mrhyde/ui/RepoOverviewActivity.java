@@ -22,12 +22,10 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubManager;
@@ -107,11 +105,9 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 
 		// get arguments
 		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
-		setTitle(repository.getName());
-
-    // open git repo
     gitManager = gitManagerFactory.openRepository(repository);
+		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
+		setTitle(repository.getName());
 
     // setup posts lists
     postsListAdapter = new PostsListAdapter(this);
@@ -156,21 +152,27 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		});
 		addPostButton.setOnClickListener(v -> {
       addButton.collapse();
+      // TODO
+      /*
       jekyllUiUtils.showNewPostDialog(
           jekyllManager,
           repository,
           Optional.<DirNode>absent(),
           (JekyllUiUtils.OnContentCreatedListener<Post>) post -> loadJekyllContent()
       );
+      */
     });
 		addDraftButton.setOnClickListener(v -> {
       addButton.collapse();
+      // TODO
+      /*
       jekyllUiUtils.showNewDraftDialog(jekyllManager, repository, Optional.<DirNode>absent(), new JekyllUiUtils.OnContentCreatedListener<Draft>() {
         @Override
         public void onContentCreated(Draft draft) {
           loadJekyllContent();
         }
       });
+      */
     });
 		tintView.setOnClickListener(v -> addButton.collapse());
 

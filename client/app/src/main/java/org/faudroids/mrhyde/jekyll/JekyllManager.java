@@ -7,12 +7,12 @@ import com.google.common.base.Optional;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
-import org.faudroids.mrhyde.git.FileData;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileNode;
+import org.faudroids.mrhyde.git.FileUtils;
+import org.faudroids.mrhyde.git.GitManager;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import timber.log.Timber;
 public class JekyllManager {
 
 	private static final String
-			DIR_POSTS = "_posts",
-			DIR_DRAFTS = "_drafts";
+      DIR_NAME_POSTS = "_posts",
+			DIR_NAME_DRAFTS = "_drafts";
 
 	private static final Pattern
 			POST_TITLE_PATTERN = Pattern.compile("(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)(.+)\\..+"),
@@ -42,29 +42,47 @@ public class JekyllManager {
 	private static final DateFormat POST_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final Context context;
+  private final FileUtils fileUtils;
 	private final FileManager fileManager;
+  private final GitManager gitManager;
+  private final File dirPosts, dirDrafts;
 
+  @Deprecated
 	JekyllManager(Context context, FileManager fileManager) {
 		this.context = context;
 		this.fileManager = fileManager;
+    this.fileUtils = null;
+    this.gitManager = null;
+    this.dirPosts = null;
+    this.dirDrafts = null;
 	}
+
+  JekyllManager(Context context, FileUtils fileUtils, GitManager gitManager) {
+    this.context = context;
+    this.fileUtils = fileUtils;
+    this.gitManager = gitManager;
+    this.fileManager = null;
+    this.dirPosts = new File(gitManager.getRootDir(), DIR_NAME_POSTS);
+    this.dirDrafts = new File(gitManager.getRootDir(), DIR_NAME_DRAFTS);
+  }
 
 
 	/**
 	 * Returns all posts sorted by date with the newest first.
 	 */
 	public Observable<List<Post>> getAllPosts() {
+    if (1 == 1) return Observable.just(new ArrayList<>());
 		return fileManager.getTree()
 				.flatMap(new Func1<DirNode, Observable<List<Post>>>() {
 					@Override
 					public Observable<List<Post>> call(DirNode dirNode) {
 						// check if post dir exists
 						List<Post> posts = new ArrayList<>();
-						if (!dirNode.getEntries().containsKey(DIR_POSTS)) return Observable.just(posts);
+						if (!dirNode.getEntries().containsKey(DIR_NAME_POSTS)) return Observable.just(posts);
 
 						// parse titles
 						List<FileNode> fileNodes = new ArrayList<>();
-						getAllFileNodes((DirNode) dirNode.getEntries().get(DIR_POSTS), fileNodes);
+						getAllFileNodes((DirNode) dirNode.getEntries().get(DIR_NAME_POSTS), fileNodes);
 						for (FileNode fileNode : fileNodes) {
 							Optional<Post> post = parsePost(fileNode);
 							if (post.isPresent()) posts.add(post.get());
@@ -84,17 +102,18 @@ public class JekyllManager {
 	 * Returns all drafts sorted by title.
 	 */
 	public Observable<List<Draft>> getAllDrafts() {
+    if (1 == 1) return Observable.just(new ArrayList<>());
 		return fileManager.getTree()
 				.flatMap(new Func1<DirNode, Observable<List<Draft>>>() {
 					@Override
 					public Observable<List<Draft>> call(DirNode dirNode) {
 						// check if drafts dir exists
 						List<Draft> drafts = new ArrayList<>();
-						if (!dirNode.getEntries().containsKey(DIR_DRAFTS)) return Observable.just(drafts);
+						if (!dirNode.getEntries().containsKey(DIR_NAME_DRAFTS)) return Observable.just(drafts);
 
 						// parse titles
 						List<FileNode> fileNodes = new ArrayList<>();
-						getAllFileNodes((DirNode) dirNode.getEntries().get(DIR_DRAFTS), fileNodes);
+						getAllFileNodes((DirNode) dirNode.getEntries().get(DIR_NAME_DRAFTS), fileNodes);
 						for (FileNode fileNode : fileNodes) {
 							Optional<Draft> draft = parseDraft((FileNode) fileNode);
 							if (draft.isPresent()) drafts.add(draft.get());
@@ -139,59 +158,36 @@ public class JekyllManager {
 
 
 	/**
-	 * Creates and returns a new post file (locally).
+	 * Creates and returns a new post file.
 	 */
 	public Observable<Post> createNewPost(final String title) {
-		return fileManager.getTree()
-				.flatMap(new Func1<DirNode, Observable<Post>>() {
-					@Override
-					public Observable<Post> call(DirNode rootNode) {
-						return createNewPost(title, assertDir(rootNode, DIR_POSTS));
-					}
-				});
+    return createNewPost(title, dirPosts);
 	}
 
 
-	public Observable<Post> createNewPost(final String title, final DirNode postDir) {
-    // TODO
-		// if (!isPostsDirOrSubDir(postDir)) throw new IllegalArgumentException("not a post dir " + postDir.getFullPath());
-		FileNode postNode = fileManager.createNewFile(postDir, postTitleToFilename(title));
-		try {
-			// create post file and setup front matter
-			setupDefaultFrontMatter(postNode, title);
-		} catch (IOException ioe) {
-			return Observable.error(ioe);
-		}
-		return Observable.just(new Post(title, Calendar.getInstance().getTime(), postNode));
-	}
+	public Observable<Post> createNewPost(final String title, final File postDir) {
+    File targetFile = new File(postDir, postTitleToFilename(title));
+    return fileUtils
+        .createNewFile(targetFile)
+        .flatMap(nothing -> setupDefaultFrontMatter(targetFile, title))
+        .map(nothing -> new Post(title, Calendar.getInstance().getTime(), targetFile));
+  }
 
 
 	/**
-	 * Creates and returns a new draft file (locally).
+	 * Creates and returns a new draft file.
 	 */
 	public Observable<Draft> createNewDraft(final String title) {
-		return fileManager.getTree()
-				.flatMap(new Func1<DirNode, Observable<Draft>>() {
-					@Override
-					public Observable<Draft> call(DirNode rootNode) {
-						return createNewDraft(title, assertDir(rootNode, DIR_DRAFTS));
-					}
-				});
+    return createNewDraft(title, dirDrafts);
 	}
 
 
-	public Observable<Draft> createNewDraft(final String title, DirNode draftDir) {
-    // TODO
-		// if (!isDraftsDirOrSubDir(draftDir)) throw new IllegalArgumentException("not a draf dir " + draftDir.getFullPath());
-		FileNode draftNode = fileManager.createNewFile(draftDir, draftTitleToFilename(title));
-		try {
-			// create draft file and setup front matter
-			setupDefaultFrontMatter(draftNode, title);
-			return Observable.just(new Draft(title, draftNode));
-
-		} catch (IOException ioe) {
-			return Observable.error(ioe);
-		}
+	public Observable<Draft> createNewDraft(final String title, File draftDir) {
+    File targetFile = new File(draftDir, draftTitleToFilename(title));
+    return fileUtils
+        .createNewFile(targetFile)
+        .flatMap(nothing -> setupDefaultFrontMatter(targetFile, title))
+        .map(nothing -> new Draft(title, targetFile));
 	}
 
 
@@ -214,7 +210,7 @@ public class JekyllManager {
 				.flatMap(new Func1<DirNode, Observable<FileNode>>() {
 					@Override
 					public Observable<FileNode> call(DirNode rootDir) {
-						DirNode postsDir = assertDir(rootDir, DIR_POSTS);
+						DirNode postsDir = assertDir(rootDir, DIR_NAME_POSTS);
 						return fileManager.moveFile(draft.getFileNode(), postsDir, postTitle);
 					}
 				})
@@ -242,7 +238,7 @@ public class JekyllManager {
 				.flatMap(new Func1<DirNode, Observable<FileNode>>() {
 					@Override
 					public Observable<FileNode> call(DirNode rootDir) {
-						DirNode draftsDir = assertDir(rootDir, DIR_DRAFTS);
+						DirNode draftsDir = assertDir(rootDir, DIR_NAME_DRAFTS);
 						return fileManager.moveFile(post.getFileNode(), draftsDir, draftTitle);
 					}
 				})
@@ -260,7 +256,7 @@ public class JekyllManager {
 	 * Returns true if the passed in dir is the Jekyll posts dir or sub dir.
 	 */
 	public boolean isPostsDirOrSubDir(File directory) {
-		return isSpecialDirOrSubDir(directory, DIR_POSTS);
+		return isSpecialDirOrSubDir(directory, DIR_NAME_POSTS);
 	}
 
 
@@ -268,7 +264,7 @@ public class JekyllManager {
 	 * Returns true if the passed in dir is the Jekyll drafts dir or sub dir.
 	 */
 	public boolean isDraftsDirOrSubDir(File directory) {
-		return isSpecialDirOrSubDir(directory, DIR_DRAFTS);
+		return isSpecialDirOrSubDir(directory, DIR_NAME_DRAFTS);
 	}
 
 
@@ -291,10 +287,9 @@ public class JekyllManager {
 	}
 
 
-	private void setupDefaultFrontMatter(FileNode fileNode, String title) throws IOException {
-		FileData data = new FileData(fileNode, context.getString(R.string.default_front_matter, title).getBytes());
-		fileManager.writeFile(data);
-	}
+	private Observable<Void> setupDefaultFrontMatter(File file, String title) {
+    return fileUtils.writeFile(file, context.getString(R.string.default_front_matter, title));
+  }
 
 
 

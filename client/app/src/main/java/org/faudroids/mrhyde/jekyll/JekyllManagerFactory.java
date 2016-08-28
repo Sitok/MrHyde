@@ -2,26 +2,25 @@ package org.faudroids.mrhyde.jekyll;
 
 import android.content.Context;
 
-import org.eclipse.egit.github.core.Repository;
-import org.faudroids.mrhyde.git.FileManagerFactory;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.FileUtils;
+import org.faudroids.mrhyde.git.GitManager;
 
 import javax.inject.Inject;
 
 public class JekyllManagerFactory {
 
 	private final Context context;
-	private final FileManagerFactory fileManagerFactory;
+  private final FileUtils fileUtils;
 
 	@Inject
-	JekyllManagerFactory(Context context, FileManagerFactory fileManagerFactory) {
+	JekyllManagerFactory(Context context, FileUtils fileUtils) {
 		this.context = context;
-		this.fileManagerFactory = fileManagerFactory;
+    this.fileUtils = fileUtils;
 	}
 
 
-	public JekyllManager createJekyllManager(GitHubRepository repository) {
-		return new JekyllManager(context, fileManagerFactory.createFileManager(repository));
+	public JekyllManager createJekyllManager(GitManager gitManager) {
+		return new JekyllManager(context, fileUtils, gitManager);
 	}
 
 }

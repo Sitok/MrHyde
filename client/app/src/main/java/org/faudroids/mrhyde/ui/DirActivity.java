@@ -18,6 +18,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.common.base.Optional;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
@@ -95,30 +96,24 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       addDirectory();
     });
     addPostButton.setOnClickListener(v -> {
-      /*)
       addButton.collapse();
       jekyllUiUtils.showNewPostDialog(
+          DirActivity.this,
           jekyllManager,
           repository,
           Optional.of(fileAdapter.getSelectedDir()),
-          content -> refreshTree());
-          */
+          post -> refreshTree()
+      );
     });
     addDraftButton.setOnClickListener(v -> {
-      // TODO
-      /*
       addButton.collapse();
       jekyllUiUtils.showNewDraftDialog(
+          DirActivity.this,
           jekyllManager,
           repository,
           Optional.of(fileAdapter.getSelectedDir()),
-          new JekyllUiUtils.OnContentCreatedListener<Draft>() {
-        @Override
-        public void onContentCreated(Draft content) {
-          refreshTree();
-        }
-      });
-      */
+          draft -> refreshTree()
+      );
     });
     tintView.setOnClickListener(v -> addButton.collapse());
 

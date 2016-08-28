@@ -65,8 +65,8 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 		// get arguments
 		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		fileManager = fileManagerFactory.createFileManager(repository);
-		jekyllManager = jekyllManagerFactory.createJekyllManager(repository);
     gitManager = gitManagerFactory.openRepository(repository);
+		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 
 		// setup list
 		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
