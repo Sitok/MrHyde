@@ -1,11 +1,7 @@
 package org.faudroids.mrhyde.ui.utils;
 
-import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.support.v7.app.AlertDialog;
-import android.text.InputType;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.faudroids.mrhyde.R;
@@ -14,67 +10,30 @@ import javax.inject.Inject;
 
 public class UiUtils {
 
-	private final Context context;
-
-	@Inject
-	UiUtils(Context context) {
-		this.context = context;
-	}
+  @Inject
+  UiUtils() {
+  }
 
 
-	public void showSpinner(View spinnerContainerView, ImageView spinnerImageView) {
-		spinnerContainerView.setVisibility(View.VISIBLE);
+  public void showSpinner(View spinnerContainerView, ImageView spinnerImageView) {
+    spinnerContainerView.setVisibility(View.VISIBLE);
 
-		spinnerImageView.setBackgroundResource(R.drawable.spinner);
-		AnimationDrawable animationDrawable = (AnimationDrawable) spinnerImageView.getBackground();
-		animationDrawable.start();
-	}
-
-
-	public void hideSpinner(View spinnerContainerView, ImageView spinnerImageView) {
-		AnimationDrawable animationDrawable = (AnimationDrawable) spinnerImageView.getBackground();
-		animationDrawable.stop();
-
-		spinnerContainerView.setVisibility(View.GONE);
-	}
+    spinnerImageView.setBackgroundResource(R.drawable.spinner);
+    AnimationDrawable animationDrawable = (AnimationDrawable) spinnerImageView.getBackground();
+    animationDrawable.start();
+  }
 
 
-	public boolean isSpinnerVisible(View spinnerContainerView) {
-		return spinnerContainerView.getVisibility() == View.VISIBLE;
-	}
+  public void hideSpinner(View spinnerContainerView, ImageView spinnerImageView) {
+    AnimationDrawable animationDrawable = (AnimationDrawable) spinnerImageView.getBackground();
+    animationDrawable.stop();
+
+    spinnerContainerView.setVisibility(View.GONE);
+  }
 
 
-	/**
-	 * Creates a simple alert dialog with one {@link EditText} for getting user input.
-	 * @param titleResource Title of dialog.
-	 * @param messageResource Default text inside the {@link EditText} field.
-	 * @param inputListener callback that will be called when user input is ready.
-	 */
-	public AlertDialog createInputDialog(Context activityContext, int titleResource, int messageResource, final OnInputListener inputListener) {
-		return createInputDialog(activityContext, context.getString(titleResource), context.getString(messageResource), inputListener);
-	}
-
-
-	public AlertDialog createInputDialog(Context activityContext, String title, String message, final OnInputListener inputListener) {
-		final EditText inputView = new EditText(context);
-		inputView.setInputType(InputType.TYPE_CLASS_TEXT);
-		inputView.setText(message);
-		inputView.setSelectAllOnFocus(true);
-
-    return new AlertDialog.Builder(activityContext, R.style.AlertDialogStyle)
-				.setTitle(title)
-				.setView(inputView)
-				.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-          String input = inputView.getText().toString();
-          if (inputListener != null) inputListener.onInput(input);
-        })
-				.setNegativeButton(android.R.string.cancel, null)
-				.create();
-	}
-
-
-	public interface OnInputListener {
-		void onInput(String input);
-	}
+  public boolean isSpinnerVisible(View spinnerContainerView) {
+    return spinnerContainerView.getVisibility() == View.VISIBLE;
+  }
 
 }

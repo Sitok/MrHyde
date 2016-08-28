@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
@@ -329,32 +331,35 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
 	private void addAndOpenFile() {
-		uiUtils.createInputDialog(
-        this,
-				R.string.file_new_title,
-				R.string.file_new_message,
-        input -> {
-          File file = new File(fileAdapter.getSelectedDir(), input);
-          fileUtils
-              .createNewFile(file)
-              .subscribe(
-                  nothing -> startFileActivity(file, true),
-                  new ErrorActionBuilder()
-                      .add(new DefaultErrorAction(DirActivity.this, "Failed to create file"))
-                      .build()
-              );
-        })
-				.show();
+    new MaterialDialog
+        .Builder(this)
+        .title(R.string.file_new_title)
+        .content(R.string.file_new_message)
+        .inputType(InputType.TYPE_CLASS_TEXT)
+        .input(R.string.file_new_hint, R.string.file_new_prefill, false, (dialog, input) -> {
+              File file = new File(fileAdapter.getSelectedDir(), input.toString());
+              fileUtils
+                  .createNewFile(file)
+                  .subscribe(
+                      nothing -> startFileActivity(file, true),
+                      new ErrorActionBuilder()
+                          .add(new DefaultErrorAction(DirActivity.this, "Failed to create file"))
+                          .build()
+                  );
+            }
+        )
+        .show();
   }
 
 
   private void addDirectory() {
-    uiUtils.createInputDialog(
-        this,
-				R.string.dir_new_title,
-				R.string.dir_new_message,
-        input -> {
-          File directory = new File(fileAdapter.getSelectedDir(), input);
+    new MaterialDialog
+        .Builder(this)
+        .title(R.string.dir_new_title)
+        .content(R.string.dir_new_message)
+        .inputType(InputType.TYPE_CLASS_TEXT)
+        .input(R.string.dir_new_hint, R.string.dir_new_prefill, false, (dialog, input) -> {
+          File directory = new File(fileAdapter.getSelectedDir(), input.toString());
           fileUtils
               .createNewDirectory(directory)
               .subscribe(
@@ -367,9 +372,8 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
                       .add(new DefaultErrorAction(DirActivity.this, "Failed to create directory"))
                       .build()
               );
-
         })
-				.show();
+        .show();
   }
 
 
