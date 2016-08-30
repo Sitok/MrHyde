@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
@@ -43,6 +44,7 @@ import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,27 +154,22 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 		});
 		addPostButton.setOnClickListener(v -> {
       addButton.collapse();
-      // TODO
-      /*
       jekyllUiUtils.showNewPostDialog(
+          RepoOverviewActivity.this,
           jekyllManager,
           repository,
-          Optional.<DirNode>absent(),
-          (JekyllUiUtils.OnContentCreatedListener<Post>) post -> loadJekyllContent()
+          Optional.<File>absent(),
+          post -> loadJekyllContent()
       );
-      */
     });
 		addDraftButton.setOnClickListener(v -> {
       addButton.collapse();
-      // TODO
-      /*
-      jekyllUiUtils.showNewDraftDialog(jekyllManager, repository, Optional.<DirNode>absent(), new JekyllUiUtils.OnContentCreatedListener<Draft>() {
-        @Override
-        public void onContentCreated(Draft draft) {
-          loadJekyllContent();
-        }
-      });
-      */
+      jekyllUiUtils.showNewDraftDialog(
+          RepoOverviewActivity.this,
+          jekyllManager,
+          repository,
+          Optional.<File>absent(),
+          draft -> loadJekyllContent());
     });
 		tintView.setOnClickListener(v -> addButton.collapse());
 
