@@ -5,12 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.common.base.Optional;
+
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.Post;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
 
+import java.io.File;
 import java.util.List;
 
 import rx.Observable;
@@ -35,9 +38,8 @@ public class PostsActivity extends AbstractJekyllActivity<Post> {
 
 	@Override
 	protected void onAddClicked(JekyllUiUtils.OnContentCreatedListener<Post> contentListener) {
-    // TODO
-		// jekyllUiUtils.showNewPostDialog(jekyllManager, repository, Optional.<DirNode>absent(), contentListener);
-	}
+    jekyllUiUtils.showNewPostDialog(this, jekyllManager, repository, Optional.<File>absent(), contentListener);
+  }
 
 	@Override
 	protected Observable<List<Post>> doLoadItems() {

@@ -1,6 +1,5 @@
 package org.faudroids.mrhyde.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -38,7 +37,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.functions.Action1;
 
 abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparable<T>>
 		extends AbstractActionBarActivity
@@ -121,18 +119,10 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 		recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
 		// setup add
-		addButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				actionModeListener.stopActionMode();
-				onAddClicked(new JekyllUiUtils.OnContentCreatedListener<T>() {
-					@Override
-					public void onContentCreated(T newItem) {
-						adapter.addItem(newItem);
-					}
-				});
-			}
-		});
+		addButton.setOnClickListener(v -> {
+      actionModeListener.stopActionMode();
+      onAddClicked(newItem -> adapter.addItem(newItem));
+    });
 
 		// prepare action mode
 		actionModeListener = new JekyllActionModeListener<>(this, this, moveActionStringResource);
@@ -145,19 +135,16 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 	private void loadItems() {
 		compositeSubscription.add(doLoadItems()
 				.compose(new DefaultTransformer<List<T>>())
-				.subscribe(new Action1<List<T>>() {
-					@Override
-					public void call(List<T> items) {
-						if (isSpinnerVisible()) hideSpinner();
-						adapter.setItems(items);
-						if (items.isEmpty()) {
-							emptyView.setText(getString(emptyStringResource));
-							emptyView.setVisibility(View.VISIBLE);
-						} else {
-							emptyView.setVisibility(View.GONE);
-						}
-					}
-				}, new ErrorActionBuilder()
+				.subscribe(items -> {
+          if (isSpinnerVisible()) hideSpinner();
+          adapter.setItems(items);
+          if (items.isEmpty()) {
+            emptyView.setText(getString(emptyStringResource));
+            emptyView.setVisibility(View.VISIBLE);
+          } else {
+            emptyView.setVisibility(View.GONE);
+          }
+        }, new ErrorActionBuilder()
 						.add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to load content"))
 						.add(new HideSpinnerAction(AbstractJekyllActivity.this))
 						.build()));
@@ -204,33 +191,26 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_title)
 				.setMessage(getString(R.string.delete_message, item.getFileNode().getPath()))
-				.setPositiveButton(getString(R.string.action_delete), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						showSpinner();
-						compositeSubscription.add(jekyllManager.deleteContent(item)
-								.compose(new DefaultTransformer<Void>())
-								.subscribe(new Action1<Void>() {
-									@Override
-									public void call(Void aVoid) {
-										hideSpinner();
-										loadItems();
-									}
-								}, new ErrorActionBuilder()
-										.add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to delete file"))
-										.add(new HideSpinnerAction(AbstractJekyllActivity.this))
-										.build()));
-					}
-				})
-				.setNegativeButton(android.R.string.cancel, null)
-				.show();
-	}
+        .setPositiveButton(getString(R.string.action_delete), (dialog, which) -> {
+          showSpinner();
+          compositeSubscription.add(jekyllManager.deleteContent(item)
+              .compose(new DefaultTransformer<Void>())
+              .subscribe(aVoid -> {
+                hideSpinner();
+                loadItems();
+              }, new ErrorActionBuilder()
+                  .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to delete file"))
+                  .add(new HideSpinnerAction(AbstractJekyllActivity.this))
+                  .build()));
+        })
+        .setNegativeButton(android.R.string.cancel, null)
+        .show();
+  }
 
 
 	@Override
 	public void onEdit(T item) {
-    // TODO
-		// startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
+		startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false));
 	}
 
 
@@ -239,22 +219,16 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 		new AlertDialog.Builder(this)
 				.setTitle(moveTitleStringResource)
 				.setMessage(getString(moveMessageStringResource, getMovedFilenameForItem(item)))
-				.setPositiveButton(R.string.move, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						createMoveObservable(item)
-								.compose(new DefaultTransformer<>())
-								.subscribe(new Action1<Object>() {
-									@Override
-									public void call(Object o) {
-										adapter.removeItem(item);
-										Toast.makeText(AbstractJekyllActivity.this, getString(movedConfirmationStringResource), Toast.LENGTH_SHORT).show();
-									}
-								}, new ErrorActionBuilder()
-										.add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to move content"))
-										.build());
-					}
-				})
+				.setPositiveButton(R.string.move, (dialog, which) -> {
+          createMoveObservable(item)
+              .compose(new DefaultTransformer<>())
+              .subscribe(o -> {
+                adapter.removeItem(item);
+                Toast.makeText(AbstractJekyllActivity.this, getString(movedConfirmationStringResource), Toast.LENGTH_SHORT).show();
+              }, new ErrorActionBuilder()
+                  .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to move content"))
+                  .build());
+        })
 				.setNegativeButton(android.R.string.cancel, null)
 				.show();
 	}
@@ -309,25 +283,18 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 
 			public void setItem(final T item) {
 				// set on click
-				view.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						actionModeListener.stopActionMode();
-            // TODO
-						// startActivity(intentFactory.createTextEditorIntent(repository, item.getFileNode(), false));
-					}
-				});
+				view.setOnClickListener(v -> {
+          actionModeListener.stopActionMode();
+          startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false));
+        });
 
 				// set long click starts action mode
-				view.setOnLongClickListener(new View.OnLongClickListener() {
-					@Override
-					public boolean onLongClick(View v) {
-						if (actionModeListener.startActionMode(item)) {
-							v.setSelected(true);
-						}
-						return true;
-					}
-				});
+				view.setOnLongClickListener(v -> {
+          if (actionModeListener.startActionMode(item)) {
+            v.setSelected(true);
+          }
+          return true;
+        });
 
 				// check if item is selected
 				if (item.equals(actionModeListener.getSelectedItem())) {
