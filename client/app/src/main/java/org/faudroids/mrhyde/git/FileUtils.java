@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -152,5 +154,24 @@ public class FileUtils {
       return null;
     });
   }
+
+
+  public Observable<List<File>> getAllFilesInDirectory(@NonNull File dir) {
+    return ObservableUtils.fromSynchronousCall(() -> getAllFilesInDirectoryHelper(dir));
+  }
+
+
+  private List<File> getAllFilesInDirectoryHelper(@NonNull File dir) {
+    List<File> files = new ArrayList<>();
+    for (File file : dir.listFiles()) {
+      if (file.isDirectory()) {
+        files.addAll(getAllFilesInDirectoryHelper(file));
+      } else {
+        files.add(file);
+      }
+    }
+    return files;
+  }
+
 
 }

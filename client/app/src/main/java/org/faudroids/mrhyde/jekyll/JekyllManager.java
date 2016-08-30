@@ -8,7 +8,6 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.AbstractNode;
 import org.faudroids.mrhyde.git.DirNode;
 import org.faudroids.mrhyde.git.FileManager;
-import org.faudroids.mrhyde.git.FileNode;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
 
@@ -23,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import rx.Observable;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -44,7 +42,6 @@ public class JekyllManager {
 	private final Context context;
   private final FileUtils fileUtils;
 	private final FileManager fileManager;
-  private final GitManager gitManager;
   private final File dirPosts, dirDrafts;
 
   @Deprecated
@@ -52,91 +49,63 @@ public class JekyllManager {
 		this.context = context;
 		this.fileManager = fileManager;
     this.fileUtils = null;
-    this.gitManager = null;
     this.dirPosts = null;
     this.dirDrafts = null;
-	}
+  }
 
   JekyllManager(Context context, FileUtils fileUtils, GitManager gitManager) {
     this.context = context;
     this.fileUtils = fileUtils;
-    this.gitManager = gitManager;
     this.fileManager = null;
     this.dirPosts = new File(gitManager.getRootDir(), DIR_NAME_POSTS);
     this.dirDrafts = new File(gitManager.getRootDir(), DIR_NAME_DRAFTS);
   }
 
 
-	/**
-	 * Returns all posts sorted by date with the newest first.
-	 */
-	public Observable<List<Post>> getAllPosts() {
-    if (1 == 1) return Observable.just(new ArrayList<>());
-		return fileManager.getTree()
-				.flatMap(new Func1<DirNode, Observable<List<Post>>>() {
-					@Override
-					public Observable<List<Post>> call(DirNode dirNode) {
-						// check if post dir exists
-						List<Post> posts = new ArrayList<>();
-						if (!dirNode.getEntries().containsKey(DIR_NAME_POSTS)) return Observable.just(posts);
+  /**
+   * Returns all posts sorted by date with the newest first.
+   */
+  public Observable<List<Post>> getAllPosts() {
+    if (!dirPosts.exists()) return Observable.just(new ArrayList<>());
 
-						// parse titles
-						List<FileNode> fileNodes = new ArrayList<>();
-						getAllFileNodes((DirNode) dirNode.getEntries().get(DIR_NAME_POSTS), fileNodes);
-						for (FileNode fileNode : fileNodes) {
-							Optional<Post> post = parsePost(fileNode);
-							if (post.isPresent()) posts.add(post.get());
-						}
+    return fileUtils
+        .getAllFilesInDirectory(dirPosts)
+        .map(postFiles -> {
+          // parse titles
+          List<Post> posts = new ArrayList<>();
+          for (File postFile : postFiles) {
+            Optional<Post> post = parsePost(postFile);
+            if (post.isPresent()) posts.add(post.get());
+          }
 
-						// sort by date
-						Collections.sort(posts);
-						Collections.reverse(posts);
-
-						return Observable.just(posts);
-					}
-				});
-	}
+          // sort by date
+          Collections.sort(posts);
+          Collections.reverse(posts);
+          return posts;
+        });
+  }
 
 
 	/**
 	 * Returns all drafts sorted by title.
 	 */
 	public Observable<List<Draft>> getAllDrafts() {
-    if (1 == 1) return Observable.just(new ArrayList<>());
-		return fileManager.getTree()
-				.flatMap(new Func1<DirNode, Observable<List<Draft>>>() {
-					@Override
-					public Observable<List<Draft>> call(DirNode dirNode) {
-						// check if drafts dir exists
-						List<Draft> drafts = new ArrayList<>();
-						if (!dirNode.getEntries().containsKey(DIR_NAME_DRAFTS)) return Observable.just(drafts);
+    if (!dirDrafts.exists()) return Observable.just(new ArrayList<>());
 
-						// parse titles
-						List<FileNode> fileNodes = new ArrayList<>();
-						getAllFileNodes((DirNode) dirNode.getEntries().get(DIR_NAME_DRAFTS), fileNodes);
-						for (FileNode fileNode : fileNodes) {
-							Optional<Draft> draft = parseDraft((FileNode) fileNode);
-							if (draft.isPresent()) drafts.add(draft.get());
-						}
+    return fileUtils
+        .getAllFilesInDirectory(dirDrafts)
+        .map(draftFiles -> {
+          // parse titles
+          List<Draft> drafts = new ArrayList<>();
+          for (File draftFile : draftFiles) {
+            Optional<Draft> draft = parseDraft(draftFile);
+            if (draft.isPresent()) drafts.add(draft.get());
+          }
 
-						// sort by title
-						Collections.sort(drafts);
-
-						return Observable.just(drafts);
-					}
-				});
-	}
-
-
-	private void getAllFileNodes(DirNode dirNode, List<FileNode> fileNodes) {
-		// parse titles
-		for (AbstractNode childNode : dirNode.getEntries().values()) {
-			if (childNode instanceof DirNode) {
-				getAllFileNodes((DirNode) childNode, fileNodes);
-			} else if (childNode instanceof FileNode) {
-				fileNodes.add((FileNode) childNode);
-			}
-		}
+          // sort by title
+          Collections.sort(drafts);
+          return drafts;
+        });
 	}
 
 
@@ -207,23 +176,15 @@ public class JekyllManager {
 		final String postTitle = postTitleToFilename(draft.getTitle());
 		return fileManager.getTree()
 				// move draft
-				.flatMap(new Func1<DirNode, Observable<FileNode>>() {
-					@Override
-					public Observable<FileNode> call(DirNode rootDir) {
-						DirNode postsDir = assertDir(rootDir, DIR_NAME_POSTS);
-						return fileManager.moveFile(draft.getFileNode(), postsDir, postTitle);
-					}
-				})
+				.flatMap(rootDir -> {
+          DirNode postsDir = assertDir(rootDir, DIR_NAME_POSTS);
+          return fileManager.moveFile(draft.getFileNode(), postsDir, postTitle);
+        })
 				// create post object
-				.flatMap(new Func1<FileNode, Observable<Post>>() {
-					@Override
-					public Observable<Post> call(FileNode newNode) {
-						return Observable.just(new Post(
-								postTitle,
-								Calendar.getInstance().getTime(),
-								newNode));
-					}
-				});
+				.flatMap(newNode -> Observable.just(new Post(
+            postTitle,
+            Calendar.getInstance().getTime(),
+            newNode)));
 	}
 
 
@@ -235,20 +196,12 @@ public class JekyllManager {
 		final String draftTitle = draftTitleToFilename(post.getTitle());
 		return fileManager.getTree()
 				// move draft
-				.flatMap(new Func1<DirNode, Observable<FileNode>>() {
-					@Override
-					public Observable<FileNode> call(DirNode rootDir) {
-						DirNode draftsDir = assertDir(rootDir, DIR_NAME_DRAFTS);
-						return fileManager.moveFile(post.getFileNode(), draftsDir, draftTitle);
-					}
-				})
+				.flatMap(rootDir -> {
+          DirNode draftsDir = assertDir(rootDir, DIR_NAME_DRAFTS);
+          return fileManager.moveFile(post.getFileNode(), draftsDir, draftTitle);
+        })
 				// create draft object
-				.flatMap(new Func1<FileNode, Observable<Draft>>() {
-					@Override
-					public Observable<Draft> call(FileNode newNode) {
-						return Observable.just(new Draft(draftTitle, newNode));
-					}
-				});
+				.flatMap(newNode -> Observable.just(new Draft(draftTitle, newNode)));
 	}
 
 
@@ -300,16 +253,6 @@ public class JekyllManager {
 		fileManager.resetRepository();
 	}
 
-
-  @Deprecated
-  public Optional<Post> parsePost(FileNode node) {
-    return Optional.absent();
-  }
-
-  @Deprecated
-  public Optional<Draft> parseDraft(FileNode node) {
-    return Optional.absent();
-  }
 
 	/**
 	 * Tries reading one particular file as a post.
