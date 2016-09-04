@@ -11,10 +11,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.eclipse.jgit.api.Status;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileManagerFactory;
+import org.faudroids.mrhyde.git.GitManager;
+import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -25,14 +28,12 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.functions.Action1;
 import timber.log.Timber;
 
 public final class CommitActivity extends AbstractActionBarActivity {
@@ -60,6 +61,8 @@ public final class CommitActivity extends AbstractActionBarActivity {
 
 	@BindView(R.id.commit_button) protected Button commitButton;
 
+  @Inject GitManagerFactory gitManagerFactory;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,28 +75,38 @@ public final class CommitActivity extends AbstractActionBarActivity {
 		changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
 		final GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
 		final FileManager fileManager = fileManagerFactory.createFileManager(repository);
+    final GitManager gitManager = gitManagerFactory.openRepository(repository);
 
 		// load file content
 		compositeSubscription.add(Observable.zip(
-				fileManager.getChangedFiles(),
-				fileManager.getDeletedFiles(),
-				fileManager.getDiff(),
-        (changedFiles, deletedFiles, diff) -> new Change(changedFiles, deletedFiles, diff))
+        gitManager.status(),
+				gitManager.diff(),
+        (status, diff) -> new Change(status, diff))
 				.compose(new DefaultTransformer<Change>())
 				.subscribe(change -> {
-          // updated changed files list
-          List<String> filesList = new ArrayList<>();
-          filesList.addAll(change.changedFiles);
-          for (String deletedFile : change.deletedFiles)
-            filesList.add(getString(R.string.commit_deleted, deletedFile));
-          Collections.sort(filesList);
+          Status status = change.status;
 
+          // changed files, not including deleted files
+          List<String> changedFiles = new ArrayList<>();
+          changedFiles.addAll(status.getUncommittedChanges());
+          changedFiles.addAll(status.getUntracked());
+          changedFiles.addAll(status.getUntrackedFolders());
+          changedFiles.removeAll(status.getMissing());
+
+          // get deleted files and add 'deleted' flag
+          List<String> deleteFiles = new ArrayList<>(status.getMissing());
+          for (String deletedFile : deleteFiles) {
+            changedFiles.add(getString(R.string.commit_deleted, deletedFile));
+          }
+          Collections.sort(changedFiles);
+
+          // build final human readable change string
           StringBuilder builder = new StringBuilder();
-          for (String file : filesList) {
+          for (String file : changedFiles) {
             builder.append(file).append('\n');
           }
           changedFilesView.setText(builder.toString());
-          changedFilesTitleView.setText(getString(R.string.commit_changed_files, String.valueOf(filesList.size())));
+          changedFilesTitleView.setText(getString(R.string.commit_changed_files, String.valueOf(changedFiles.size())));
 
           // update diff
           diffView.setText(change.diff);
@@ -107,18 +120,14 @@ public final class CommitActivity extends AbstractActionBarActivity {
       String commitMessage = messageView.getText().toString();
       if ("".equals(commitMessage)) commitMessage = messageView.getHint().toString();
 
-      uiUtils.showSpinner(spinnerContainerView, spinnerImageView);
-      compositeSubscription.add(fileManager.commit(commitMessage)
+      compositeSubscription.add(gitManager.commitAllChanges(commitMessage)
           .compose(new DefaultTransformer<Void>())
-          .subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void nothing) {
-              hideSpinner();
-              Timber.d("commit success");
-              setResult(RESULT_OK);
-              Toast.makeText(CommitActivity.this, getString(R.string.commit_success), Toast.LENGTH_LONG).show();
-              finish();
-            }
+          .subscribe(nothing -> {
+            hideSpinner();
+            Timber.d("commit success");
+            setResult(RESULT_OK);
+            Toast.makeText(CommitActivity.this, getString(R.string.commit_success), Toast.LENGTH_LONG).show();
+            finish();
           }, new ErrorActionBuilder()
               .add(new DefaultErrorAction(CommitActivity.this, "failed to commit"))
               .add(new HideSpinnerAction(CommitActivity.this))
@@ -126,24 +135,9 @@ public final class CommitActivity extends AbstractActionBarActivity {
     });
 
 		// setup expand buttons
-		changedFilesTitleView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				toggleExpand(changedFilesExpandButton, changedFilesView);
-			}
-		});
-		diffTitleView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				toggleExpand(diffExpandButton, diffView);
-			}
-		});
-		messageTitleView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				toggleExpand(messageExpandButton, messageView);
-			}
-		});
+		changedFilesTitleView.setOnClickListener(v -> toggleExpand(changedFilesExpandButton, changedFilesView));
+		diffTitleView.setOnClickListener(v -> toggleExpand(diffExpandButton, diffView));
+		messageTitleView.setOnClickListener(v -> toggleExpand(messageExpandButton, messageView));
 
 		// restore expansions
 		if (savedInstanceState != null) {
@@ -241,12 +235,11 @@ public final class CommitActivity extends AbstractActionBarActivity {
 
 	private static class Change {
 
-		private final Set<String> changedFiles, deletedFiles;
+    private final Status status;
 		private final String diff;
 
-		public Change(Set<String> changedFiles, Set<String> deletedFiles, String diff) {
-			this.changedFiles = changedFiles;
-			this.deletedFiles = deletedFiles;
+		public Change(Status status, String diff) {
+      this.status = status;
 			this.diff = diff;
 		}
 
