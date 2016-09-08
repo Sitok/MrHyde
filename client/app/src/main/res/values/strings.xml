@@ -29,6 +29,8 @@
     <string name="action_move">Move to …</string>
     <string name="action_clone">Clone repositoryt</string>
     <string name="action_commit">Commit</string>
+    <string name="action_pull">Pull</string>
+    <string name="action_push">Push</string>
     <string name="action_preview">Preview</string>
     <string name="action_delete_repo">Delete local repository</string>
     <string name="action_close">Close</string>
@@ -133,6 +135,8 @@
     <string name="commit_message_default">Mr Hyde was here …</string>
     <string name="commit_action">Commit</string>
     <string name="commit_success">Commit success</string>
+    <string name="push_success">Push successful</string>
+    <string name="pull_success">Pull successful</string>
 
     <string name="version">Version</string>
     <string name="about">About</string>

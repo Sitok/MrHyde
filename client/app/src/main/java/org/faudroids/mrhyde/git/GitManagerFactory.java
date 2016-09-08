@@ -27,19 +27,25 @@ public class GitManagerFactory {
   private final Context context;
   private final LoginManager loginManager;
   private final FileUtils fileUtils;
+  private final GitCommandAuthAdapter gitCommandAuthAdapter;
 
   @Inject
-  public GitManagerFactory(Context context, LoginManager loginManager, FileUtils fileUtils) {
+  public GitManagerFactory(
+      Context context,
+      LoginManager loginManager,
+      FileUtils fileUtils,
+      GitCommandAuthAdapter gitCommandAuthAdapter) {
     this.context = context;
     this.loginManager = loginManager;
     this.fileUtils = fileUtils;
+    this.gitCommandAuthAdapter = gitCommandAuthAdapter;
   }
 
   public GitManager openRepository(@NonNull final GitHubRepository repository) {
     try {
       File rootDir = getRepoRootDir(repository);
       Git client = Git.open(rootDir);
-      return new GitManager(repository, client, rootDir, fileUtils);
+      return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
     } catch (IOException e) {
       Timber.e(e, "Failed to open local git repository");
       return null;
@@ -48,17 +54,13 @@ public class GitManagerFactory {
 
   public Observable<GitManager> cloneRepository(@NonNull GitHubRepository repository) {
     return ObservableUtils.fromSynchronousCall(() -> {
-      String cloneUrl = "https://"
-          + loginManager.getAccount().getAccessToken()
-          + ":x-oauth-basic@"
-          + repository.getCloneUrl().replaceFirst("https://", "");
       File rootDir = getRepoRootDir(repository);
-      Git client = Git
+      Git client = gitCommandAuthAdapter.wrap(Git
           .cloneRepository()
-          .setURI(cloneUrl)
-          .setDirectory(rootDir)
+          .setURI(repository.getCloneUrl())
+          .setDirectory(rootDir))
           .call();
-      return new GitManager(repository, client, rootDir, fileUtils);
+      return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
     });
   }
 

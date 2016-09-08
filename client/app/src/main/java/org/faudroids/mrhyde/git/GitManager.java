@@ -17,6 +17,7 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -36,16 +37,22 @@ public class GitManager {
   private final Git gitClient;
   private final File rootDir;
   private final FileUtils fileUtils;
+  private final GitCommandAuthAdapter gitCommandAuthAdapter;
+  private final LoginManager loginManager;
 
   public GitManager(
       @NonNull GitHubRepository repository,
       @NonNull Git gitClient,
       @NonNull File rootDir,
-      @NonNull FileUtils fileUtils) {
+      @NonNull FileUtils fileUtils,
+      @NonNull GitCommandAuthAdapter gitCommandAuthAdapter,
+      @NonNull LoginManager loginManager) {
     this.repository = repository;
     this.gitClient = gitClient;
     this.rootDir = rootDir;
     this.fileUtils = fileUtils;
+    this.gitCommandAuthAdapter = gitCommandAuthAdapter;
+    this.loginManager = loginManager;
   }
 
 
@@ -60,7 +67,11 @@ public class GitManager {
   public Observable<Void> commitAllChanges(String commitMsg) {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
       gitClient.add().addFilepattern(".").call();
-      gitClient.commit().setMessage(commitMsg).call();
+      gitClient
+          .commit()
+          .setMessage(commitMsg)
+          .setCommitter(loginManager.getAccount().getLogin(), loginManager.getAccount().getEmail())
+          .call();
       return null;
     });
   }
@@ -85,14 +96,14 @@ public class GitManager {
 
   public Observable<Void> pull() {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-      gitClient.pull().call();
+      gitCommandAuthAdapter.wrap(gitClient.pull()).call();
       return null;
     });
   }
 
   public Observable<Void> push() {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-      gitClient.push().call();
+      gitCommandAuthAdapter.wrap(gitClient.push()).call();
       return null;
     });
   }

@@ -320,6 +320,46 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 				startActivity(intentFactory.createPreviewIntent(repository));
 				return true;
 
+      case R.id.action_push:
+        showSpinner();
+        compositeSubscription.add(gitManager.push()
+            .compose(new DefaultTransformer<>())
+            .subscribe(aVoid -> {
+                  hideSpinner();
+                  Toast.makeText(
+                      RepoOverviewActivity.this,
+                      getString(R.string.push_success),
+                      Toast.LENGTH_SHORT
+                  ).show();
+                },
+                new ErrorActionBuilder()
+                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to push changes"))
+                    .add(new HideSpinnerAction(RepoOverviewActivity.this))
+                    .build()
+            )
+        );
+        return true;
+
+      case R.id.action_pull:
+        showSpinner();
+        compositeSubscription.add(gitManager.pull()
+            .compose(new DefaultTransformer<>())
+            .subscribe(aVoid -> {
+                  hideSpinner();
+                  Toast.makeText(
+                      RepoOverviewActivity.this,
+                      getString(R.string.pull_success),
+                      Toast.LENGTH_SHORT
+                  ).show();
+                },
+                new ErrorActionBuilder()
+                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to pull changes"))
+                    .add(new HideSpinnerAction(RepoOverviewActivity.this))
+                    .build()
+            )
+        );
+        return true;
+
       case R.id.action_delete_repo:
 				new AlertDialog.Builder(this)
 						.setTitle(R.string.delete_repo_title)
