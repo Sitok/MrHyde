@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 
@@ -65,15 +67,29 @@ public class GitManager {
   }
 
   public Observable<Void> commitAllChanges(String commitMsg) {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-      gitClient.add().addFilepattern(".").call();
-      gitClient
-          .commit()
-          .setMessage(commitMsg)
-          .setCommitter(loginManager.getAccount().getLogin(), loginManager.getAccount().getEmail())
-          .call();
-      return null;
-    });
+    return status()
+        .flatMap(status -> ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+          // remove git "missing" files (jgit does not have a "git add --all" option)
+          Set<String> removedFileNames = status.getMissing();
+          if (removedFileNames.size() > 0) {
+            RmCommand rmCommand = gitClient.rm();
+            for (String removedFileName : removedFileNames) {
+              rmCommand = rmCommand.addFilepattern(removedFileName);
+            }
+            rmCommand.call();
+          }
+
+          // add all changed (!= deleted) files
+          gitClient.add().addFilepattern(".").call();
+
+          // commit
+          gitClient
+              .commit()
+              .setMessage(commitMsg)
+              .setCommitter(loginManager.getAccount().getLogin(), loginManager.getAccount().getEmail())
+              .call();
+          return null;
+        }));
   }
 
   public Observable<List<String>> log() {
