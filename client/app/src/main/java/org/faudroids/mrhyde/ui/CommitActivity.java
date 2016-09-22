@@ -7,15 +7,13 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.eclipse.jgit.api.Status;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.FileManager;
-import org.faudroids.mrhyde.git.FileManagerFactory;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
@@ -38,52 +36,52 @@ import timber.log.Timber;
 
 public final class CommitActivity extends AbstractActionBarActivity {
 
-	static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
+  static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
 
-	private static final String
-			STATE_FILES_EXPAND = "STATE_FILES_EXPAND",
-			STATE_DIFF_EXPAND = "STATE_DIFF_EXPAND",
-			STATE_MESSAGE_EXPAND = "STATE_MESSAGE_EXPAND";
+  private static final String
+      STATE_FILES_EXPAND = "STATE_FILES_EXPAND",
+      STATE_DIFF_EXPAND = "STATE_DIFF_EXPAND",
+      STATE_MESSAGE_EXPAND = "STATE_MESSAGE_EXPAND";
 
-	@Inject FileManagerFactory fileManagerFactory;
+  @BindView(R.id.changed_files_layout) protected View changedFilesLayout;
+  @BindView(R.id.changed_files_expand) protected ImageView changedFilesExpandButton;
+  @BindView(R.id.changed_files_title) protected TextView changedFilesTitleView;
+  @BindView(R.id.changed_files) protected TextView changedFilesView;
 
-	@BindView(R.id.changed_files_expand) protected ImageButton changedFilesExpandButton;
-	@BindView(R.id.changed_files_title) protected TextView changedFilesTitleView;
-	@BindView(R.id.changed_files) protected TextView changedFilesView;
+  @BindView(R.id.diff_layout) protected View diffLayout;
+  @BindView(R.id.diff_expand) protected ImageView diffExpandButton;
+  @BindView(R.id.diff_title) protected TextView diffTitleView;
+  @BindView(R.id.diff) protected TextView diffView;
 
-	@BindView(R.id.diff_expand) protected ImageButton diffExpandButton;
-	@BindView(R.id.diff_title) protected TextView diffTitleView;
-	@BindView(R.id.diff) protected TextView diffView;
+  @BindView(R.id.message_layout) protected View messageLayout;
+  @BindView(R.id.message_expand) protected ImageView messageExpandButton;
+  @BindView(R.id.message_title) protected TextView messageTitleView;
+  @BindView(R.id.message) protected EditText messageView;
 
-	@BindView(R.id.message_expand) protected ImageButton messageExpandButton;
-	@BindView(R.id.message_title) protected TextView messageTitleView;
-	@BindView(R.id.message) protected  EditText messageView;
-
-	@BindView(R.id.commit_button) protected Button commitButton;
+  @BindView(R.id.commit_button) protected Button commitButton;
 
   @Inject GitManagerFactory gitManagerFactory;
 
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
     ((MrHydeApp) getApplication()).getComponent().inject(this);
-		super.onCreate(savedInstanceState);
+    super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_commit);
     ButterKnife.bind(this);
 
-		setTitle(getString(R.string.title_commit));
-		changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
-		final GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-		final FileManager fileManager = fileManagerFactory.createFileManager(repository);
+    setTitle(getString(R.string.title_commit));
+    changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
+    final GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     final GitManager gitManager = gitManagerFactory.openRepository(repository);
 
-		// load file content
-		compositeSubscription.add(Observable.zip(
+    // load file content
+    compositeSubscription.add(Observable.zip(
         gitManager.status(),
-				gitManager.diff(),
+        gitManager.diff(),
         (status, diff) -> new Change(status, diff))
-				.compose(new DefaultTransformer<Change>())
-				.subscribe(change -> {
+        .compose(new DefaultTransformer<Change>())
+        .subscribe(change -> {
           Status status = change.status;
 
           // changed files, not including deleted files
@@ -111,11 +109,11 @@ public final class CommitActivity extends AbstractActionBarActivity {
           // update diff
           diffView.setText(change.diff);
         }, new ErrorActionBuilder()
-						.add(new DefaultErrorAction(this, "failed to load git changes"))
-						.build()));
+            .add(new DefaultErrorAction(this, "failed to load git changes"))
+            .build()));
 
-		// setup commit button
-		commitButton.setOnClickListener(v -> {
+    // setup commit button
+    commitButton.setOnClickListener(v -> {
       showSpinner();
       String commitMessage = messageView.getText().toString();
       if ("".equals(commitMessage)) commitMessage = messageView.getHint().toString();
@@ -134,115 +132,113 @@ public final class CommitActivity extends AbstractActionBarActivity {
               .build()));
     });
 
-		// setup expand buttons
-		changedFilesTitleView.setOnClickListener(v -> toggleExpand(changedFilesExpandButton, changedFilesView));
-		diffTitleView.setOnClickListener(v -> toggleExpand(diffExpandButton, diffView));
-		messageTitleView.setOnClickListener(v -> toggleExpand(messageExpandButton, messageView));
+    // setup expand buttons
+    changedFilesLayout.setOnClickListener(v -> toggleExpand(changedFilesExpandButton, changedFilesView));
+    diffLayout.setOnClickListener(v -> toggleExpand(diffExpandButton, diffView));
+    messageLayout.setOnClickListener(v -> toggleExpand(messageExpandButton, messageView));
 
-		// restore expansions
-		if (savedInstanceState != null) {
-			if (savedInstanceState.getBoolean(STATE_FILES_EXPAND)) {
-				changedFilesView.setVisibility(View.VISIBLE);
-				changedFilesExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
-			}
-			if (savedInstanceState.getBoolean(STATE_DIFF_EXPAND)) {
-				diffView.setVisibility(View.VISIBLE);
-				diffExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
-			}
-			if (savedInstanceState.getBoolean(STATE_MESSAGE_EXPAND)) {
-				messageView.setVisibility(View.VISIBLE);
-				messageExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
-			}
-		}
-	}
-
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putBoolean(STATE_FILES_EXPAND, changedFilesView.getVisibility() != View.GONE);
-		outState.putBoolean(STATE_DIFF_EXPAND, diffView.getVisibility() != View.GONE);
-		outState.putBoolean(STATE_MESSAGE_EXPAND, messageView.getVisibility() != View.GONE);
-	}
+    // restore expansions
+    if (savedInstanceState != null) {
+      if (savedInstanceState.getBoolean(STATE_FILES_EXPAND)) {
+        changedFilesView.setVisibility(View.VISIBLE);
+        changedFilesExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
+      }
+      if (savedInstanceState.getBoolean(STATE_DIFF_EXPAND)) {
+        diffView.setVisibility(View.VISIBLE);
+        diffExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
+      }
+      if (savedInstanceState.getBoolean(STATE_MESSAGE_EXPAND)) {
+        messageView.setVisibility(View.VISIBLE);
+        messageExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
+      }
+    }
+  }
 
 
-	private void toggleExpand(ImageButton button, View targetView) {
-		if (targetView.getVisibility() == View.GONE) {
-			expandView(targetView);
-			button.setBackgroundResource(R.drawable.ic_expand_less);
-		} else {
-			collapseView(targetView);
-			button.setBackgroundResource(R.drawable.ic_expand_more);
-		}
-	}
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putBoolean(STATE_FILES_EXPAND, changedFilesView.getVisibility() != View.GONE);
+    outState.putBoolean(STATE_DIFF_EXPAND, diffView.getVisibility() != View.GONE);
+    outState.putBoolean(STATE_MESSAGE_EXPAND, messageView.getVisibility() != View.GONE);
+  }
 
 
-	/* Thanks to http://stackoverflow.com/a/13381228 */
-	private void expandView(final View v) {
-		v.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		final int targetHeight = v.getMeasuredHeight();
-
-		v.getLayoutParams().height = 0;
-		v.setVisibility(View.VISIBLE);
-		Animation a = new Animation()
-		{
-			@Override
-			protected void applyTransformation(float interpolatedTime, Transformation t) {
-				v.getLayoutParams().height = interpolatedTime == 1
-						? LayoutParams.WRAP_CONTENT
-						: (int)(targetHeight * interpolatedTime);
-				v.requestLayout();
-			}
-
-			@Override
-			public boolean willChangeBounds() {
-				return true;
-			}
-		};
-
-		// 1dp/ms
-		a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-		v.startAnimation(a);
-	}
+  private void toggleExpand(ImageView button, View targetView) {
+    if (targetView.getVisibility() == View.GONE) {
+      expandView(targetView);
+      button.setBackgroundResource(R.drawable.ic_expand_less);
+    } else {
+      collapseView(targetView);
+      button.setBackgroundResource(R.drawable.ic_expand_more);
+    }
+  }
 
 
-	private void collapseView(final View v) {
-		final int initialHeight = v.getMeasuredHeight();
+  /* Thanks to http://stackoverflow.com/a/13381228 */
+  private void expandView(final View v) {
+    v.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+    final int targetHeight = v.getMeasuredHeight();
 
-		Animation a = new Animation()
-		{
-			@Override
-			protected void applyTransformation(float interpolatedTime, Transformation t) {
-				if(interpolatedTime == 1){
-					v.setVisibility(View.GONE);
-				}else{
-					v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
-					v.requestLayout();
-				}
-			}
+    v.getLayoutParams().height = 0;
+    v.setVisibility(View.VISIBLE);
+    Animation a = new Animation() {
+      @Override
+      protected void applyTransformation(float interpolatedTime, Transformation t) {
+        v.getLayoutParams().height = interpolatedTime == 1
+            ? LayoutParams.WRAP_CONTENT
+            : (int) (targetHeight * interpolatedTime);
+        v.requestLayout();
+      }
 
-			@Override
-			public boolean willChangeBounds() {
-				return true;
-			}
-		};
+      @Override
+      public boolean willChangeBounds() {
+        return true;
+      }
+    };
 
-		// 1dp/ms
-		a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
-		v.startAnimation(a);
-	}
+    // 1dp/ms
+    a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+    v.startAnimation(a);
+  }
 
 
-	private static class Change {
+  private void collapseView(final View v) {
+    final int initialHeight = v.getMeasuredHeight();
+
+    Animation a = new Animation() {
+      @Override
+      protected void applyTransformation(float interpolatedTime, Transformation t) {
+        if (interpolatedTime == 1) {
+          v.setVisibility(View.GONE);
+        } else {
+          v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
+          v.requestLayout();
+        }
+      }
+
+      @Override
+      public boolean willChangeBounds() {
+        return true;
+      }
+    };
+
+    // 1dp/ms
+    a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+    v.startAnimation(a);
+  }
+
+
+  private static class Change {
 
     private final Status status;
-		private final String diff;
+    private final String diff;
 
-		public Change(Status status, String diff) {
+    public Change(Status status, String diff) {
       this.status = status;
-			this.diff = diff;
-		}
+      this.diff = diff;
+    }
 
-	}
+  }
 
 }

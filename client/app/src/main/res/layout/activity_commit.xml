@@ -27,10 +27,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/card_vertical_margin"
                 android:layout_marginBottom="@dimen/card_vertical_margin"
-                android:clickable="true"
                 >
 
                 <RelativeLayout
+                    android:id="@+id/changed_files_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="15dp"
@@ -39,7 +39,7 @@
                     android:focusable="true"
                     >
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/changed_files_expand"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -80,6 +80,7 @@
                 >
 
                 <RelativeLayout
+                    android:id="@+id/diff_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="15dp"
@@ -88,7 +89,7 @@
                     android:focusable="true"
                     >
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/diff_expand"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -130,6 +131,7 @@
                 >
 
                 <RelativeLayout
+                    android:id="@+id/message_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="15dp"
@@ -138,7 +140,7 @@
                     android:focusable="true"
                     >
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/message_expand"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
