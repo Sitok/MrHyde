@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
@@ -97,10 +98,13 @@ public abstract class AbstractReposFragment extends AbstractFragment {
               }
 
               // clone repo
-              new AlertDialog.Builder(getActivity())
-                  .setTitle(getActivity().getString(R.string.clone_repo_title))
-                  .setMessage(getActivity().getString(R.string.clone_repo_message))
-                  .setPositiveButton(R.string.clone_repo_confirm, (dialog, which) -> {
+              new MaterialDialog
+                  .Builder(getActivity())
+                  .title(R.string.clone_repo_title)
+                  .content(R.string.clone_repo_message)
+                  .positiveText(R.string.clone_repo_confirm)
+                  .negativeText(android.R.string.cancel)
+                  .onPositive((dialog, which) -> {
                     showSpinner();
                     gitManagerFactory
                         .cloneRepository(repository)
@@ -113,7 +117,6 @@ public abstract class AbstractReposFragment extends AbstractFragment {
                                 .build()
                         );
                   })
-                  .setNegativeButton(android.R.string.cancel, null)
                   .show();
             },
             new ErrorActionBuilder()

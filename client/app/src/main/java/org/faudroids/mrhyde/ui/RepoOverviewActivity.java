@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.common.base.Optional;
@@ -110,6 +110,9 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
     gitManager = gitManagerFactory.openRepository(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 		setTitle(repository.getName());
+
+    // check for empty repos
+    if (!this.assertRepoNotEmpty()) return;
 
     // setup posts lists
     postsListAdapter = new PostsListAdapter(this);
@@ -361,10 +364,12 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
         return true;
 
       case R.id.action_delete_repo:
-				new AlertDialog.Builder(this)
-						.setTitle(R.string.delete_repo_title)
-						.setMessage(R.string.delete_repo_message)
-						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+        new MaterialDialog.Builder(this)
+            .title(R.string.delete_repo_title)
+            .content(R.string.delete_repo_message)
+            .positiveText(R.string.delete_repo_confirm)
+            .negativeText(android.R.string.cancel)
+            .onPositive((dialog, which) -> {
               showSpinner();
               gitManager
                   .deleteAllLocalContent()
@@ -377,32 +382,52 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
                           .build()
                   );
             })
-						.setNegativeButton(android.R.string.cancel, null)
-						.show();
+            .show();
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
   }
 
 
+  /**
+   * @return true if the repo is NOT empty, false otherwise.
+   */
+  private boolean assertRepoNotEmpty() {
+    // check for empty repository
+    File rootDir = gitManager.getRootDir();
+    if (rootDir.listFiles().length > 1
+        || !(rootDir.listFiles().length == 1 && rootDir.listFiles()[0].getName().equals(".git"))) {
+      return true;
+    }
+
+    new MaterialDialog.Builder(this)
+        .title(R.string.error_empty_repo_title)
+        .content(R.string.error_empty_repo_message)
+        .positiveText(android.R.string.ok)
+        .onAny((dialog, which) -> finish())
+        .show();
+    return false;
+  }
+
+
   private abstract class AbstractListAdapter<T extends AbstractJekyllContent> extends ArrayAdapter<T> {
 
-		private final int viewResource;
+    private final int viewResource;
 
-		public AbstractListAdapter(Context context, int viewResource) {
-			super(context, viewResource);
-			this.viewResource = viewResource;
-		}
+    public AbstractListAdapter(Context context, int viewResource) {
+      super(context, viewResource);
+      this.viewResource = viewResource;
+    }
 
 
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// get item + view
-			final T item = getItem(position);
-			LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View view = inflater.inflate(viewResource, parent, false);
+    public View getView(int position, View convertView, ViewGroup parent) {
+      // get item + view
+      final T item = getItem(position);
+      LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      View view = inflater.inflate(viewResource, parent, false);
 
-			// setup click to edit
-			view.setOnClickListener(
+      // setup click to edit
+      view.setOnClickListener(
           v -> startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false))
       );
 

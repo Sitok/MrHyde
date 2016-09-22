@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -135,7 +134,6 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
     if (isSpinnerVisible()) {
       menu.findItem(R.id.action_commit).setVisible(false);
       menu.findItem(R.id.action_preview).setVisible(false);
-      menu.findItem(R.id.action_discard_changes).setVisible(false);
     }
     return super.onPrepareOptionsMenu(menu);
   }
@@ -150,18 +148,6 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
       case R.id.action_preview:
         startActivity(intentFactory.createPreviewIntent(repository));
-        return true;
-
-      case R.id.action_discard_changes:
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.delete_repo_title)
-            .setMessage(R.string.delete_repo_message)
-            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-              fileManager.resetRepository();
-              updateTree(null);
-            })
-            .setNegativeButton(android.R.string.cancel, null)
-            .show();
         return true;
     }
     return super.onOptionsItemSelected(item);

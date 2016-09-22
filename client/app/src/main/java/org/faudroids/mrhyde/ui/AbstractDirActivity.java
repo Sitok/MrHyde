@@ -1,7 +1,6 @@
 package org.faudroids.mrhyde.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -100,34 +99,22 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 	 */
 	protected void updateTree(final Bundle savedInstanceState) {
     invalidateOptionsMenu();
-    File rootDir = gitManager.getRootDir();
-
-    // check for empty repository
-    if (rootDir.listFiles().length == 0) {
-      new AlertDialog.Builder(AbstractDirActivity.this)
-          .setTitle(R.string.error_empty_repo_title)
-          .setMessage(R.string.error_empty_repo_message)
-          .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
-          .setOnCancelListener(dialog -> finish())
-          .show();
-      return;
-    }
-
     if (savedInstanceState != null) {
       fileAdapter.onRestoreInstanceState(savedInstanceState);
     } else {
-      fileAdapter.setSelectedDir(rootDir);
+      fileAdapter.setSelectedDir(gitManager.getRootDir());
     }
-	}
+  }
 
 
-	protected FileAdapter createAdapter() {
-		return new FileAdapter(gitManager.getRootDir());
-	}
+  protected FileAdapter createAdapter() {
+    return new FileAdapter(gitManager.getRootDir());
+  }
 
 
-	protected abstract void onDirSelected(File file);
-	protected abstract void onFileSelected(File file);
+  protected abstract void onDirSelected(File file);
+
+  protected abstract void onFileSelected(File file);
 
 
 	protected class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {

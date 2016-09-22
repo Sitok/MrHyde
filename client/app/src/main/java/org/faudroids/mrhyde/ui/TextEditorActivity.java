@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -18,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.faudroids.mrhyde.R;
@@ -244,17 +244,17 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
         returnResult();
 
       } else {
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.save_title)
-            .setMessage(R.string.save_message)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.save_ok), (dialog, which) -> {
+        new MaterialDialog.Builder(this)
+            .title(R.string.save_title)
+            .content(R.string.save_message)
+            .cancelable(false)
+            .positiveText(R.string.save_ok)
+            .onPositive((dialog, which) -> {
               saveFile();
               returnResult();
             })
-            .setNegativeButton(getString(R.string.save_cancel), (dialog, which) -> {
-              returnResult();
-            })
+            .negativeText(R.string.save_cancel)
+            .onNegative((dialog, which) -> returnResult())
             .show();
       }
     } else {
