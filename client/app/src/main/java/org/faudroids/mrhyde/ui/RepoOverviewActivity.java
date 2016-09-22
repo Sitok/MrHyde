@@ -292,7 +292,7 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.repo_overview, menu);
+		inflater.inflate(R.menu.menu_repo_overview, menu);
 		return true;
 	}
 

@@ -159,7 +159,7 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.text_editor, menu);
+    inflater.inflate(R.menu.menu_text_editor, menu);
     return true;
   }
 

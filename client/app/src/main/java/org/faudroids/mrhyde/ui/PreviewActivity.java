@@ -95,7 +95,7 @@ public class PreviewActivity extends AbstractActionBarActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.preview, menu);
+    inflater.inflate(R.menu.menu_preview, menu);
     return true;
   }
 

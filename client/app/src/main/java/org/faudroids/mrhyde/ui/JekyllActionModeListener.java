@@ -46,7 +46,7 @@ class JekyllActionModeListener<T> implements ActionMode.Callback {
 	@Override
 	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 		MenuInflater inflater = mode.getMenuInflater();
-		inflater.inflate(R.menu.posts_drafts_action_mode, menu);
+		inflater.inflate(R.menu.menu_posts_drafts_action_mode, menu);
 		return true;
 	}
 
