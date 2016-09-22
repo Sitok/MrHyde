@@ -108,6 +108,9 @@ public final class CommitActivity extends AbstractActionBarActivity {
 
           // update diff
           diffView.setText(change.diff);
+
+          // enable commit btn if changes are present
+          commitButton.setEnabled(changedFiles.size() > 0);
         }, new ErrorActionBuilder()
             .add(new DefaultErrorAction(this, "failed to load git changes"))
             .build()));
