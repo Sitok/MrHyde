@@ -29,6 +29,7 @@
     <string name="action_move">Move to …</string>
     <string name="action_clone">Clone repositoryt</string>
     <string name="action_commit">Commit</string>
+    <string name="action_remote">Remote</string>
     <string name="action_pull">Pull</string>
     <string name="action_push">Push</string>
     <string name="action_preview">Preview</string>
