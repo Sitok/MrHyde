@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.git.FileManager;
-import org.faudroids.mrhyde.git.FileManagerFactory;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
@@ -46,9 +44,7 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 
   @Inject GitManagerFactory gitManagerFactory;
   protected GitManager gitManager;
-	@Inject FileManagerFactory fileManagerFactory;
 	protected GitHubRepository repository;
-	protected FileManager fileManager;
 	@Inject protected NodeUtils nodeUtils;
 	@Inject protected FileUtils fileUtils;
 
@@ -63,7 +59,6 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
 
 		// get arguments
 		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-		fileManager = fileManagerFactory.createFileManager(repository);
     gitManager = gitManagerFactory.openRepository(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 

@@ -5,7 +5,6 @@ import android.content.Context;
 import com.google.common.base.Optional;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
@@ -41,22 +40,11 @@ public class JekyllManager {
 
   private final Context context;
   private final FileUtils fileUtils;
-  private final FileManager fileManager;
   private final File dirPosts, dirDrafts;
-
-  @Deprecated
-  JekyllManager(Context context, FileManager fileManager) {
-    this.context = context;
-    this.fileManager = fileManager;
-    this.fileUtils = null;
-    this.dirPosts = null;
-    this.dirDrafts = null;
-  }
 
   JekyllManager(Context context, FileUtils fileUtils, GitManager gitManager) {
     this.context = context;
     this.fileUtils = fileUtils;
-    this.fileManager = null;
     this.dirPosts = new File(gitManager.getRootDir(), DIR_NAME_POSTS);
     this.dirDrafts = new File(gitManager.getRootDir(), DIR_NAME_DRAFTS);
   }
