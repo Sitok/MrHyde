@@ -15,7 +15,7 @@ import butterknife.BindView;
 import rx.subscriptions.CompositeSubscription;
 
 
-public abstract class AbstractActionBarActivity extends AppCompatActivity {
+public abstract class AbstractActivity extends AppCompatActivity {
 
 	protected final CompositeSubscription compositeSubscription = new CompositeSubscription();
 	@Inject protected UiUtils uiUtils;

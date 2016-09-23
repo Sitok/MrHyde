@@ -18,7 +18,7 @@ import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.PreviewManager;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class PreviewActivity extends AbstractActionBarActivity {
+public class PreviewActivity extends AbstractActivity {
 
   private static final String STATE_URL = "STATE_URL";
 

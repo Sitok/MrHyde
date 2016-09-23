@@ -21,7 +21,7 @@ import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.ui.utils.DividerItemDecoration;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 import rx.Observable;
 
 abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparable<T>>
-    extends AbstractActionBarActivity
+    extends AbstractActivity
     implements JekyllActionModeListener.ActionSelectionListener<T> {
 
   private static final int REQUEST_COMMIT = 42;

@@ -23,7 +23,7 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.github.GitHubRepository;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.ui.utils.UndoRedoEditText;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -40,7 +40,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public final class TextEditorActivity extends AbstractActionBarActivity {
+public final class TextEditorActivity extends AbstractActivity {
 
   private static final int EDITOR_MAX_HISTORY = 100;
 

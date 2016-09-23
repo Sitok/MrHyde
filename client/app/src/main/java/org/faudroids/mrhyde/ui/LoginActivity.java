@@ -23,7 +23,7 @@ import org.faudroids.mrhyde.github.GitHubAuthApi;
 import org.faudroids.mrhyde.github.GitHubEmailsApi;
 import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.github.TokenDetails;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
@@ -46,7 +46,7 @@ import rx.functions.Func1;
 import timber.log.Timber;
 
 
-public final class LoginActivity extends AbstractActionBarActivity {
+public final class LoginActivity extends AbstractActivity {
 
 	private static final String STATE_LOGIN_RUNNING = "STATE_LOGIN_RUNNING";
 	private static final String GITHUB_LOGIN_STATE = UUID.randomUUID().toString();

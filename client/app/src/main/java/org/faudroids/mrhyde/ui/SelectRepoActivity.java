@@ -6,7 +6,7 @@ import android.os.Bundle;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.github.GitHubRepository;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
@@ -18,7 +18,7 @@ import java.util.Collection;
 import butterknife.ButterKnife;
 import rx.Observable;
 
-public class SelectRepoActivity extends AbstractActionBarActivity {
+public class SelectRepoActivity extends AbstractActivity {
 
   static final String RESULT_REPOSITORY = "RESULT_REPOSITORY";
 

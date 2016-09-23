@@ -38,7 +38,7 @@ import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
 import org.faudroids.mrhyde.jekyll.Post;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.ui.utils.JekyllUiUtils;
 import org.faudroids.mrhyde.ui.utils.ObservableScrollView;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -57,7 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 
-public final class RepoOverviewActivity extends AbstractActionBarActivity {
+public final class RepoOverviewActivity extends AbstractActivity {
 
 	public static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
 

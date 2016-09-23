@@ -16,7 +16,7 @@ import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.ui.utils.DividerItemDecoration;
 
 import java.io.File;
@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
 /**
  * Shows list of files in a repo and passes click events to sub classes.
  */
-abstract class AbstractDirActivity extends AbstractActionBarActivity {
+abstract class AbstractDirActivity extends AbstractActivity {
 
 	static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY"; // which repo to show
 

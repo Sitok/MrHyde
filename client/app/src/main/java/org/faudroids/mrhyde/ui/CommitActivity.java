@@ -17,7 +17,7 @@ import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 import rx.Observable;
 import timber.log.Timber;
 
-public final class CommitActivity extends AbstractActionBarActivity {
+public final class CommitActivity extends AbstractActivity {
 
   static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
 

@@ -8,14 +8,14 @@ import com.ortiz.touch.TouchImageView;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
+import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 
 import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class ImageViewerActivity extends AbstractActionBarActivity {
+public final class ImageViewerActivity extends AbstractActivity {
 
   static final String
       EXTRA_REPOSITORY = "EXTRA_REPOSITORY",
