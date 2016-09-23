@@ -1,7 +1,6 @@
 package org.faudroids.mrhyde.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -55,9 +54,6 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
       STATE_EDIT_TEXT = "STATE_EDIT_TEXT",
       STATE_EDIT_MODE = "STATE_EDIT_MODE",
       STATE_UNDO_REDO = "STATE_UNDO_REDO";
-
-  private static final int
-      REQUEST_COMMIT = 42;
 
   private static final String
       PREFS_NAME = TextEditorActivity.class.getSimpleName();
@@ -210,11 +206,6 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
         }
         return true;
 
-      case R.id.action_commit:
-        saveFile();
-        startActivityForResult(intentFactory.createCommitIntent(repository), REQUEST_COMMIT);
-        return true;
-
       case R.id.action_preview:
         saveFile();
         startActivity(intentFactory.createPreviewIntent(repository));
@@ -222,17 +213,6 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
 
     }
     return super.onOptionsItemSelected(item);
-  }
-
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    switch (requestCode) {
-      case REQUEST_COMMIT:
-        if (resultCode != RESULT_OK) return;
-        if (isEditMode()) stopEditMode();
-        loadContent(false);
-    }
   }
 
 
