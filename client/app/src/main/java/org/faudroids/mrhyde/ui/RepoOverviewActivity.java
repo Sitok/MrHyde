@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
+import org.faudroids.mrhyde.git.Branch;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubManager;
@@ -46,6 +48,7 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -361,6 +364,57 @@ public final class RepoOverviewActivity extends AbstractActionBarActivity {
                     .build()
             )
         );
+        return true;
+
+      case R.id.action_switch_branch:
+        // show dialog for selecting branch
+        Observable.zip(
+            gitManager.listRemoteTrackingBranches(),
+            gitManager.getCurrentBranchName(),
+            Pair::new
+        )
+            .compose(new DefaultTransformer<>())
+            .subscribe(branchInfo -> {
+
+              // all (remote) branches
+              List<String> branchNames = new ArrayList<String>();
+              for (Branch branch : branchInfo.first) branchNames.add(branch.getDisplayName());
+
+              // current branch
+              int currentBranchIdx = branchNames.indexOf(branchInfo.second);
+
+              Collections.sort(branchNames);
+                  new MaterialDialog
+                      .Builder(this)
+                      .title(R.string.switch_branch_title)
+                      .items(branchNames)
+                      .itemsCallbackSingleChoice(currentBranchIdx, (dialog, itemView, which, text) -> {
+                        // checkout selected branch
+                        Branch selectedBranch = branchInfo.first.get(which);
+                        gitManager
+                            .checkoutBranch(selectedBranch)
+                            .compose(new DefaultTransformer<>())
+                            .subscribe(aVoid -> {
+                                  loadJekyllContent();
+                                  Toast.makeText(
+                                      RepoOverviewActivity.this,
+                                      getString(R.string.switch_branch_success, selectedBranch.getDisplayName()),
+                                      Toast.LENGTH_SHORT)
+                                      .show();
+                                },
+                                new ErrorActionBuilder()
+                                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to checkout branch"))
+                                    .build()
+                            );
+                        return true;
+                      })
+                      .show();
+                },
+                new ErrorActionBuilder()
+                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to list branches"))
+                    .build()
+            );
+
         return true;
 
       case R.id.action_delete_repo:

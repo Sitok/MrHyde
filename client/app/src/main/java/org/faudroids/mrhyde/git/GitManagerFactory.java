@@ -45,7 +45,7 @@ public class GitManagerFactory {
     try {
       File rootDir = getRepoRootDir(repository);
       Git client = Git.open(rootDir);
-      return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
+      return new GitManager(client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
     } catch (IOException e) {
       Timber.e(e, "Failed to open local git repository");
       return null;
@@ -60,7 +60,7 @@ public class GitManagerFactory {
           .setURI(repository.getCloneUrl())
           .setDirectory(rootDir))
           .call();
-      return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
+      return new GitManager(client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
     });
   }
 

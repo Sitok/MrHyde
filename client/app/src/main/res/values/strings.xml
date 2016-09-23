@@ -32,6 +32,7 @@
     <string name="action_remote">Remote</string>
     <string name="action_pull">Pull</string>
     <string name="action_push">Push</string>
+    <string name="action_switch_branch">Swith branch</string>
     <string name="action_preview">Preview</string>
     <string name="action_delete_repo">Delete local repository</string>
     <string name="action_close">Close</string>
@@ -44,6 +45,8 @@
     <string name="clone_repo_title">Clone repository</string>
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
     <string name="clone_repo_confirm">Clone</string>
+
+    <string name="switch_branch_title">Select branch</string>
 
     <string name="select_destination_folder">Select destination folder</string>
     <string name="move">Move</string>
@@ -139,6 +142,7 @@
     <string name="commit_success">Commit success</string>
     <string name="push_success">Push successful</string>
     <string name="pull_success">Pull successful</string>
+    <string name="switch_branch_success">Switched to branch %1$s</string>
 
     <string name="version">Version</string>
     <string name="about">About</string>

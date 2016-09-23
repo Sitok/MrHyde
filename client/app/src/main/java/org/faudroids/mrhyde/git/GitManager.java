@@ -2,11 +2,15 @@ package org.faudroids.mrhyde.git;
 
 import android.support.annotation.NonNull;
 
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -17,7 +21,6 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
-import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
@@ -29,13 +32,13 @@ import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Handles "low level" git operations for a single repository.
  */
 public class GitManager {
 
-  private final GitHubRepository repository;
   private final Git gitClient;
   private final File rootDir;
   private final FileUtils fileUtils;
@@ -43,13 +46,11 @@ public class GitManager {
   private final LoginManager loginManager;
 
   public GitManager(
-      @NonNull GitHubRepository repository,
       @NonNull Git gitClient,
       @NonNull File rootDir,
       @NonNull FileUtils fileUtils,
       @NonNull GitCommandAuthAdapter gitCommandAuthAdapter,
       @NonNull LoginManager loginManager) {
-    this.repository = repository;
     this.gitClient = gitClient;
     this.rootDir = rootDir;
     this.fileUtils = fileUtils;
@@ -101,12 +102,44 @@ public class GitManager {
     });
   }
 
-  public Observable<List<String>> branch() {
+  /**
+   * @return all local (!) remote tracking branches. See http://stackoverflow.com/a/24785777
+   * for a good explanation.
+   */
+  public Observable<List<Branch>> listRemoteTrackingBranches() {
     return ObservableUtils.fromSynchronousCall(() -> {
-      Iterable<Ref> branches = gitClient.branchList().call();
-      List<String> result = new ArrayList<>();
-      for (Ref branch : branches) result.add(branch.getName());
+      Iterable<Ref> branches = gitClient
+          .branchList()
+          .setListMode(ListBranchCommand.ListMode.REMOTE)
+          .call();
+      List<Branch> result = new ArrayList<>();
+      for (Ref ref: branches) result.add(new Branch(ref));
       return result;
+    });
+  }
+
+  /**
+   * @return the display name of this branch without origin.
+   */
+  public Observable<String> getCurrentBranchName() {
+    return ObservableUtils.fromSynchronousCall(() -> gitClient.getRepository().getBranch());
+  }
+
+  public Observable<Void> checkoutBranch(Branch branch) {
+    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+      CheckoutCommand checkoutCommand = gitClient.checkout().setName(branch.getDisplayName());
+
+      try {
+        checkoutCommand.call();
+      } catch (RefNotFoundException e) {
+        Timber.i("Branch not found, creating new one");
+        checkoutCommand
+            .setCreateBranch(true)
+            .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
+            .call();
+      }
+
+      return null;
     });
   }
 
@@ -179,16 +212,4 @@ public class GitManager {
     return parser;
   }
 
-  public Observable<Void> checkoutBranch(String branchName) {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-      gitClient.checkout().setName(branchName).call();
-      return null;
-    });
-  }
-
-  /*
-  public static String refToBranchName(String ref) {
-    return ref.replace("refs/master/", "");
-  }
-  */
 }

@@ -37,6 +37,13 @@
     </item>
 
     <item
+        android:id="@+id/action_switch_branch"
+        android:title="@string/action_switch_branch"
+        android:icon="@drawable/ic_branch_white"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@+id/action_delete_repo"
         android:title="@string/action_delete_repo"
         app:showAsAction="never"
