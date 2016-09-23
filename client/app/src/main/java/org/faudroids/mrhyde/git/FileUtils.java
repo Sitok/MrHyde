@@ -133,8 +133,8 @@ public class FileUtils {
       return null;
     });
 
-    if (overwrite && !targetFile.exists()) return renameObservable;
-    return deleteFile(file)
+    if (!overwrite || !targetFile.exists()) return renameObservable;
+    return deleteFile(targetFile)
         .flatMap(nothing -> renameObservable);
   }
 
