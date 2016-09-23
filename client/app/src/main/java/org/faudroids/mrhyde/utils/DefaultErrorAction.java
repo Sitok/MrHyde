@@ -2,11 +2,11 @@ package org.faudroids.mrhyde.utils;
 
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.faudroids.mrhyde.R;
 
@@ -32,42 +32,35 @@ public class DefaultErrorAction extends AbstractErrorAction {
 
 			// network problems
 			Timber.d(throwable, logMessage);
-			new AlertDialog.Builder(context)
-					.setTitle(R.string.error_network_title)
-					.setMessage(R.string.error_network_message)
-					.setPositiveButton(android.R.string.ok, null)
+			new MaterialDialog.Builder(context)
+					.title(R.string.error_network_title)
+					.content(R.string.error_network_message)
+					.positiveText(android.R.string.ok)
 					.show();
 
 		} else {
 			// default internal message
 			Timber.e(throwable, logMessage);
-			AlertDialog.Builder builder = new AlertDialog.Builder(context)
-					.setTitle(R.string.error_internal_title)
-					.setPositiveButton(android.R.string.ok, null);
+			MaterialDialog dialog = new MaterialDialog.Builder(context)
+					.title(R.string.error_internal_title)
+					.positiveText(android.R.string.ok)
+          .customView(R.layout.dialog_internal_error, true)
+          .show();
 
-			LayoutInflater inflater = LayoutInflater.from(context);
-			View messageView = inflater.inflate(R.layout.dialog_internal_error, null, false);
-
+			View messageView = dialog.getCustomView();
 			View expandDetailsView = messageView.findViewById(R.id.details_expand);
 			final TextView detailsTextView = (TextView) messageView.findViewById(R.id.details);
 			detailsTextView.setText(Log.getStackTraceString(throwable));
 
-			expandDetailsView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// toggle details
-					if (detailsTextView.getVisibility() == View.GONE) {
-						detailsTextView.setVisibility(View.VISIBLE);
-					} else {
-						detailsTextView.setVisibility(View.GONE);
-					}
+			expandDetailsView.setOnClickListener(v -> {
+        // toggle details
+        if (detailsTextView.getVisibility() == View.GONE) {
+          detailsTextView.setVisibility(View.VISIBLE);
+        } else {
+          detailsTextView.setVisibility(View.GONE);
+        }
 
-				}
-			});
-
-			builder
-					.setView(messageView)
-					.show();
+      });
 		}
 
 	}

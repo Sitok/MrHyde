@@ -2,7 +2,6 @@ package org.faudroids.mrhyde.ui.utils;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -191,14 +190,15 @@ public abstract class AbstractReposFragment extends AbstractFragment {
         containerView.setOnClickListener(v -> onRepositorySelected(repo));
         if (gitHubManager.isRepositoryFavourite(repo)) {
           heartView.setVisibility(View.VISIBLE);
-          heartView.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
-              .setTitle(AbstractReposFragment.this.getActivity().getString(R.string.unmark_title))
-              .setMessage(AbstractReposFragment.this.getActivity().getString(R.string.unmark_message))
-              .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+          heartView.setOnClickListener(v -> new MaterialDialog.Builder(getActivity())
+              .title(R.string.unmark_title)
+              .content(R.string.unmark_message)
+              .positiveText(android.R.string.ok)
+              .onPositive((dialog, which) -> {
                 gitHubManager.unmarkRepositoryAsFavourite(repo);
                 loadRepositories();
               })
-              .setNegativeButton(android.R.string.cancel, null)
+              .negativeText(android.R.string.cancel)
               .show());
         } else {
           heartView.setVisibility(View.GONE);

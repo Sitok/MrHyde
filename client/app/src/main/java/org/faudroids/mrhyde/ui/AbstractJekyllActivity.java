@@ -2,7 +2,6 @@ package org.faudroids.mrhyde.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -12,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
 import org.faudroids.mrhyde.R;
@@ -188,10 +188,11 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 
 	@Override
 	public void onDelete(final T item) {
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.delete_title)
-				.setMessage(getString(R.string.delete_message, item.getFileNode().getPath()))
-        .setPositiveButton(getString(R.string.action_delete), (dialog, which) -> {
+		new MaterialDialog.Builder(this)
+				.title(R.string.delete_title)
+				.content(getString(R.string.delete_message, item.getFileNode().getPath()))
+        .positiveText(R.string.action_delete)
+        .onPositive((dialog, which) -> {
           showSpinner();
           compositeSubscription.add(jekyllManager.deleteContent(item)
               .compose(new DefaultTransformer<Void>())
@@ -203,7 +204,7 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
                   .add(new HideSpinnerAction(AbstractJekyllActivity.this))
                   .build()));
         })
-        .setNegativeButton(android.R.string.cancel, null)
+        .negativeText(android.R.string.cancel)
         .show();
   }
 
@@ -216,20 +217,19 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 
 	@Override
 	public void onMove(final T item) {
-		new AlertDialog.Builder(this)
-				.setTitle(moveTitleStringResource)
-				.setMessage(getString(moveMessageStringResource, getMovedFilenameForItem(item)))
-				.setPositiveButton(R.string.move, (dialog, which) -> {
-          createMoveObservable(item)
-              .compose(new DefaultTransformer<>())
-              .subscribe(o -> {
-                adapter.removeItem(item);
-                Toast.makeText(AbstractJekyllActivity.this, getString(movedConfirmationStringResource), Toast.LENGTH_SHORT).show();
-              }, new ErrorActionBuilder()
-                  .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to move content"))
-                  .build());
-        })
-				.setNegativeButton(android.R.string.cancel, null)
+		new MaterialDialog.Builder(this)
+				.title(moveTitleStringResource)
+				.content(getString(moveMessageStringResource, getMovedFilenameForItem(item)))
+				.positiveText(R.string.move)
+        .onPositive((dialog, which) -> createMoveObservable(item)
+            .compose(new DefaultTransformer<>())
+            .subscribe(o -> {
+              adapter.removeItem(item);
+              Toast.makeText(AbstractJekyllActivity.this, getString(movedConfirmationStringResource), Toast.LENGTH_SHORT).show();
+            }, new ErrorActionBuilder()
+                .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to move content"))
+                .build()))
+        .negativeText(android.R.string.cancel)
 				.show();
 	}
 

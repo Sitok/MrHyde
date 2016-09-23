@@ -6,11 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.service.UserService;
@@ -210,10 +211,10 @@ public final class LoginActivity extends AbstractActionBarActivity {
 
 
 	private void onAccessDenied() {
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.login_error_title)
-				.setMessage(R.string.login_error_message)
-				.setPositiveButton(android.R.string.ok, null)
+		new MaterialDialog.Builder(this)
+				.title(R.string.login_error_title)
+				.content(R.string.login_error_message)
+				.positiveText(android.R.string.ok)
 				.show();
 	}
 
