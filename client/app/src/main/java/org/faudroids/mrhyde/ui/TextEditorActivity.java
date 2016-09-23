@@ -23,7 +23,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileUtils;
-import org.faudroids.mrhyde.git.NodeUtils;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
 import org.faudroids.mrhyde.ui.utils.UndoRedoEditText;
@@ -76,7 +75,6 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
   @BindView(R.id.line_numbers) protected TextView numLinesTextView;
 
   @Inject FileUtils fileUtils;
-  @Inject NodeUtils nodeUtils;
   private GitHubRepository repository;
   private File file;
   private String savedFileContent; // last saved content

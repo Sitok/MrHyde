@@ -13,7 +13,6 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
-import org.faudroids.mrhyde.git.NodeUtils;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
@@ -45,7 +44,6 @@ abstract class AbstractDirActivity extends AbstractActionBarActivity {
   @Inject GitManagerFactory gitManagerFactory;
   protected GitManager gitManager;
 	protected GitHubRepository repository;
-	@Inject protected NodeUtils nodeUtils;
 	@Inject protected FileUtils fileUtils;
 
 	@Inject JekyllManagerFactory jekyllManagerFactory;
