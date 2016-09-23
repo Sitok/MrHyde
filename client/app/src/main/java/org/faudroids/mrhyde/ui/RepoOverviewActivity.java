@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +27,6 @@ import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.Branch;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubManager;
@@ -48,7 +46,6 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -97,8 +94,9 @@ public final class RepoOverviewActivity extends AbstractActivity {
   @Inject GitManagerFactory gitManagerFactory;
   private GitManager gitManager;
 
-
 	@Inject ActivityIntentFactory intentFactory;
+
+  private GitActionBarMenu gitActionBarMenu;
 
 
 	@Override
@@ -188,14 +186,14 @@ public final class RepoOverviewActivity extends AbstractActivity {
 
 		// setup scroll partially hides top image
 		actionBarDrawable = new ColorDrawable(getResources().getColor(R.color.colorPrimary));
-		getSupportActionBar().setBackgroundDrawable(actionBarDrawable);
-		scrollView.setOnScrollListener((scrollView1, l, t, oldL, oldT) -> RepoOverviewActivity.this.onScrollChanged());
+    getSupportActionBar().setBackgroundDrawable(actionBarDrawable);
+    scrollView.setOnScrollListener((scrollView1, l, t, oldL, oldT) -> RepoOverviewActivity.this.onScrollChanged());
 
-		// setup favourite button
-		if (gitHubManager.isRepositoryFavourite(repository)) {
-			favouriteButton.setSelected(true);
-		}
-		favouriteButton.setOnClickListener(v -> {
+    // setup favourite button
+    if (gitHubManager.isRepositoryFavourite(repository)) {
+      favouriteButton.setSelected(true);
+    }
+    favouriteButton.setOnClickListener(v -> {
       if (favouriteButton.isSelected()) {
         gitHubManager.unmarkRepositoryAsFavourite(repository);
         favouriteButton.setSelected(false);
@@ -206,14 +204,23 @@ public final class RepoOverviewActivity extends AbstractActivity {
         Toast.makeText(RepoOverviewActivity.this, getString(R.string.marked_toast), Toast.LENGTH_SHORT).show();
       }
     });
-	}
+
+    // git related menu items
+    gitActionBarMenu = new GitActionBarMenu(
+        this,
+        this::loadJekyllContent,
+        gitManager,
+        repository,
+        intentFactory
+    );
+  }
 
 
 	private void loadJekyllContent() {
 		compositeSubscription.add(Observable.zip(
 				jekyllManager.getAllPosts(),
 				jekyllManager.getAllDrafts(),
-        (posts, drafts) -> new JekyllContent(posts, drafts))
+        JekyllContent::new)
 				.compose(new DefaultTransformer<JekyllContent>())
 				.subscribe(jekyllContent -> {
           if (isSpinnerVisible()) hideSpinner();
@@ -318,105 +325,6 @@ public final class RepoOverviewActivity extends AbstractActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.action_commit:
-				startActivity(intentFactory.createCommitIntent(repository));
-				return true;
-
-			case R.id.action_preview:
-				startActivity(intentFactory.createPreviewIntent(repository));
-				return true;
-
-      case R.id.action_push:
-        showSpinner();
-        compositeSubscription.add(gitManager.push()
-            .compose(new DefaultTransformer<>())
-            .subscribe(aVoid -> {
-                  hideSpinner();
-                  Toast.makeText(
-                      RepoOverviewActivity.this,
-                      getString(R.string.push_success),
-                      Toast.LENGTH_SHORT
-                  ).show();
-                },
-                new ErrorActionBuilder()
-                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to push changes"))
-                    .add(new HideSpinnerAction(RepoOverviewActivity.this))
-                    .build()
-            )
-        );
-        return true;
-
-      case R.id.action_pull:
-        showSpinner();
-        compositeSubscription.add(gitManager.pull()
-            .compose(new DefaultTransformer<>())
-            .subscribe(aVoid -> {
-                  hideSpinner();
-                  Toast.makeText(
-                      RepoOverviewActivity.this,
-                      getString(R.string.pull_success),
-                      Toast.LENGTH_SHORT
-                  ).show();
-                },
-                new ErrorActionBuilder()
-                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to pull changes"))
-                    .add(new HideSpinnerAction(RepoOverviewActivity.this))
-                    .build()
-            )
-        );
-        return true;
-
-      case R.id.action_switch_branch:
-        // show dialog for selecting branch
-        Observable.zip(
-            gitManager.listRemoteTrackingBranches(),
-            gitManager.getCurrentBranchName(),
-            Pair::new
-        )
-            .compose(new DefaultTransformer<>())
-            .subscribe(branchInfo -> {
-
-              // all (remote) branches
-              List<String> branchNames = new ArrayList<String>();
-              for (Branch branch : branchInfo.first) branchNames.add(branch.getDisplayName());
-
-              // current branch
-              int currentBranchIdx = branchNames.indexOf(branchInfo.second);
-
-              Collections.sort(branchNames);
-                  new MaterialDialog
-                      .Builder(this)
-                      .title(R.string.switch_branch_title)
-                      .items(branchNames)
-                      .itemsCallbackSingleChoice(currentBranchIdx, (dialog, itemView, which, text) -> {
-                        // checkout selected branch
-                        Branch selectedBranch = branchInfo.first.get(which);
-                        gitManager
-                            .checkoutBranch(selectedBranch)
-                            .compose(new DefaultTransformer<>())
-                            .subscribe(aVoid -> {
-                                  loadJekyllContent();
-                                  Toast.makeText(
-                                      RepoOverviewActivity.this,
-                                      getString(R.string.switch_branch_success, selectedBranch.getDisplayName()),
-                                      Toast.LENGTH_SHORT)
-                                      .show();
-                                },
-                                new ErrorActionBuilder()
-                                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to checkout branch"))
-                                    .build()
-                            );
-                        return true;
-                      })
-                      .show();
-                },
-                new ErrorActionBuilder()
-                    .add(new DefaultErrorAction(RepoOverviewActivity.this, "Failed to list branches"))
-                    .build()
-            );
-
-        return true;
-
       case R.id.action_delete_repo:
         new MaterialDialog.Builder(this)
             .title(R.string.delete_repo_title)
@@ -439,6 +347,9 @@ public final class RepoOverviewActivity extends AbstractActivity {
             .show();
 				return true;
 		}
+
+    if (gitActionBarMenu.onOptionsItemSelected(item)) return true;
+
 		return super.onOptionsItemSelected(item);
   }
 

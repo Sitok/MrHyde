@@ -17,7 +17,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class AbstractActivity extends AppCompatActivity {
 
-	protected final CompositeSubscription compositeSubscription = new CompositeSubscription();
+	public final CompositeSubscription compositeSubscription = new CompositeSubscription();
 	@Inject protected UiUtils uiUtils;
 	@BindView(R.id.spinner) protected View spinnerContainerView;
 	@BindView(R.id.spinner_image) protected ImageView spinnerImageView;

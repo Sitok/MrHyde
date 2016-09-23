@@ -63,6 +63,8 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
   @Inject JekyllUiUtils jekyllUiUtils;
 
+  private GitActionBarMenu gitActionBarMenu;
+
   private DirActionModeListener actionModeListener = null;
 
 
@@ -137,6 +139,18 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
     // prepare action mode
     actionModeListener = new DirActionModeListener(this, this, uiUtils);
+
+    // git related menu items
+    gitActionBarMenu = new GitActionBarMenu(
+        this,
+        () -> {
+         fileAdapter.setSelectedDir(gitManager.getRootDir());
+          refreshTree();
+        },
+        gitManager,
+        repository,
+        intentFactory
+    );
   }
 
 
@@ -160,15 +174,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.action_commit:
-        startActivityForResult(intentFactory.createCommitIntent(repository), REQUEST_COMMIT);
-        return true;
-
-      case R.id.action_preview:
-        startActivity(intentFactory.createPreviewIntent(repository));
-        return true;
-    }
+    if (gitActionBarMenu.onOptionsItemSelected(item)) return true;
     return super.onOptionsItemSelected(item);
   }
 
