@@ -7,102 +7,100 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.ui.utils.UiUtils;
 
 import java.io.File;
 
 class DirActionModeListener implements ActionMode.Callback {
 
-	private final Activity activity;
-	private final ActionSelectionListener selectionListener;
-	private final UiUtils uiUtils;
+  private final Activity activity;
+  private final ActionSelectionListener selectionListener;
 
-	private File selectedFile = null;
-	private ActionMode actionMode;
-
-
-	public DirActionModeListener(Activity activity, ActionSelectionListener selectionListener, UiUtils uiUtils) {
-		this.activity = activity;
-		this.selectionListener = selectionListener;
-		this.uiUtils = uiUtils;
-	}
+  private File selectedFile = null;
+  private ActionMode actionMode;
 
 
-	public boolean startActionMode(File selectedFile) {
-		if (this.selectedFile != null) return false;
-		this.actionMode = this.activity.startActionMode(this);
-		this.selectedFile = selectedFile;
-		return true;
-	}
+  public DirActionModeListener(Activity activity, ActionSelectionListener selectionListener) {
+    this.activity = activity;
+    this.selectionListener = selectionListener;
+  }
 
 
-	public void stopActionMode() {
-		if (actionMode != null) actionMode.finish();
-	}
+  public boolean startActionMode(File selectedFile) {
+    if (this.selectedFile != null) return false;
+    this.selectedFile = selectedFile;
+    this.actionMode = this.activity.startActionMode(this);
+    return true;
+  }
 
 
-	public File getSelectedFile() {
-		return selectedFile;
-	}
+  public void stopActionMode() {
+    if (actionMode != null) actionMode.finish();
+  }
 
 
-	@Override
-	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-		MenuInflater inflater = mode.getMenuInflater();
-		inflater.inflate(R.menu.menu_files_action_mode, menu);
-		return true;
-	}
+  public File getSelectedFile() {
+    return selectedFile;
+  }
 
 
-	@Override
-	public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-		return false;
-	}
+  @Override
+  public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+    MenuInflater inflater = mode.getMenuInflater();
+    if (selectedFile.isDirectory()) inflater.inflate(R.menu.menu_files_action_mode_dir, menu);
+    else inflater.inflate(R.menu.menu_files_action_mode_file, menu);
+    return true;
+  }
 
 
-	@Override
-	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_edit:
-				selectionListener.onEdit(selectedFile);
-				stopActionMode();
-				return true;
+  @Override
+  public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+    return false;
+  }
 
-			case R.id.action_delete:
-				selectionListener.onDelete(selectedFile);
-				stopActionMode();
-				return true;
 
-			case R.id.action_rename:
+  @Override
+  public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_edit:
+        selectionListener.onEdit(selectedFile);
+        stopActionMode();
+        return true;
+
+      case R.id.action_delete:
+        selectionListener.onDelete(selectedFile);
+        stopActionMode();
+        return true;
+
+      case R.id.action_rename:
         selectionListener.onRename(selectedFile);
         stopActionMode();
         return true;
 
-			case R.id.action_move:
-				selectionListener.onMoveTo(selectedFile);
-				stopActionMode();
-				return true;
-		}
-		return false;
-	}
+      case R.id.action_move:
+        selectionListener.onMoveTo(selectedFile);
+        stopActionMode();
+        return true;
+    }
+    return false;
+  }
 
 
-	@Override
-	public void onDestroyActionMode(ActionMode mode) {
-		this.selectedFile = null;
-		this.actionMode = null;
-		selectionListener.onStopActionMode();
-	}
+  @Override
+  public void onDestroyActionMode(ActionMode mode) {
+    this.selectedFile = null;
+    this.actionMode = null;
+    selectionListener.onStopActionMode();
+  }
 
 
-	public interface ActionSelectionListener {
+  public interface ActionSelectionListener {
 
-		void onDelete(File file);
-		void onEdit(File file);
-		void onRename(File file);
-		void onMoveTo(File file);
-		void onStopActionMode();
+    void onDelete(File file);
+    void onEdit(File file);
+    void onRename(File file);
+    void onMoveTo(File file);
+    void onStopActionMode();
 
-	}
+  }
 
 }

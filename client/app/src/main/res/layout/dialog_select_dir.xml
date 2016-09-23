@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:text="@string/select_destination_folder"
+            android:text="@string/select_destination_directory"
             android:textColor="@android:color/white"
             android:layout_gravity="center_vertical"
             style="@style/TextLarge"

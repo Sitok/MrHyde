@@ -88,7 +88,7 @@
             fab:fab_colorNormal="@android:color/white"
             fab:fab_colorPressed="@color/gray_light_2"
             fab:fab_icon="@drawable/folder"
-            fab:fab_title="@string/folder"
+            fab:fab_title="@string/directory"
             />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

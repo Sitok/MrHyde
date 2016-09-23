@@ -49,12 +49,18 @@
 
     <string name="switch_branch_title">Select branch</string>
 
-    <string name="select_destination_folder">Select destination folder</string>
+    <string name="select_destination_directory">Select destination directory</string>
     <string name="move">Move</string>
-    <string name="file_moved">File moved</string>
     <string name="overwrite_file_title">Overwrite file</string>
     <string name="overwrite_file_message">"Overwrite existing file %1$s?"</string>
     <string name="overwrite_confirm">Overwrite</string>
+
+    <string name="file_moved">File moved</string>
+    <string name="dir_moved">Directory moved</string>
+    <string name="file_renamed">File renamed</string>
+    <string name="dir_renamed">Directory renamed</string>
+    <string name="file_deleted">File deleted</string>
+    <string name="dir_deleted">Directory deleted</string>
 
     <string name="draft_published">Moved draft to posts</string>
     <string name="publish_draft_title">Publish draft?</string>
@@ -106,7 +112,9 @@
     <string name="dir_new_hint">ducks</string>
     <string name="file_already_exists">File already exists</string>
     <string name="dir_empty">Empty</string>
-    <string name="rename_title">Rename File</string>
+
+    <string name="rename_dir_title">Rename directory</string>
+    <string name="rename_file_title">Rename file</string>
     <string name="rename_message">What do you want to call it?</string>
     <string name="rename_hint">ducks.md</string>
 
@@ -121,12 +129,13 @@
     <string name="reset_repo_confirm">Reset</string>
     <string name="reset_repo_success">Repository reset</string>
 
-    <string name="delete_title">Delete file</string>
+    <string name="delete_dir_title">Delete directory</string>
+    <string name="delete_file_title">Delete file</string>
     <string name="delete_message">Do you want to delete %1$s?</string>
 
     <string name="text">Text</string>
     <string name="image">Image</string>
-    <string name="folder">Folder</string>
+    <string name="directory">Directory</string>
 
 
     <string name="unmark_title">Unmark repository</string>
@@ -219,5 +228,5 @@
 
     <string name="help_got_it">Got it!</string>
     <string name="help_publish_draft_title">Publishing drafts</string>
-    <string name="help_publish_draft_message">To move a draft to the post folder long click on it.</string>
+    <string name="help_publish_draft_message">To move a draft to the post directory long click on it.</string>
 </resources>

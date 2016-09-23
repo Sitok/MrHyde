@@ -138,7 +138,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
     tintView.setOnClickListener(v -> addButton.collapse());
 
     // prepare action mode
-    actionModeListener = new DirActionModeListener(this, this, uiUtils);
+    actionModeListener = new DirActionModeListener(this, this);
 
     // git related menu items
     gitActionBarMenu = new GitActionBarMenu(
@@ -252,7 +252,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
   @Override
   public void onDelete(File file) {
     new MaterialDialog.Builder(this)
-        .title(R.string.delete_title)
+        .title(file.isDirectory() ? R.string.delete_dir_title : R.string.delete_file_title)
         .content(getString(R.string.delete_message, file.getName()))
         .positiveText(R.string.action_delete)
         .negativeText(android.R.string.cancel)
@@ -261,7 +261,14 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
                 .deleteFile(file)
                 .compose(new DefaultTransformer<>())
                 .subscribe(
-                    nothing -> refreshTree(),
+                    nothing -> {
+                      Toast.makeText(
+                          DirActivity.this,
+                          getString(file.isDirectory() ? R.string.dir_deleted : R.string.file_deleted),
+                          Toast.LENGTH_SHORT
+                      ).show();
+                      refreshTree();
+                    },
                     new ErrorActionBuilder()
                         .add(new DefaultErrorAction(DirActivity.this, "Failed to delete file"))
                         .build()
@@ -281,7 +288,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
   public void onRename(File file) {
     new MaterialDialog
         .Builder(this)
-        .title(R.string.rename_title)
+        .title(file.isDirectory() ? R.string.rename_dir_title : R.string.rename_file_title)
         .content(R.string.rename_message)
         .inputType(InputType.TYPE_CLASS_TEXT)
         .alwaysCallInputCallback()
@@ -297,7 +304,14 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
               .renameFile(file, targetFile)
               .compose(new DefaultTransformer<>())
               .subscribe(
-                  nothing -> refreshTree(),
+                  nothing -> {
+                    Toast.makeText(
+                        DirActivity.this,
+                        getString(file.isDirectory() ? R.string.dir_renamed : R.string.file_renamed),
+                        Toast.LENGTH_SHORT
+                    ).show();
+                    refreshTree();
+                  },
                   new ErrorActionBuilder()
                       .add(new DefaultErrorAction(DirActivity.this, "Failed to rename file"))
                       .build()
@@ -313,6 +327,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
     Intent intent = new Intent(this, SelectDirActivity.class);
     intent.putExtra(SelectDirActivity.EXTRA_REPOSITORY, repository);
     intent.putExtra(EXTRA_FILE_T0_MOVE, file);
+    if (file.isDirectory()) intent.putExtra(SelectDirActivity.EXTRA_IGNORE_DIR, file);
     for (String key : intent.getExtras().keySet()) Timber.d("found key " + key);
     startActivityForResult(intent, REQUEST_SELECT_DIR);
   }
@@ -324,7 +339,11 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
         .compose(new DefaultTransformer<>())
         .subscribe(
             nothing -> {
-              Toast.makeText(DirActivity.this, getString(R.string.file_moved), Toast.LENGTH_SHORT).show();
+              Toast.makeText(
+                  DirActivity.this,
+                  getString(fileToMove.isDirectory() ? R.string.dir_moved : R.string.file_moved),
+                  Toast.LENGTH_SHORT
+              ).show();
               refreshTree();
             }, new ErrorActionBuilder()
                 .add(new DefaultErrorAction(DirActivity.this, "Failed to move file"))
@@ -509,17 +528,13 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
         }
 
         // setup long click
-        if (!file.isDirectory()) {
-          view.setOnLongClickListener(v -> {
-            // only highlight item when selection was successful
-            if (actionModeListener.startActionMode(file)) {
-              view.setSelected(true);
-            }
-            return true;
-          });
-        } else {
-          view.setLongClickable(false);
-        }
+        view.setOnLongClickListener(v -> {
+          // only highlight item when selection was successful
+          if (actionModeListener.startActionMode(file)) {
+            view.setSelected(true);
+          }
+          return true;
+        });
       }
     }
   }

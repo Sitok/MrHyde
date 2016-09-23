@@ -196,7 +196,7 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
   @Override
   public void onDelete(final T item) {
     new MaterialDialog.Builder(this)
-        .title(R.string.delete_title)
+        .title(R.string.delete_file_title)
         .content(getString(R.string.delete_message, item.getFile().getName()))
         .positiveText(R.string.action_delete)
 
