@@ -1,7 +1,9 @@
 package org.faudroids.mrhyde.ui;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.text.InputType;
@@ -18,6 +20,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.common.base.Optional;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.single.EmptyPermissionListener;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
@@ -86,9 +91,23 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
     });
     addImageButton.setOnClickListener(v -> {
       addButton.collapse();
+
       Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
       photoPickerIntent.setType("image/*");
-      startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
+
+      // if below v16 start immediately
+      if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+        startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
+
+      } else {
+        // assert has required permission
+        Dexter.checkPermission(new EmptyPermissionListener() {
+          @Override
+          public void onPermissionGranted(PermissionGrantedResponse r) {
+            startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
+          }
+        }, Manifest.permission.READ_EXTERNAL_STORAGE);
+      }
     });
     addFolderButton.setOnClickListener(v -> {
       addButton.collapse();
@@ -201,12 +220,12 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       case REQUEST_SELECT_DIR:
         if (resultCode != RESULT_OK) return;
 
-				// get selected dir and file
-				final File selectedDir = (File) data.getSerializableExtra(SelectDirActivity.EXTRA_SELECTED_DIR);
-				final File fileToMove = (File) data.getSerializableExtra(EXTRA_FILE_T0_MOVE);
+        // get selected dir and file
+        final File selectedDir = (File) data.getSerializableExtra(SelectDirActivity.EXTRA_SELECTED_DIR);
+        final File fileToMove = (File) data.getSerializableExtra(EXTRA_FILE_T0_MOVE);
         final File targetFile = new File(selectedDir, fileToMove.getName());
 
-				// confirm overwriting files
+        // confirm overwriting files
         if (targetFile.exists()) {
           new MaterialDialog.Builder(this)
               .title(R.string.overwrite_file_title)
@@ -294,7 +313,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
 
   private void moveFile(File fileToMove, File targetFile) {
-		compositeSubscription.add(fileUtils
+    compositeSubscription.add(fileUtils
         .renameFile(fileToMove, targetFile, true)
         .compose(new DefaultTransformer<>())
         .subscribe(
@@ -475,26 +494,26 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       public void setFile(File file) {
         super.setFile(file);
 
-				// check for action mode
+        // check for action mode
         File selectedFile = actionModeListener.getSelectedFile();
-				if (selectedFile != null && selectedFile.equals(file)) {
-					view.setSelected(true);
-				} else {
-					view.setSelected(false);
-				}
+        if (selectedFile != null && selectedFile.equals(file)) {
+          view.setSelected(true);
+        } else {
+          view.setSelected(false);
+        }
 
-				// setup long click
-				if (!file.isDirectory()) {
-					view.setOnLongClickListener(v -> {
+        // setup long click
+        if (!file.isDirectory()) {
+          view.setOnLongClickListener(v -> {
             // only highlight item when selection was successful
             if (actionModeListener.startActionMode(file)) {
               view.setSelected(true);
             }
             return true;
           });
-				} else {
-					view.setLongClickable(false);
-				}
+        } else {
+          view.setLongClickable(false);
+        }
       }
     }
   }

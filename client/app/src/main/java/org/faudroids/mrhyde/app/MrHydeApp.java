@@ -3,6 +3,8 @@ package org.faudroids.mrhyde.app;
 
 import android.app.Application;
 
+import com.karumi.dexter.Dexter;
+
 import org.faudroids.mrhyde.BuildConfig;
 import org.faudroids.mrhyde.github.GitHubModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
@@ -13,24 +15,29 @@ public class MrHydeApp extends Application {
 
   private AppComponent component;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+  @Override
+  public void onCreate() {
+    super.onCreate();
 
+    // setup dependency injection
     component = DaggerAppComponent.builder()
         .appModule(new AppModule(this))
         .gitHubModule(new GitHubModule())
         .jekyllModule(new JekyllModule())
         .build();
 
-		if (BuildConfig.DEBUG) {
-			Timber.plant(new Timber.DebugTree());
-		} else {
+    // setup logging
+    if (BuildConfig.DEBUG) {
       Timber.plant(new Timber.DebugTree());
-			// Fabric.with(this, new Crashlytics());
-			// Timber.plant(new CrashReportingTree());
-		}
-	}
+    } else {
+      Timber.plant(new Timber.DebugTree());
+      // Fabric.with(this, new Crashlytics());
+      // Timber.plant(new CrashReportingTree());
+    }
+
+    // setup permission requests
+    Dexter.initialize(this);
+  }
 
   public AppComponent getComponent() {
     return component;
@@ -38,7 +45,7 @@ public class MrHydeApp extends Application {
 
 
   /*
-	private static final class CrashReportingTree extends Timber.HollowTree {
+  private static final class CrashReportingTree extends Timber.HollowTree {
 
 		@Override
 		public void e(String msg, Object... args) {
