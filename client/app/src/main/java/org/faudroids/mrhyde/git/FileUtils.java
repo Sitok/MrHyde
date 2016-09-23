@@ -69,16 +69,20 @@ public class FileUtils {
    */
   public Observable<Void> deleteFile(@NonNull File file) {
     return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
-      if (file.isDirectory()) {
-        for (File f : file.listFiles()) {
-          deleteFile(f);
-        }
-      }
-      if (!file.delete()) {
-        Timber.w("Failed to delete \"%s\"", file.getAbsolutePath());
-      }
+      deleteFileHelper(file);
       return null;
     });
+  }
+
+  private void deleteFileHelper(@NonNull File file) {
+    if (file.isDirectory()) {
+      for (File f : file.listFiles()) {
+        deleteFileHelper(f);
+      }
+    }
+    if (!file.delete()) {
+      Timber.w("Failed to delete \"%s\"", file.getAbsolutePath());
+    }
   }
 
 
