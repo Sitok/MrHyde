@@ -150,6 +150,32 @@ public class GitActionBarMenu {
                     .build()
             );
         return true;
+
+      case R.id.action_reset_repo:
+        new MaterialDialog
+            .Builder(activity)
+            .title(R.string.reset_repo_title)
+            .content(R.string.reset_repo_message)
+            .positiveText(R.string.reset_repo_confirm)
+            .negativeText(android.R.string.cancel)
+            .onPositive((dialog, which) -> gitManager
+                .resetHardAndClean()
+                .compose(new DefaultTransformer<>())
+                .subscribe(
+                    aVoid -> {
+                      Toast.makeText(
+                          activity,
+                          activity.getString(R.string.reset_repo_success),
+                          Toast.LENGTH_SHORT
+                      ).show();
+                      actionsListener.onRefreshContent();
+                    },
+                    new ErrorActionBuilder()
+                        .add(new DefaultErrorAction(activity, "Failed to reset repo"))
+                        .build()
+                ))
+            .show();
+        return true;
     }
     return false;
   }

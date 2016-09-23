@@ -44,6 +44,12 @@
         />
 
     <item
+        android:id="@+id/action_reset_repo"
+        android:title="@string/action_reset_repo"
+        app:showAsAction="never"
+        />
+
+    <item
         android:id="@+id/action_delete_repo"
         android:title="@string/action_delete_repo"
         app:showAsAction="never"

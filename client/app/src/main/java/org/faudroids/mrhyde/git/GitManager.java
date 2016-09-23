@@ -79,7 +79,7 @@ public class GitManager {
 
   public Observable<Void> commitAllChanges(String commitMsg) {
     return status()
-        .flatMap(status -> ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+        .flatMap(status -> ObservableUtils.fromSynchronousCall(() -> {
           // remove git "missing" files (jgit does not have a "git add --all" option)
           Set<String> removedFileNames = status.getMissing();
           if (removedFileNames.size() > 0) {
@@ -136,7 +136,7 @@ public class GitManager {
   }
 
   public Observable<Void> checkoutBranch(Branch branch) {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+    return ObservableUtils.fromSynchronousCall(() -> {
       CheckoutCommand checkoutCommand = gitClient.checkout().setName(branch.getDisplayName());
 
       try {
@@ -154,21 +154,21 @@ public class GitManager {
   }
 
   public Observable<Void> pull() {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+    return ObservableUtils.fromSynchronousCall(() -> {
       gitCommandAuthAdapter.wrap(gitClient.pull()).call();
       return null;
     });
   }
 
   public Observable<Void> push() {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+    return ObservableUtils.fromSynchronousCall(() -> {
       gitCommandAuthAdapter.wrap(gitClient.push()).call();
       return null;
     });
   }
 
-  public Observable<Void> resetHard() {
-    return ObservableUtils.fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+  public Observable<Void> resetHardAndClean() {
+    return ObservableUtils.fromSynchronousCall(() -> {
       gitClient.reset().setMode(ResetCommand.ResetType.HARD).call();
       gitClient.clean().setCleanDirectories(true).call();
       return null;
