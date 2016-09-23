@@ -29,6 +29,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -178,6 +180,10 @@ public class GitManager {
   }
 
   public Observable<String> diff() {
+    return diff(new HashSet<>());
+  }
+
+  public Observable<String> diff(Set<String> filesToIgnore) {
     return ObservableUtils.fromSynchronousCall(() -> {
       AbstractTreeIterator commitTreeIterator = prepareCommitTreeIterator(gitClient.getRepository());
       FileTreeIterator workTreeIterator = new FileTreeIterator(gitClient.getRepository());
@@ -187,7 +193,6 @@ public class GitManager {
       formatter.setRepository(gitClient.getRepository());
 
       List<DiffEntry> diffs = formatter.scan(commitTreeIterator, workTreeIterator);
-      /*
       // remove ignored files
       if (filesToIgnore != null) {
         Iterator<DiffEntry> entryIterator = diffs.iterator();
@@ -197,7 +202,6 @@ public class GitManager {
           }
         }
       }
-      */
       formatter.format(diffs);
       return outputStream.toString();
     });

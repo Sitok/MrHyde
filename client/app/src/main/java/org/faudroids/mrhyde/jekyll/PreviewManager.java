@@ -26,10 +26,11 @@ public class PreviewManager {
   public Observable<String> loadPreview(GitManager gitManager) {
     Timber.d("starting new preview");
     return previewRequestDataFactory.createRepoDetails(gitManager)
-        .flatMap(repoDetails -> {
-          Timber.d("found " + repoDetails.getStaticFiles().size() + " binary files for preview");
-          for (BinaryFile file : repoDetails.getStaticFiles()) Timber.d(file.getPath());
-          return jekyllApi.createPreview(repoDetails);
+        .flatMap(previewData -> {
+          Timber.d(previewData.getStaticFiles().get(0).getData());
+          Timber.d("found " + previewData.getStaticFiles().size() + " binary files for preview");
+          for (BinaryFile file : previewData.getStaticFiles()) Timber.d(file.getPath());
+          return jekyllApi.createPreview(previewData);
         })
         .flatMap(previewResult -> Observable.just(previewResult.getPreviewUrl()));
 

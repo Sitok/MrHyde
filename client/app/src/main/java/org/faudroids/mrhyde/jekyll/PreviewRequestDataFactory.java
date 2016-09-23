@@ -40,17 +40,17 @@ public class PreviewRequestDataFactory {
 		this.clientSecret = context.getString(R.string.jekyllServerClientSecret);
 		this.loginManager = loginManager;
     this.fileUtils = fileUtils;
-	}
+  }
 
 
-	public Observable<PreviewRequestData> createRepoDetails(GitManager gitManager) {
-    return gitManager
-        .diff()
-        .flatMap(nonBinaryDiff -> {
-          Timber.d("non binary diff is " + nonBinaryDiff);
-          return getChangedBinaryFiles(gitManager)
-              .flatMap(binaryFiles -> Observable
-                  .from(binaryFiles)
+  public Observable<PreviewRequestData> createRepoDetails(GitManager gitManager) {
+    return getChangedBinaryFiles(gitManager)
+        .flatMap(binaryFileNames -> gitManager
+            .diff(binaryFileNames)
+            .flatMap(nonBinaryDiff -> {
+              Timber.d("non binary diff is " + nonBinaryDiff);
+              return Observable
+                  .from(binaryFileNames)
                   .flatMap(binaryFileName -> {
                     Timber.d("reading binary file " + binaryFileName);
                     return fileUtils
@@ -61,7 +61,7 @@ public class PreviewRequestDataFactory {
                         ));
                   })
                   .toList()
-                  .flatMap(binaryFiles1 -> {
+                  .flatMap(binaryFiles -> {
                     // TODO this is not that great security wise. In the long run use https://help.github.com/articles/git-automation-with-oauth-tokens/
                     String cloneUrl = "https://"
                         + loginManager.getAccount().getAccessToken()
@@ -70,10 +70,11 @@ public class PreviewRequestDataFactory {
                     return Observable.just(new PreviewRequestData(
                         cloneUrl,
                         nonBinaryDiff,
-                        binaryFiles1,
+                        binaryFiles,
                         clientSecret));
-                  }));
-        });
+                  });
+            })
+        );
   }
 
   private Observable<Set<String>> getChangedBinaryFiles(GitManager gitManager) {
