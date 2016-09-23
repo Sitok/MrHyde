@@ -17,7 +17,7 @@ public interface JekyllApi {
      * Returns the repo URL and the expiration date encoded in {@link PreviewResult}.
      */
     @POST(JEKYLL_URL)
-    public Observable<PreviewResult> createPreview(@Body RepoDetails input);
+    public Observable<PreviewResult> createPreview(@Body PreviewRequestData input);
 
 
     /**

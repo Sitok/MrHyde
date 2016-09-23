@@ -34,6 +34,7 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 
 import javax.inject.Inject;
 
@@ -271,7 +272,12 @@ public final class TextEditorActivity extends AbstractActionBarActivity {
         .subscribe(
             content -> {
               hideSpinner();
-              savedFileContent = content;
+              try {
+                savedFileContent = new String(content, "UTF-8");
+                Timber.d(savedFileContent);
+              } catch (UnsupportedEncodingException e) {
+                Timber.e(e, "Encoding not supported");
+              }
               showContent(isNewFile, null);
             },
             new ErrorActionBuilder()

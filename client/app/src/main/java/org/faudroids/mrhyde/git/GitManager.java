@@ -21,6 +21,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
+import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
@@ -39,6 +40,7 @@ import timber.log.Timber;
  */
 public class GitManager {
 
+  private final GitHubRepository repository;
   private final Git gitClient;
   private final File rootDir;
   private final FileUtils fileUtils;
@@ -46,11 +48,13 @@ public class GitManager {
   private final LoginManager loginManager;
 
   public GitManager(
+      @NonNull GitHubRepository repository,
       @NonNull Git gitClient,
       @NonNull File rootDir,
       @NonNull FileUtils fileUtils,
       @NonNull GitCommandAuthAdapter gitCommandAuthAdapter,
       @NonNull LoginManager loginManager) {
+    this.repository = repository;
     this.gitClient = gitClient;
     this.rootDir = rootDir;
     this.fileUtils = fileUtils;
@@ -65,6 +69,10 @@ public class GitManager {
 
   public File getRootDir() {
     return rootDir;
+  }
+
+  public GitHubRepository getRepositoro() {
+    return repository;
   }
 
   public Observable<Void> commitAllChanges(String commitMsg) {

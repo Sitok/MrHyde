@@ -3,38 +3,38 @@ package org.faudroids.mrhyde.git;
 
 import com.google.common.base.Objects;
 
+import java.io.File;
 import java.io.Serializable;
 
 public class FileData implements Serializable {
 
-	private final FileNode fileNode;
-	private final byte[] data;
+  private final File file;
+  private final byte[] data;
 
-	public FileData(FileNode fileNode, byte[] data) {
-		this.fileNode = fileNode;
-		this.data = data;
-	}
+  public FileData(File file, byte[] data) {
+    this.file = file;
+    this.data = data;
+  }
 
-	public FileNode getFileNode() {
-		return fileNode;
-	}
+  public File getFile() {
+    return file;
+  }
 
-	public byte[] getData() {
-		return data;
-	}
+  public byte[] getData() {
+    return data;
+  }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		FileData fileData = (FileData) o;
-		return Objects.equal(fileNode, fileData.fileNode) &&
-				Objects.equal(data, fileData.data);
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof FileData)) return false;
+    FileData fileData = (FileData) o;
+    return Objects.equal(file, fileData.file) &&
+        Objects.equal(data, fileData.data);
+  }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(fileNode, data);
-	}
-
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(file, data);
+  }
 }

@@ -14,7 +14,8 @@ import android.webkit.WebViewClient;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.git.FileManagerFactory;
+import org.faudroids.mrhyde.git.GitManager;
+import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.PreviewManager;
 import org.faudroids.mrhyde.ui.utils.AbstractActionBarActivity;
@@ -35,8 +36,8 @@ public class PreviewActivity extends AbstractActionBarActivity {
 
   static final String EXTRA_REPO = "EXTRA_REPO";
 
+  @Inject GitManagerFactory gitManagerFactory;
   @Inject PreviewManager previewManager;
-  @Inject FileManagerFactory fileManagerFactory;
   @BindView(R.id.web_view) protected WebView webView;
 
   private String previewUrl;
@@ -52,6 +53,7 @@ public class PreviewActivity extends AbstractActionBarActivity {
 
     // load arguments
     GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPO);
+    GitManager gitManager = gitManagerFactory.openRepository(repository);
 
     // setup preview view
     webView.getSettings().setJavaScriptEnabled(true);
@@ -77,7 +79,7 @@ public class PreviewActivity extends AbstractActionBarActivity {
     } else {
       showSpinner();
       compositeSubscription.add(previewManager
-          .loadPreview(fileManagerFactory.createFileManager(repository))
+          .loadPreview(gitManager)
           .compose(new DefaultTransformer<String>())
           .subscribe(previewUrl1 -> {
             Timber.d("getting url " + previewUrl1);

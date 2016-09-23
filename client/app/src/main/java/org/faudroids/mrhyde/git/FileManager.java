@@ -32,6 +32,7 @@ import rx.Observable;
 import rx.functions.Func1;
 import timber.log.Timber;
 
+@Deprecated
 public final class FileManager {
 
 	private final LoginManager loginManager;
@@ -103,6 +104,8 @@ public final class FileManager {
 	 * Gets and stores a file on disk (!).
 	 */
 	public Observable<FileData> readFile(final FileNode fileNode) {
+    return null;
+    /*
 		final TreeEntry treeEntry = fileNode.getTreeEntry();
 		final File file = new File(rootDir, treeEntry.getPath());
 
@@ -129,6 +132,7 @@ public final class FileManager {
 					})
 					.flatMap(gitManagerDeprecated.<FileData>commit(file));
 		}
+		*/
 	}
 
 
@@ -137,6 +141,8 @@ public final class FileManager {
 	 * and returns the new {@link FileNode}.
 	 */
 	public Observable<FileNode> renameFile(final FileNode oldFileNode, final String newFileName) {
+    return null;
+    /*
 		return readFile(oldFileNode)
 				.flatMap(data -> {
 					final FileNode newFileNode = createNewFile(oldFileNode.getParent(), newFileName);
@@ -154,6 +160,7 @@ public final class FileManager {
 								}
 							});
 				});
+				*/
 	}
 
 
@@ -170,6 +177,8 @@ public final class FileManager {
 	 * @return the newly created file.
 	 */
 	public Observable<FileNode> moveFile(final FileNode oldFileNode, DirNode parentNode, String newFileName) {
+    return null;
+    /*
 		final FileNode newFileNode = createNewFile(parentNode, newFileName);
 		return readFile(oldFileNode)
 				.flatMap(oldData -> {
@@ -182,6 +191,7 @@ public final class FileManager {
             return Observable.error(e);
           }
         });
+        */
 	}
 
 
@@ -225,10 +235,12 @@ public final class FileManager {
 	 * Stores the content on disk.
 	 */
 	public void writeFile(FileData data) throws IOException {
+    /*
 		Timber.d("writing file " + data.getFileNode().getTreeEntry().getPath());
 		File file = new File(rootDir, data.getFileNode().getTreeEntry().getPath());
 		if (!file.exists()) if (!file.createNewFile()) Timber.w("failed to create new file");
 		writeFile(file, data.getData());
+		*/
 	}
 
 

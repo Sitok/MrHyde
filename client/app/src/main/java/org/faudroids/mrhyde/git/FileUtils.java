@@ -2,16 +2,16 @@ package org.faudroids.mrhyde.git;
 
 import android.support.annotation.NonNull;
 
+import com.google.common.io.Files;
+
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,18 +89,8 @@ public class FileUtils {
   /**
    * Returns the whole content of the given file as a string.
    */
-  public Observable<String> readFile(@NonNull File file) {
-    return ObservableUtils.fromSynchronousCall(() -> {
-      StringBuilder builder = new StringBuilder();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        builder.append(line);
-        builder.append('\n');
-      }
-      reader.close();
-      return builder.toString();
-    });
+  public Observable<byte[]> readFile(@NonNull File file) {
+    return ObservableUtils.fromSynchronousCall(() -> Files.toByteArray(file));
   }
 
 

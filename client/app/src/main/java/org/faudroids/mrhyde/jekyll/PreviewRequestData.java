@@ -3,18 +3,18 @@ package org.faudroids.mrhyde.jekyll;
 import java.util.List;
 
 /**
- * Data given to the server in case of a post
+ * Data sent to the preview server for rendering a single preview.
  */
-public final class RepoDetails {
+public final class PreviewRequestData {
 
     private String gitCheckoutUrl;
     private String gitDiff;
     private List<BinaryFile> staticFiles;
     private String clientSecret;
 
-    public RepoDetails() { }
+    public PreviewRequestData() { }
 
-    public RepoDetails(String gitCheckoutUrl, String gitDiff, List<BinaryFile> staticFiles, String clientSecret) {
+    public PreviewRequestData(String gitCheckoutUrl, String gitDiff, List<BinaryFile> staticFiles, String clientSecret) {
         this.gitCheckoutUrl = gitCheckoutUrl;
         this.gitDiff = gitDiff;
         this.staticFiles = staticFiles;
