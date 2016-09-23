@@ -8,6 +8,7 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.FileManager;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
+import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -134,11 +135,18 @@ public class JekyllManager {
 
 
   public Observable<Post> createNewPost(final String title, final File postDir) {
-    File targetFile = new File(postDir, postTitleToFilename(title));
-    return fileUtils
-        .createNewFile(targetFile)
-        .flatMap(nothing -> setupDefaultFrontMatter(targetFile, title))
-        .map(nothing -> new Post(title, Calendar.getInstance().getTime(), targetFile));
+    return ObservableUtils
+        .fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+          if (!postDir.exists()) if (!postDir.mkdir()) Timber.w("Failed to create posts dir");
+          return null;
+        })
+        .flatMap(aVoid -> {
+          File targetFile = new File(postDir, postTitleToFilename(title));
+          return fileUtils
+              .createNewFile(targetFile)
+              .flatMap(nothing -> setupDefaultFrontMatter(targetFile, title))
+              .map(nothing -> new Post(title, Calendar.getInstance().getTime(), targetFile));
+        });
   }
 
 
@@ -151,11 +159,18 @@ public class JekyllManager {
 
 
   public Observable<Draft> createNewDraft(final String title, File draftDir) {
-    File targetFile = new File(draftDir, draftTitleToFilename(title));
-    return fileUtils
-        .createNewFile(targetFile)
-        .flatMap(nothing -> setupDefaultFrontMatter(targetFile, title))
-        .map(nothing -> new Draft(title, targetFile));
+    return ObservableUtils
+        .fromSynchronousCall((ObservableUtils.Func<Void>) () -> {
+          if (!draftDir.exists()) if (!draftDir.mkdir()) Timber.w("Failed to create drafts dir");
+          return null;
+        })
+        .flatMap(aVoid -> {
+          File targetFile = new File(draftDir, draftTitleToFilename(title));
+          return fileUtils
+              .createNewFile(targetFile)
+              .flatMap(nothing -> setupDefaultFrontMatter(targetFile, title))
+              .map(nothing -> new Draft(title, targetFile));
+        });
   }
 
 
