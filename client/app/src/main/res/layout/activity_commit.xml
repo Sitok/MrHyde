@@ -115,6 +115,7 @@
                         android:layout_marginTop="10dp"
                         android:textColor="@color/gray_dark"
                         android:visibility="gone"
+                        android:typeface="monospace"
                         style="@style/Text"
                         />
 
