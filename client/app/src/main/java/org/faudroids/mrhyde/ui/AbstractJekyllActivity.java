@@ -15,6 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManagerFactory;
 import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
@@ -39,103 +40,109 @@ import butterknife.ButterKnife;
 import rx.Observable;
 
 abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparable<T>>
-		extends AbstractActionBarActivity
-		implements JekyllActionModeListener.ActionSelectionListener<T>  {
+    extends AbstractActionBarActivity
+    implements JekyllActionModeListener.ActionSelectionListener<T> {
 
-	private static final int REQUEST_COMMIT = 42;
+  private static final int REQUEST_COMMIT = 42;
 
-	static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
+  static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
 
 
-	@BindView(R.id.list) protected RecyclerView recyclerView;
-	protected AbstractAdapter adapter;
-	@Inject protected JekyllUiUtils jekyllUiUtils;
+  @BindView(R.id.list) protected RecyclerView recyclerView;
+  protected AbstractAdapter adapter;
+  @Inject protected JekyllUiUtils jekyllUiUtils;
 
-	@BindView(R.id.empty) protected TextView emptyView;
-	@BindView(R.id.add) protected AddFloatingActionButton addButton;
+  @BindView(R.id.empty) protected TextView emptyView;
+  @BindView(R.id.add) protected AddFloatingActionButton addButton;
 
-	protected GitHubRepository repository;
+  protected GitHubRepository repository;
   @Inject GitManagerFactory gitManagerFactory;
-	@Inject JekyllManagerFactory jekyllManagerFactory;
-	protected JekyllManager jekyllManager;
+  @Inject JekyllManagerFactory jekyllManagerFactory;
+  protected JekyllManager jekyllManager;
 
-	@Inject ActivityIntentFactory intentFactory;
+  @Inject protected FileUtils fileUtils;
 
-	private JekyllActionModeListener<T> actionModeListener;
+  @Inject ActivityIntentFactory intentFactory;
 
-	private final int
-			titleStringResource,
-			emptyStringResource,
-			moveActionStringResource,
-			movedConfirmationStringResource,
-			moveTitleStringResource,
-			moveMessageStringResource;
+  private JekyllActionModeListener<T> actionModeListener;
 
-
-	AbstractJekyllActivity(
-			int titleStringResource,
-			int emptyStringResource,
-			int moveActionStringResource,
-			int movedConfirmationStringResource,
-			int moveTitleStringResource,
-			int moveMessageStringResource) {
-
-		this.titleStringResource = titleStringResource;
-		this.emptyStringResource = emptyStringResource;
-		this.moveActionStringResource = moveActionStringResource;
-		this.movedConfirmationStringResource = movedConfirmationStringResource;
-		this.moveTitleStringResource = moveTitleStringResource;
-		this.moveMessageStringResource = moveMessageStringResource;
-	}
+  private final int
+      titleStringResource,
+      emptyStringResource,
+      moveActionStringResource,
+      movedConfirmationStringResource,
+      moveTitleStringResource,
+      moveMessageStringResource;
 
 
-	protected abstract void onAddClicked(JekyllUiUtils.OnContentCreatedListener<T> contentListener);
-	protected abstract Observable<List<T>> doLoadItems();
-	protected abstract AbstractAdapter createAdapter();
-	protected abstract Observable<?> createMoveObservable(T item);
-	protected abstract String getMovedFilenameForItem(T item); // what the item would be called if it were move to the other folder
+  AbstractJekyllActivity(
+      int titleStringResource,
+      int emptyStringResource,
+      int moveActionStringResource,
+      int movedConfirmationStringResource,
+      int moveTitleStringResource,
+      int moveMessageStringResource) {
+
+    this.titleStringResource = titleStringResource;
+    this.emptyStringResource = emptyStringResource;
+    this.moveActionStringResource = moveActionStringResource;
+    this.movedConfirmationStringResource = movedConfirmationStringResource;
+    this.moveTitleStringResource = moveTitleStringResource;
+    this.moveMessageStringResource = moveMessageStringResource;
+  }
 
 
-	@Override
-	public void onCreate(final Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+  protected abstract void onAddClicked(JekyllUiUtils.OnContentCreatedListener<T> contentListener);
+
+  protected abstract Observable<List<T>> doLoadItems();
+
+  protected abstract AbstractAdapter createAdapter();
+
+  protected abstract Observable<?> createMoveObservable(T item);
+
+  protected abstract String getMovedFilenameForItem(T item); // what the item would be called if it were move to the other folder
+
+
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_posts_or_drafts);
     ButterKnife.bind(this);
 
-		// get arguments
-		repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+    // get arguments
+    repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     jekyllManager = jekyllManagerFactory.createJekyllManager(
         gitManagerFactory.openRepository(repository)
     );
 
-		// set title
-		setTitle(getString(titleStringResource));
+    // set title
+    setTitle(getString(titleStringResource));
 
-		// setup list
-		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-		adapter = createAdapter();
-		recyclerView.setLayoutManager(layoutManager);
-		recyclerView.setAdapter(adapter);
-		recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+    // setup list
+    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+    adapter = createAdapter();
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setAdapter(adapter);
+    recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-		// setup add
-		addButton.setOnClickListener(v -> {
+    // setup add
+    addButton.setOnClickListener(v -> {
       actionModeListener.stopActionMode();
       onAddClicked(newItem -> adapter.addItem(newItem));
     });
 
-		// prepare action mode
-		actionModeListener = new JekyllActionModeListener<>(this, this, moveActionStringResource);
+    // prepare action mode
+    actionModeListener = new JekyllActionModeListener<>(this, this, moveActionStringResource);
 
-		// load posts
-		loadItems();
-	}
+    // load posts
+    loadItems();
+  }
 
 
-	private void loadItems() {
-		compositeSubscription.add(doLoadItems()
-				.compose(new DefaultTransformer<List<T>>())
-				.subscribe(items -> {
+  private void loadItems() {
+    compositeSubscription.add(doLoadItems()
+        .compose(new DefaultTransformer<List<T>>())
+        .subscribe(items -> {
           if (isSpinnerVisible()) hideSpinner();
           adapter.setItems(items);
           if (items.isEmpty()) {
@@ -145,82 +152,82 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
             emptyView.setVisibility(View.GONE);
           }
         }, new ErrorActionBuilder()
-						.add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to load content"))
-						.add(new HideSpinnerAction(AbstractJekyllActivity.this))
-						.build()));
-	}
+            .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to load content"))
+            .add(new HideSpinnerAction(AbstractJekyllActivity.this))
+            .build()));
+  }
 
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_posts, menu);
-		return true;
-	}
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_posts, menu);
+    return true;
+  }
 
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_commit:
-				startActivityForResult(intentFactory.createCommitIntent(repository), REQUEST_COMMIT);
-				return true;
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_commit:
+        startActivityForResult(intentFactory.createCommitIntent(repository), REQUEST_COMMIT);
+        return true;
 
-			case R.id.action_preview:
-				startActivity(intentFactory.createPreviewIntent(repository));
-				return true;
+      case R.id.action_preview:
+        startActivity(intentFactory.createPreviewIntent(repository));
+        return true;
 
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-
-	@Override
-	public void onActivityResult(int request, int result, Intent data) {
-		switch (request) {
-			case REQUEST_COMMIT:
-				if (result != RESULT_OK) return;
-				showSpinner();
-				loadItems();
-		}
-	}
+    }
+    return super.onOptionsItemSelected(item);
+  }
 
 
-	@Override
-	public void onDelete(final T item) {
-		new MaterialDialog.Builder(this)
-				.title(R.string.delete_title)
-				.content(getString(R.string.delete_message, item.getFileNode().getPath()))
+  @Override
+  public void onActivityResult(int request, int result, Intent data) {
+    switch (request) {
+      case REQUEST_COMMIT:
+        if (result != RESULT_OK) return;
+        showSpinner();
+        loadItems();
+    }
+  }
+
+
+  @Override
+  public void onDelete(final T item) {
+    new MaterialDialog.Builder(this)
+        .title(R.string.delete_title)
+        .content(getString(R.string.delete_message, item.getFile().getName()))
         .positiveText(R.string.action_delete)
-        .onPositive((dialog, which) -> {
-          showSpinner();
-          compositeSubscription.add(jekyllManager.deleteContent(item)
-              .compose(new DefaultTransformer<Void>())
-              .subscribe(aVoid -> {
-                hideSpinner();
-                loadItems();
-              }, new ErrorActionBuilder()
-                  .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to delete file"))
-                  .add(new HideSpinnerAction(AbstractJekyllActivity.this))
-                  .build()));
-        })
+
+        .onPositive((dialog, which) -> compositeSubscription.add(
+            fileUtils
+                .deleteFile(item.getFile())
+                .compose(new DefaultTransformer<>())
+                .subscribe(
+                    nothing -> loadItems(),
+                    new ErrorActionBuilder()
+                        .add(new DefaultErrorAction(this, "Failed to delete file"))
+                        .build()
+                )
+        ))
         .negativeText(android.R.string.cancel)
         .show();
   }
 
 
-	@Override
-	public void onEdit(T item) {
-		startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false));
-	}
+  @Override
+  public void onEdit(T item) {
+    startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false));
+  }
 
 
-	@Override
-	public void onMove(final T item) {
-		new MaterialDialog.Builder(this)
-				.title(moveTitleStringResource)
-				.content(getString(moveMessageStringResource, getMovedFilenameForItem(item)))
-				.positiveText(R.string.move)
+  @Override
+  public void onMove(final T item) {
+    new MaterialDialog.Builder(this)
+        .title(moveTitleStringResource)
+        .content(getString(moveMessageStringResource, getMovedFilenameForItem(item)))
+        .positiveText(R.string.move)
         .onPositive((dialog, which) -> createMoveObservable(item)
             .compose(new DefaultTransformer<>())
             .subscribe(o -> {
@@ -230,84 +237,84 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
                 .add(new DefaultErrorAction(AbstractJekyllActivity.this, "failed to move content"))
                 .build()))
         .negativeText(android.R.string.cancel)
-				.show();
-	}
+        .show();
+  }
 
 
-	@Override
-	public void onStopActionMode() {
-		adapter.notifyDataSetChanged();
-	}
+  @Override
+  public void onStopActionMode() {
+    adapter.notifyDataSetChanged();
+  }
 
 
-	abstract class AbstractAdapter extends RecyclerView.Adapter<AbstractAdapter.AbstractViewHolder> {
+  abstract class AbstractAdapter extends RecyclerView.Adapter<AbstractAdapter.AbstractViewHolder> {
 
-		private final List<T> itemsList = new ArrayList<>();
+    private final List<T> itemsList = new ArrayList<>();
 
-		@Override
-		public void onBindViewHolder(AbstractViewHolder holder, int position) {
-			holder.setItem(itemsList.get(position));
-		}
+    @Override
+    public void onBindViewHolder(AbstractViewHolder holder, int position) {
+      holder.setItem(itemsList.get(position));
+    }
 
-		@Override
-		public int getItemCount() {
-			return itemsList.size();
-		}
+    @Override
+    public int getItemCount() {
+      return itemsList.size();
+    }
 
-		public void setItems(List<T> itemsList) {
-			this.itemsList.clear();
-			this.itemsList.addAll(itemsList);
-			notifyDataSetChanged();
-		}
+    public void setItems(List<T> itemsList) {
+      this.itemsList.clear();
+      this.itemsList.addAll(itemsList);
+      notifyDataSetChanged();
+    }
 
-		public void addItem(T item) {
-			itemsList.add(item);
-			Collections.sort(itemsList);
-			notifyDataSetChanged();
-		}
+    public void addItem(T item) {
+      itemsList.add(item);
+      Collections.sort(itemsList);
+      notifyDataSetChanged();
+    }
 
-		public void removeItem(T item) {
-			itemsList.remove(item);
-			notifyDataSetChanged();
-		}
+    public void removeItem(T item) {
+      itemsList.remove(item);
+      notifyDataSetChanged();
+    }
 
 
-		abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
+    abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
 
-			protected final View view;
+      protected final View view;
 
-			public AbstractViewHolder(View view) {
-				super(view);
-				this.view = view;
-			}
+      public AbstractViewHolder(View view) {
+        super(view);
+        this.view = view;
+      }
 
-			public void setItem(final T item) {
-				// set on click
-				view.setOnClickListener(v -> {
+      public void setItem(final T item) {
+        // set on click
+        view.setOnClickListener(v -> {
           actionModeListener.stopActionMode();
           startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false));
         });
 
-				// set long click starts action mode
-				view.setOnLongClickListener(v -> {
+        // set long click starts action mode
+        view.setOnLongClickListener(v -> {
           if (actionModeListener.startActionMode(item)) {
             v.setSelected(true);
           }
           return true;
         });
 
-				// check if item is selected
-				if (item.equals(actionModeListener.getSelectedItem())) {
-					view.setSelected(true);
-				} else {
-					view.setSelected(false);
-				}
+        // check if item is selected
+        if (item.equals(actionModeListener.getSelectedItem())) {
+          view.setSelected(true);
+        } else {
+          view.setSelected(false);
+        }
 
-				doSetItem(item);
-			}
+        doSetItem(item);
+      }
 
-			protected abstract void doSetItem(T item);
-		}
-	}
+      protected abstract void doSetItem(T item);
+    }
+  }
 
 }
