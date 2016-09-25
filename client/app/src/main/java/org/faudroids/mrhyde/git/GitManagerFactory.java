@@ -3,6 +3,8 @@ package org.faudroids.mrhyde.git;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.google.common.io.Files;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.faudroids.mrhyde.github.GitHubRepository;
@@ -55,13 +57,31 @@ public class GitManagerFactory {
   }
 
   public Observable<GitManager> cloneRepository(@NonNull GitHubRepository repository) {
+    return cloneRepository(repository, false);
+  }
+
+  public Observable<GitManager> cloneRepository(@NonNull GitHubRepository repository, boolean importPreV1Repo) {
     return ObservableUtils.fromSynchronousCall(() -> {
       File rootDir = getRepoRootDir(repository);
+
+      // clone repo
       Git client = gitCommandAuthAdapter.wrap(Git
           .cloneRepository()
           .setURI(repository.getCloneUrl())
           .setDirectory(rootDir))
           .call();
+
+      // copy v1 files
+      File preV1RootDir = getPreV1RootDir(repository);
+      if (importPreV1Repo) {
+        copyFiles(preV1RootDir, rootDir);
+      }
+
+      // delete pre v1 files
+      if (preV1RootDir.exists()) {
+        fileUtils.deleteFile(preV1RootDir).toBlocking().first();
+      }
+
       return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
     });
   }
@@ -70,8 +90,6 @@ public class GitManagerFactory {
     return ObservableUtils.fromSynchronousCall(() -> {
       try {
         Git client = Git.open(getRepoRootDir(repository));
-        Timber.d("" + client.getRepository().getDirectory().exists());
-        Timber.d("" + client.getRepository().getDirectory());
         return client.getRepository().getDirectory().exists();
       } catch (RepositoryNotFoundException e) {
         return false;
@@ -79,8 +97,28 @@ public class GitManagerFactory {
     });
   }
 
+  public boolean canPreV1RepoBeImported(@NonNull GitHubRepository repository) {
+    File oldRootDir = getPreV1RootDir(repository);
+    return oldRootDir.exists() && oldRootDir.listFiles().length > 0;
+  }
+
   private File getRepoRootDir(@NonNull GitHubRepository repository) {
     return new File(context.getFilesDir(), PATH_REPOS_GITHUB + "/" + repository.getFullName());
+  }
+
+  private File getPreV1RootDir(@NonNull GitHubRepository repository) {
+    return new File(context.getFilesDir(), repository.getFullName());
+  }
+
+  private void copyFiles(@NonNull File from, @NonNull File to) throws IOException {
+    if (!from.isDirectory()) {
+      Files.copy(from, to);
+      return;
+    }
+    for (File file : from.listFiles()) {
+      if (file.getName().equals(".git")) continue;
+      copyFiles(file, new File(to, file.getName()));
+    }
   }
 
 }

@@ -32,6 +32,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import timber.log.Timber;
 
 public abstract class AbstractReposFragment extends AbstractFragment {
 
@@ -96,6 +97,23 @@ public abstract class AbstractReposFragment extends AbstractFragment {
                 return;
               }
 
+              // check for pre v1 repos that can be imported
+              if (gitManagerFactory.canPreV1RepoBeImported(repository)) {
+                new MaterialDialog
+                    .Builder(getActivity())
+                    .title(R.string.import_repo_title)
+                    .content(R.string.import_repo_message)
+                    .positiveText(R.string.import_repo_confirm)
+                    .negativeText(android.R.string.cancel)
+                    .checkBoxPromptRes(R.string.import_repo_check_import, true, null)
+                    .onPositive((dialog, which) -> {
+                      boolean importRepo = dialog.isPromptCheckBoxChecked();
+                      cloneRepository(repoIntent, repository, importRepo);
+                    })
+                    .show();
+                return;
+              }
+
               // clone repo
               new MaterialDialog
                   .Builder(getActivity())
@@ -104,17 +122,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
                   .positiveText(R.string.clone_repo_confirm)
                   .negativeText(android.R.string.cancel)
                   .onPositive((dialog, which) -> {
-                    showSpinner();
-                    gitManagerFactory
-                        .cloneRepository(repository)
-                        .compose(new DefaultTransformer<>())
-                        .subscribe(
-                            gitManager -> startActivityForResult(repoIntent, REQUEST_OVERVIEW),
-                            new ErrorActionBuilder()
-                                .add(new DefaultErrorAction(getActivity(), "Failed to repo status"))
-                                .add(new HideSpinnerAction(this))
-                                .build()
-                        );
+                    cloneRepository(repoIntent, repository, false);
                   })
                   .show();
             },
@@ -123,6 +131,21 @@ public abstract class AbstractReposFragment extends AbstractFragment {
             .build()
     );
 
+  }
+
+
+  private void cloneRepository(Intent repoIntent, GitHubRepository repository, boolean importPreV1Repo) {
+    showSpinner();
+    gitManagerFactory
+        .cloneRepository(repository, importPreV1Repo)
+        .compose(new DefaultTransformer<>())
+        .subscribe(
+            gitManager -> startActivityForResult(repoIntent, REQUEST_OVERVIEW),
+            new ErrorActionBuilder()
+                .add(new DefaultErrorAction(getActivity(), "Failed to repo status"))
+                .add(new HideSpinnerAction(this))
+                .build()
+        );
   }
 
 

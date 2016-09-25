@@ -47,6 +47,15 @@
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
     <string name="clone_repo_confirm">Clone</string>
 
+    <string name="import_repo_title">Import old repository</string>
+    <string name="import_repo_message">
+        Local repository detected. This version of MrHyde uses a format for repositories that is incompatible
+        with previous versions. You can try cloning this repo and importing changes from the old format, or simply only clone the repository
+        and start fresh.
+    </string>
+    <string name="import_repo_confirm">Clone</string>
+    <string name="import_repo_check_import">Import local repository</string>
+
     <string name="switch_branch_title">Select branch</string>
 
     <string name="select_destination_directory">Select destination directory</string>
