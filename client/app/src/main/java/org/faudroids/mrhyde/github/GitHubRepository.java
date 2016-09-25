@@ -40,16 +40,8 @@ public class GitHubRepository implements Serializable {
     return String.format("%s/%s", owner.getLogin(), repository.getName());
   }
 
-  public String getDefaultBranch() {
-    return repository.getDefaultBranch();
-  }
-
   public GitHubUser getOwner() {
     return owner;
-  }
-
-  public Repository getRepository() {
-    return repository;
   }
 
 }
