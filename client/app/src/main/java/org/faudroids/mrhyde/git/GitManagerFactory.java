@@ -24,6 +24,8 @@ import timber.log.Timber;
 @Singleton
 public class GitManagerFactory {
 
+  private static final String PATH_REPOS_GITHUB = "github";
+
   private final Context context;
   private final LoginManager loginManager;
   private final FileUtils fileUtils;
@@ -78,7 +80,7 @@ public class GitManagerFactory {
   }
 
   private File getRepoRootDir(@NonNull GitHubRepository repository) {
-    return new File(context.getFilesDir(), repository.getFullName());
+    return new File(context.getFilesDir(), PATH_REPOS_GITHUB + "/" + repository.getFullName());
   }
 
 }
