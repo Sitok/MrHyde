@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 
 import java.io.File;
 
@@ -24,7 +24,7 @@ public class ActivityIntentFactory {
 	}
 
 
-	public Intent createPostsIntent(GitHubRepository repository) {
+	public Intent createPostsIntent(Repository repository) {
 		Intent intent = new Intent(context, PostsActivity.class);
 		Bundle extras = new Bundle();
 		extras.putSerializable(PostsActivity.EXTRA_REPOSITORY, repository);
@@ -33,7 +33,7 @@ public class ActivityIntentFactory {
 	}
 
 
-	public Intent createDraftsIntent(GitHubRepository repository) {
+	public Intent createDraftsIntent(Repository repository) {
 		Intent intent = new Intent(context, DraftsActivity.class);
 		Bundle extras = new Bundle();
 		extras.putSerializable(DraftsActivity.EXTRA_REPOSITORY, repository);
@@ -42,7 +42,7 @@ public class ActivityIntentFactory {
 	}
 
 
-	public Intent createTextEditorIntent(GitHubRepository repository, File file, boolean isNewFile) {
+	public Intent createTextEditorIntent(Repository repository, File file, boolean isNewFile) {
 		Intent intent = new Intent(context, TextEditorActivity.class);
 		Bundle extras = createFileExtras(
 				TextEditorActivity.EXTRA_REPOSITORY, repository,
@@ -53,7 +53,7 @@ public class ActivityIntentFactory {
 	}
 
 
-	public Intent createImageViewerIntent(GitHubRepository repository, File file) {
+	public Intent createImageViewerIntent(Repository repository, File file) {
 		Intent intent = new Intent(context, ImageViewerActivity.class);
 		intent.putExtras(createFileExtras(
 				ImageViewerActivity.EXTRA_REPOSITORY, repository,
@@ -62,14 +62,14 @@ public class ActivityIntentFactory {
 	}
 
 
-	public Intent createPreviewIntent(GitHubRepository repository) {
+	public Intent createPreviewIntent(Repository repository) {
 		Intent previewIntent = new Intent(context, PreviewActivity.class);
 		previewIntent.putExtra(PreviewActivity.EXTRA_REPO, repository);
 		return previewIntent;
 	}
 
 
-	public Intent createCommitIntent(GitHubRepository repository) {
+	public Intent createCommitIntent(Repository repository) {
 		Intent commitIntent = new Intent(context, CommitActivity.class);
 		commitIntent.putExtra(CommitActivity.EXTRA_REPOSITORY, repository);
 		return commitIntent;
@@ -78,7 +78,7 @@ public class ActivityIntentFactory {
 
 	private Bundle createFileExtras(
 			String repositoryKey,
-			GitHubRepository repository,
+			Repository repository,
 			String fileKey,
 			File file) {
 

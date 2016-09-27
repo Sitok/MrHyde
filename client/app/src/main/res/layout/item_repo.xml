@@ -58,14 +58,6 @@
                 android:text="Foo bar foo bar foo bar foo bar"
                 />
 
-            <TextView
-                android:id="@+id/subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/never_pushed"
-                style="@style/TextSecondary"
-                />
-
         </LinearLayout>
 
     </RelativeLayout>

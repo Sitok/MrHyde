@@ -1,23 +1,21 @@
 package org.faudroids.mrhyde.github;
 
 
-import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
+import org.faudroids.mrhyde.git.Repository;
+import org.faudroids.mrhyde.git.RepositoryOwner;
+import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.exceptions.OnErrorThrowable;
 
 /**
  * Simple wrapper class for converting the GitHuh client methods into an async version
  * by using RxJava.
- *
- * Methods are added as needed.
  */
 public final class GitHubApiWrapper {
 
@@ -34,75 +32,37 @@ public final class GitHubApiWrapper {
 	}
 
 
-	public Observable<List<GitHubRepository>> getRepositories() {
-		return new Wrapper<List<Repository>>() {
-			@Override
-			protected List<Repository> doWrapMethod() throws Exception {
-				return repositoryService.getRepositories();
-      }
-    }
-        .wrapMethod()
+	public Observable<List<Repository>> getRepositories() {
+    return ObservableUtils
+        .fromSynchronousCall(repositoryService::getRepositories)
         .flatMap(Observable::from)
-        .map(GitHubRepository::new)
+        .map(Repository::fromGitHubRepository)
         .toList();
   }
 
 
-	public Observable<List<GitHubRepository>> getOrgRepositories(final String orgName) {
-		return new Wrapper<List<Repository>>() {
-			@Override
-			protected List<Repository> doWrapMethod() throws Exception {
-				return repositoryService.getOrgRepositories(orgName);
-			}
-    }
-        .wrapMethod()
+	public Observable<List<Repository>> getOrgRepositories(final String orgName) {
+    return ObservableUtils
+        .fromSynchronousCall(() -> repositoryService.getOrgRepositories(orgName))
         .flatMap(Observable::from)
-        .map(GitHubRepository::new)
+        .map(Repository::fromGitHubRepository)
         .toList();
   }
 
 
-	public Observable<GitHubRepository> getRepository(final String ownerLogin, final String repoName) {
-		return new Wrapper<Repository>() {
-			@Override
-			protected Repository doWrapMethod() throws Exception {
-				return repositoryService.getRepository(ownerLogin, repoName);
-			}
-		}
-        .wrapMethod()
-        .map(GitHubRepository::new);
+	public Observable<Repository> getRepository(final String ownerLogin, final String repoName) {
+    return ObservableUtils
+        .fromSynchronousCall(() -> repositoryService.getRepository(ownerLogin, repoName))
+        .map(Repository::fromGitHubRepository);
 	}
 
 
-	public Observable<List<GitHubUser>> getOrganizations() {
-		return new Wrapper<List<User>>() {
-			@Override
-			protected List<User> doWrapMethod() throws Exception {
-				return organizationService.getOrganizations();
-			}
-		}
-        .wrapMethod()
+	public Observable<List<RepositoryOwner>> getOrganizations() {
+    return ObservableUtils
+        .fromSynchronousCall(organizationService::getOrganizations)
         .flatMap(Observable::from)
-        .map(GitHubUser::new)
+        .map(RepositoryOwner::fromGitHubUser)
         .toList();
-	}
-
-
-	private static abstract class Wrapper<T> {
-
-		public Observable<T> wrapMethod() {
-			return Observable.defer(() -> {
-        try {
-          return Observable.just(doWrapMethod());
-        } catch (Exception e) {
-          throw OnErrorThrowable.from(e);
-        }
-
-      });
-		}
-
-		protected abstract T doWrapMethod() throws Exception;
-
 	}
 
 }

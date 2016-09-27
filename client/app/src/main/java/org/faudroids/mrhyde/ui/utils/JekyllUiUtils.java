@@ -15,7 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.base.Optional;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
@@ -83,7 +83,7 @@ public class JekyllUiUtils {
   public void showNewPostDialog(
       final Activity activity,
       final JekyllManager jekyllManager,
-      final GitHubRepository repository,
+      final Repository repository,
       final Optional<File> postsDir,
       final OnContentCreatedListener<Post> listener
   ) {
@@ -108,7 +108,7 @@ public class JekyllUiUtils {
   public void showNewDraftDialog(
       final Activity activity,
       final JekyllManager jekyllManager,
-      final GitHubRepository repository,
+      final Repository repository,
       final Optional<File> draftsDir,
       final OnContentCreatedListener<Draft> listener
 
@@ -131,7 +131,7 @@ public class JekyllUiUtils {
   private <T extends AbstractJekyllContent> void showNewJekyllContentDialog(
       final Activity activity,
       final NewJekyllContentStrategy<T> strategy,
-      final GitHubRepository repository,
+      final Repository repository,
       final OnContentCreatedListener<T> listener
   ) {
 

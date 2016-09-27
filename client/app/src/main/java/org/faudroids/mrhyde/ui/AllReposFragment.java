@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractReposFragment;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -25,7 +25,7 @@ public class AllReposFragment extends AbstractReposFragment {
   protected void loadRepositories() {
     showSpinner();
     compositeSubscription.add(gitHubManager.getAllRepositories()
-        .compose(new DefaultTransformer<Collection<GitHubRepository>>())
+        .compose(new DefaultTransformer<Collection<Repository>>())
         .subscribe(repositories -> {
           hideSpinner();
           repoAdapter.setItems(repositories);

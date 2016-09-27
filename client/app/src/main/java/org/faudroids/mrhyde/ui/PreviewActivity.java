@@ -16,7 +16,7 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.jekyll.PreviewManager;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -52,7 +52,7 @@ public class PreviewActivity extends AbstractActivity {
     ButterKnife.bind(this);
 
     // load arguments
-    GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPO);
+    Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPO);
     GitManager gitManager = gitManagerFactory.openRepository(repository);
 
     // setup preview view

@@ -16,7 +16,7 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -72,7 +72,7 @@ public final class CommitActivity extends AbstractActivity {
 
     setTitle(getString(R.string.title_commit));
     changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
-    final GitHubRepository repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+    final Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     final GitManager gitManager = gitManagerFactory.openRepository(repository);
 
     // load file content

@@ -9,7 +9,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.Branch;
 import org.faudroids.mrhyde.git.GitManager;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -34,14 +34,14 @@ public class GitActionBarMenu {
   private final AbstractActivity activity;
   private final ActionsListener actionsListener;
   private final GitManager gitManager;
-  private final GitHubRepository repository;
+  private final Repository repository;
   private final ActivityIntentFactory intentFactory;
 
   public GitActionBarMenu(
       AbstractActivity activity,
       ActionsListener actionsListener,
       GitManager gitManager,
-      GitHubRepository repository,
+      Repository repository,
       ActivityIntentFactory intentFactory) {
 
     this.activity = activity;

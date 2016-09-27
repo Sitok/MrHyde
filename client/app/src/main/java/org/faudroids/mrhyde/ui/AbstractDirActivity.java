@@ -13,7 +13,7 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
@@ -43,7 +43,7 @@ abstract class AbstractDirActivity extends AbstractActivity {
 
   @Inject GitManagerFactory gitManagerFactory;
   protected GitManager gitManager;
-	protected GitHubRepository repository;
+	protected Repository repository;
 	@Inject protected FileUtils fileUtils;
 
 	@Inject JekyllManagerFactory jekyllManagerFactory;
@@ -56,7 +56,7 @@ abstract class AbstractDirActivity extends AbstractActivity {
     ButterKnife.bind(this);
 
 		// get arguments
-		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     gitManager = gitManagerFactory.openRepository(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 

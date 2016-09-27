@@ -22,7 +22,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.FileUtils;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.ui.utils.UndoRedoEditText;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -71,7 +71,7 @@ public final class TextEditorActivity extends AbstractActivity {
   @BindView(R.id.line_numbers) protected TextView numLinesTextView;
 
   @Inject FileUtils fileUtils;
-  private GitHubRepository repository;
+  private Repository repository;
   private File file;
   private String savedFileContent; // last saved content
   private boolean showingLineNumbers;
@@ -87,7 +87,7 @@ public final class TextEditorActivity extends AbstractActivity {
     // load arguments
     final boolean isNewFile = getIntent().getBooleanExtra(EXTRA_IS_NEW_FILE, false);
     file = (File) getIntent().getSerializableExtra(EXTRA_FILE);
-    repository = (GitHubRepository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+    repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     setTitle(file.getName());
 
     // hide line numbers by default

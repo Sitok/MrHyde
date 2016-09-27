@@ -15,8 +15,8 @@ import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubManager;
-import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.ui.RepoOverviewActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -32,7 +32,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import timber.log.Timber;
 
 public abstract class AbstractReposFragment extends AbstractFragment {
 
@@ -82,7 +81,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
   protected abstract void loadRepositories();
 
 
-  protected void onRepositorySelected(GitHubRepository repository) {
+  protected void onRepositorySelected(Repository repository) {
     gitManagerFactory
         .hasRepositoryBeenCloned(repository)
         .compose(new DefaultTransformer<>())
@@ -134,7 +133,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
   }
 
 
-  private void cloneRepository(Intent repoIntent, GitHubRepository repository, boolean importPreV1Repo) {
+  private void cloneRepository(Intent repoIntent, Repository repository, boolean importPreV1Repo) {
     showSpinner();
     gitManagerFactory
         .cloneRepository(repository, importPreV1Repo)
@@ -151,7 +150,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 
   protected final class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.RepoViewHolder> {
 
-    private final List<GitHubRepository> repositoryList = new ArrayList<>();
+    private final List<Repository> repositoryList = new ArrayList<>();
 
 
     @Override
@@ -173,7 +172,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
     }
 
 
-    public void setItems(Collection<GitHubRepository> repositoryList) {
+    public void setItems(Collection<Repository> repositoryList) {
       this.repositoryList.clear();
       this.repositoryList.addAll(repositoryList);
       Collections.sort(
@@ -188,7 +187,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 
       private final View containerView;
       private final ImageView iconView;
-      private final TextView titleView, subTitleView;
+      private final TextView titleView;
       private final ImageView heartView;
 
       public RepoViewHolder(View view) {
@@ -196,20 +195,17 @@ public abstract class AbstractReposFragment extends AbstractFragment {
         this.containerView = view.findViewById(R.id.container);
         this.iconView = (ImageView) view.findViewById(R.id.icon);
         this.titleView = (TextView) view.findViewById(R.id.title);
-        this.subTitleView = (TextView) view.findViewById(R.id.subtitle);
         this.heartView = (ImageView) view.findViewById(R.id.heart);
       }
 
-      public void setRepo(final GitHubRepository repo) {
+      public void setRepo(final Repository repo) {
         Picasso.with(getActivity())
-            .load(repo.getOwner().getAvatarUrl())
+            .load(repo.getOwner().get().getAvatarUrl().orNull())
             .resizeDimen(R.dimen.card_icon_size, R.dimen.card_icon_size)
             .placeholder(R.drawable.octocat_black)
             .transform(new CircleTransformation())
             .into(iconView);
         titleView.setText(repo.getFullName());
-        if (repo.getPushedAt() != null)
-          subTitleView.setText(getString(R.string.repos_last_update, dateFormat.format(repo.getPushedAt())));
         containerView.setOnClickListener(v -> onRepositorySelected(repo));
         if (gitHubManager.isRepositoryFavourite(repo)) {
           heartView.setVisibility(View.VISIBLE);

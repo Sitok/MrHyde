@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -32,7 +32,7 @@ public class SelectRepoActivity extends AbstractActivity {
   }
 
 
-  protected void returnRepository(GitHubRepository repository) {
+  protected void returnRepository(Repository repository) {
     Intent data = new Intent();
     data.putExtra(RESULT_REPOSITORY, repository);
     setResult(RESULT_OK, data);
@@ -51,11 +51,11 @@ public class SelectRepoActivity extends AbstractActivity {
               gitHubManager.getFavouriteRepositories(),
               (allRepos, favouriteRepos) -> {
                 // show only not favourite repositories
-                Collection<GitHubRepository> filteredRepos = new ArrayList<>();
-                for (GitHubRepository repo : allRepos) {
+                Collection<Repository> filteredRepos = new ArrayList<>();
+                for (Repository repo : allRepos) {
                   boolean found = false;
-                  for (GitHubRepository favouriteRepo : favouriteRepos) {
-                    if (repo.getId() == favouriteRepo.getId()) {
+                  for (Repository favouriteRepo : favouriteRepos) {
+                    if (repo.getFullName().equals(favouriteRepo.getFullName())) {
                       found = true;
                       break;
                     }
@@ -64,7 +64,7 @@ public class SelectRepoActivity extends AbstractActivity {
                 }
                 return filteredRepos;
               })
-              .compose(new DefaultTransformer<Collection<GitHubRepository>>())
+              .compose(new DefaultTransformer<Collection<Repository>>())
               .subscribe(repositories -> {
                 hideSpinner();
                 repoAdapter.setItems(repositories);
@@ -75,7 +75,7 @@ public class SelectRepoActivity extends AbstractActivity {
     }
 
     @Override
-    protected void onRepositorySelected(GitHubRepository repository) {
+    protected void onRepositorySelected(Repository repository) {
       ((SelectRepoActivity) getActivity()).returnRepository(repository);
     }
 

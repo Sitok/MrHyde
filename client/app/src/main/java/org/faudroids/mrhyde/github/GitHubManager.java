@@ -4,6 +4,8 @@ package org.faudroids.mrhyde.github;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.faudroids.mrhyde.git.Repository;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ public final class GitHubManager {
 
   private final Context context;
   private final GitHubApiWrapper gitHubApiWrapper;
-  private Map<String, GitHubRepository> allRepositoryMap, favouriteRepositoriesMap;
+  private Map<String, Repository> allRepositoryMap, favouriteRepositoriesMap;
 
 
   @Inject
@@ -39,7 +41,7 @@ public final class GitHubManager {
   }
 
 
-  public Observable<Collection<GitHubRepository>> getAllRepositories() {
+  public Observable<Collection<Repository>> getAllRepositories() {
     // cache?
     if (allRepositoryMap != null) {
       return Observable.just(allRepositoryMap.values());
@@ -50,16 +52,16 @@ public final class GitHubManager {
         gitHubApiWrapper.getRepositories(),
         gitHubApiWrapper.getOrganizations()
             .flatMap(Observable::from)
-            .flatMap(org -> gitHubApiWrapper.getOrgRepositories(org.getLogin()))
+            .flatMap(org -> gitHubApiWrapper.getOrgRepositories(org.getUsername()))
             .toList(),
         (userRepos, orgRepos) -> {
-          List<GitHubRepository> allRepos = new ArrayList<>(userRepos);
-          for (List<GitHubRepository> repos : orgRepos) allRepos.addAll(repos);
+          List<Repository> allRepos = new ArrayList<>(userRepos);
+          for (List<Repository> repos : orgRepos) allRepos.addAll(repos);
           return allRepos;
         })
         .flatMap(repositories -> {
           allRepositoryMap = new HashMap<>();
-          for (GitHubRepository repository : repositories) {
+          for (Repository repository : repositories) {
             allRepositoryMap.put(repository.getFullName(), repository);
           }
           return Observable.just(allRepositoryMap.values());
@@ -74,7 +76,7 @@ public final class GitHubManager {
   }
 
 
-  public Observable<Collection<GitHubRepository>> getFavouriteRepositories() {
+  public Observable<Collection<Repository>> getFavouriteRepositories() {
     // get cached values
     if (favouriteRepositoriesMap != null) {
       return Observable.just(favouriteRepositoriesMap.values());
@@ -87,7 +89,7 @@ public final class GitHubManager {
     if (allRepositoryMap != null) {
       favouriteRepositoriesMap = new HashMap<>();
       for (String repoName : repoNames) {
-        GitHubRepository repo = allRepositoryMap.get(repoName);
+        Repository repo = allRepositoryMap.get(repoName);
         if (repo == null) {
           Timber.w("failed to find favourite repo " + repoName);
           unmarkRepositoryAsFavourite(repoName);
@@ -117,15 +119,15 @@ public final class GitHubManager {
         .toList()
         .flatMap(repositories -> {
           favouriteRepositoriesMap = new HashMap<>();
-          for (GitHubRepository repo : repositories) {
+          for (Repository repo : repositories) {
             favouriteRepositoriesMap.put(repo.getFullName(), repo);
           }
-          return Observable.<Collection<GitHubRepository>>just(repositories);
+          return Observable.<Collection<Repository>>just(repositories);
         });
   }
 
 
-  public void markRepositoryAsFavourite(GitHubRepository repository) {
+  public void markRepositoryAsFavourite(Repository repository) {
     Timber.d("marking repo %s as favourite", repository.getFullName());
     SharedPreferences.Editor editor
         = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
@@ -138,13 +140,13 @@ public final class GitHubManager {
   }
 
 
-  public boolean isRepositoryFavourite(GitHubRepository repository) {
+  public boolean isRepositoryFavourite(Repository repository) {
     SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     return prefs.contains(repository.getFullName());
   }
 
 
-  public void unmarkRepositoryAsFavourite(GitHubRepository repository) {
+  public void unmarkRepositoryAsFavourite(Repository repository) {
     unmarkRepositoryAsFavourite(repository.getFullName());
   }
 

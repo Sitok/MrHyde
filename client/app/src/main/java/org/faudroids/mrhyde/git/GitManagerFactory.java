@@ -7,7 +7,6 @@ import com.google.common.io.Files;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
@@ -45,7 +44,7 @@ public class GitManagerFactory {
     this.gitCommandAuthAdapter = gitCommandAuthAdapter;
   }
 
-  public GitManager openRepository(@NonNull final GitHubRepository repository) {
+  public GitManager openRepository(@NonNull final Repository repository) {
     try {
       File rootDir = getRepoRootDir(repository);
       Git client = Git.open(rootDir);
@@ -56,11 +55,7 @@ public class GitManagerFactory {
     }
   }
 
-  public Observable<GitManager> cloneRepository(@NonNull GitHubRepository repository) {
-    return cloneRepository(repository, false);
-  }
-
-  public Observable<GitManager> cloneRepository(@NonNull GitHubRepository repository, boolean importPreV1Repo) {
+  public Observable<GitManager> cloneRepository(@NonNull Repository repository, boolean importPreV1Repo) {
     return ObservableUtils.fromSynchronousCall(() -> {
       File rootDir = getRepoRootDir(repository);
 
@@ -86,7 +81,7 @@ public class GitManagerFactory {
     });
   }
 
-  public Observable<Boolean> hasRepositoryBeenCloned(@NonNull GitHubRepository repository) {
+  public Observable<Boolean> hasRepositoryBeenCloned(@NonNull Repository repository) {
     return ObservableUtils.fromSynchronousCall(() -> {
       try {
         Git client = Git.open(getRepoRootDir(repository));
@@ -97,16 +92,16 @@ public class GitManagerFactory {
     });
   }
 
-  public boolean canPreV1RepoBeImported(@NonNull GitHubRepository repository) {
+  public boolean canPreV1RepoBeImported(@NonNull Repository repository) {
     File oldRootDir = getPreV1RootDir(repository);
     return oldRootDir.exists() && oldRootDir.listFiles().length > 0;
   }
 
-  private File getRepoRootDir(@NonNull GitHubRepository repository) {
+  private File getRepoRootDir(@NonNull Repository repository) {
     return new File(context.getFilesDir(), PATH_REPOS_GITHUB + "/" + repository.getFullName());
   }
 
-  private File getPreV1RootDir(@NonNull GitHubRepository repository) {
+  private File getPreV1RootDir(@NonNull Repository repository) {
     return new File(context.getFilesDir(), repository.getFullName());
   }
 

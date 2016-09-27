@@ -10,7 +10,7 @@ import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.github.GitHubRepository;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractReposFragment;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -58,7 +58,7 @@ public final class FavouriteReposFragment extends AbstractReposFragment {
     }
     switch (requestCode) {
       case REQUEST_SELECT_REPOSITORY:
-        GitHubRepository repository = (GitHubRepository) data.getSerializableExtra(SelectRepoActivity.RESULT_REPOSITORY);
+        Repository repository = (Repository) data.getSerializableExtra(SelectRepoActivity.RESULT_REPOSITORY);
         gitHubManager.markRepositoryAsFavourite(repository);
         loadRepositories();
         return;
@@ -71,7 +71,7 @@ public final class FavouriteReposFragment extends AbstractReposFragment {
   protected void loadRepositories() {
     showSpinner();
     compositeSubscription.add(gitHubManager.getFavouriteRepositories()
-        .compose(new DefaultTransformer<Collection<GitHubRepository>>())
+        .compose(new DefaultTransformer<Collection<Repository>>())
         .subscribe(repositories -> {
           hideSpinner();
           if (repositories.size() == 0) {

@@ -29,8 +29,8 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubManager;
-import org.faudroids.mrhyde.github.GitHubRepository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
@@ -87,7 +87,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
 	@BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
 	@BindView(R.id.tint) protected View tintView;
 
-	private GitHubRepository repository;
+	private Repository repository;
 	@Inject JekyllManagerFactory jekyllManagerFactory;
 	private JekyllManager jekyllManager;
   @Inject GitHubManager gitHubManager;
@@ -107,7 +107,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
     ButterKnife.bind(this);
 
 		// get arguments
-		repository = (GitHubRepository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     gitManager = gitManagerFactory.openRepository(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 		setTitle(repository.getName());
@@ -179,7 +179,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
 
 		// load owner image
 		Picasso.with(this)
-				.load(repository.getOwner().getAvatarUrl())
+				.load(repository.getOwner().get().getAvatarUrl().orNull())
 				.resizeDimen(R.dimen.overview_owner_icon_size_max, R.dimen.overview_owner_icon_size_max)
 				.placeholder(R.drawable.octocat_black)
 				.into(repoOwnerImage);
