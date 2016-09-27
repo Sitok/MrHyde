@@ -88,7 +88,7 @@ public class PreviewManager {
     return "https://"
         + loginManager.getAccount().getAccessToken()
         + ":x-oauth-basic@"
-        + gitManager.getRepositoro().getCloneUrl().replaceFirst("https://", "");
+        + gitManager.getRepository().getCloneUrl().replaceFirst("https://", "");
   }
 
   private Observable<Set<String>> getChangedBinaryFiles(GitManager gitManager) {

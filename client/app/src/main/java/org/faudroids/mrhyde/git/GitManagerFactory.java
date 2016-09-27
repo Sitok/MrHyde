@@ -23,7 +23,7 @@ import timber.log.Timber;
  * Creates {@link GitManager} instances.
  */
 @Singleton
-public class GitManagerFactory {
+class GitManagerFactory {
 
   private static final String PATH_REPOS_GITHUB = "github";
 

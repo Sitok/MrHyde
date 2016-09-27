@@ -15,7 +15,7 @@ import android.webkit.WebViewClient;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
-import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.jekyll.PreviewManager;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
@@ -36,7 +36,7 @@ public class PreviewActivity extends AbstractActivity {
 
   static final String EXTRA_REPO = "EXTRA_REPO";
 
-  @Inject GitManagerFactory gitManagerFactory;
+  @Inject RepositoriesManager repositoriesManager;
   @Inject PreviewManager previewManager;
   @BindView(R.id.web_view) protected WebView webView;
 
@@ -53,7 +53,7 @@ public class PreviewActivity extends AbstractActivity {
 
     // load arguments
     Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPO);
-    GitManager gitManager = gitManagerFactory.openRepository(repository);
+    GitManager gitManager = repositoriesManager.openRepository(repository);
 
     // setup preview view
     webView.getSettings().setJavaScriptEnabled(true);

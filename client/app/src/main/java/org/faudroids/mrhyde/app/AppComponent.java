@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.app;
 
+import org.faudroids.mrhyde.git.GitModule;
 import org.faudroids.mrhyde.github.GitHubModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
 import org.faudroids.mrhyde.ui.AllReposFragment;
@@ -23,7 +24,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {AppModule.class, GitHubModule.class, JekyllModule.class})
+@Component(modules = {AppModule.class, GitHubModule.class, JekyllModule.class, GitModule.class})
 public interface AppComponent {
   void inject(MrHydeApp app);
   void inject(LoginActivity activity);

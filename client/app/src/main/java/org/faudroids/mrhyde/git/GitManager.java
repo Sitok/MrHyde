@@ -64,7 +64,7 @@ public class GitManager {
   }
 
 
-  public Observable<Void> deleteAllLocalContent() {
+  Observable<Void> deleteAllLocalContent() {
     return fileUtils.deleteFile(rootDir);
   }
 
@@ -72,7 +72,7 @@ public class GitManager {
     return rootDir;
   }
 
-  public Repository getRepositoro() {
+  public Repository getRepository() {
     return repository;
   }
 

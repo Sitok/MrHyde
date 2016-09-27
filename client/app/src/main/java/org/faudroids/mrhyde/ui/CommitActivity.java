@@ -15,7 +15,7 @@ import org.eclipse.jgit.api.Status;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
-import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
@@ -60,7 +60,7 @@ public final class CommitActivity extends AbstractActivity {
 
   @BindView(R.id.commit_button) protected Button commitButton;
 
-  @Inject GitManagerFactory gitManagerFactory;
+  @Inject RepositoriesManager repositoriesManager;
 
 
   @Override
@@ -73,7 +73,7 @@ public final class CommitActivity extends AbstractActivity {
     setTitle(getString(R.string.title_commit));
     changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
     final Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-    final GitManager gitManager = gitManagerFactory.openRepository(repository);
+    final GitManager gitManager = repositoriesManager.openRepository(repository);
 
     // load file content
     compositeSubscription.add(Observable.zip(

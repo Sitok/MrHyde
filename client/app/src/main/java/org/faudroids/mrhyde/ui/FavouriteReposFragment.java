@@ -70,7 +70,7 @@ public final class FavouriteReposFragment extends AbstractReposFragment {
   @Override
   protected void loadRepositories() {
     showSpinner();
-    compositeSubscription.add(gitHubManager.getFavouriteRepositories()
+    compositeSubscription.add(repositoriesManager.getClonedRepositories()
         .compose(new DefaultTransformer<Collection<Repository>>())
         .subscribe(repositories -> {
           hideSpinner();

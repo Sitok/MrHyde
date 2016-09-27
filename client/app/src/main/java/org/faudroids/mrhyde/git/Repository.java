@@ -15,6 +15,7 @@ public class Repository implements Serializable {
   protected final String cloneUrl;
   protected final Optional<RepositoryOwner> owner;
 
+
   public Repository(
       @NonNull String name,
       @NonNull String cloneUrl,

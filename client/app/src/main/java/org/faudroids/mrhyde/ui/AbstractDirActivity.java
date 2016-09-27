@@ -12,7 +12,7 @@ import android.widget.TextView;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
-import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
 import org.faudroids.mrhyde.jekyll.JekyllManagerFactory;
@@ -41,7 +41,7 @@ abstract class AbstractDirActivity extends AbstractActivity {
 	@BindView(R.id.list) protected RecyclerView recyclerView;
 	protected FileAdapter fileAdapter;
 
-  @Inject GitManagerFactory gitManagerFactory;
+  @Inject RepositoriesManager repositoriesManager;
   protected GitManager gitManager;
 	protected Repository repository;
 	@Inject protected FileUtils fileUtils;
@@ -57,7 +57,7 @@ abstract class AbstractDirActivity extends AbstractActivity {
 
 		// get arguments
 		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-    gitManager = gitManagerFactory.openRepository(repository);
+    gitManager = repositoriesManager.openRepository(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 
 		// setup list

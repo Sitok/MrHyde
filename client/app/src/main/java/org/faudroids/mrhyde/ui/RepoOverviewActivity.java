@@ -28,7 +28,7 @@ import com.squareup.picasso.Picasso;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.git.GitManager;
-import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
@@ -91,7 +91,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
 	@Inject JekyllManagerFactory jekyllManagerFactory;
 	private JekyllManager jekyllManager;
   @Inject GitHubManager gitHubManager;
-  @Inject GitManagerFactory gitManagerFactory;
+  @Inject RepositoriesManager repositoriesManager;
   private GitManager gitManager;
 
 	@Inject ActivityIntentFactory intentFactory;
@@ -108,7 +108,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
 
 		// get arguments
 		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-    gitManager = gitManagerFactory.openRepository(repository);
+    gitManager = repositoriesManager.openRepository(repository);
 		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
 		setTitle(repository.getName());
 
@@ -333,8 +333,8 @@ public final class RepoOverviewActivity extends AbstractActivity {
             .negativeText(android.R.string.cancel)
             .onPositive((dialog, which) -> {
               showSpinner();
-              gitManager
-                  .deleteAllLocalContent()
+              repositoriesManager
+                  .deleteRepository(gitManager)
                   .compose(new DefaultTransformer<>())
                   .subscribe(
                       aVoid -> finish(),

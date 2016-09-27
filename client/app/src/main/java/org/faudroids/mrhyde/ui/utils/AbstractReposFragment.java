@@ -14,7 +14,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
-import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.ui.RepoOverviewActivity;
@@ -39,7 +39,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
   private static final DateFormat dateFormat = DateFormat.getDateInstance();
 
   @Inject protected GitHubManager gitHubManager;
-  @Inject GitManagerFactory gitManagerFactory;
+  @Inject protected RepositoriesManager repositoriesManager;
 
   @BindView(R.id.list) protected RecyclerView recyclerView;
   protected RepositoryAdapter repoAdapter;
@@ -82,7 +82,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 
 
   protected void onRepositorySelected(Repository repository) {
-    gitManagerFactory
+    repositoriesManager
         .hasRepositoryBeenCloned(repository)
         .compose(new DefaultTransformer<>())
         .subscribe(
@@ -97,7 +97,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
               }
 
               // check for pre v1 repos that can be imported
-              if (gitManagerFactory.canPreV1RepoBeImported(repository)) {
+              if (repositoriesManager.canPreV1RepoBeImported(repository)) {
                 new MaterialDialog
                     .Builder(getActivity())
                     .title(R.string.import_repo_title)
@@ -135,7 +135,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 
   private void cloneRepository(Intent repoIntent, Repository repository, boolean importPreV1Repo) {
     showSpinner();
-    gitManagerFactory
+    repositoriesManager
         .cloneRepository(repository, importPreV1Repo)
         .compose(new DefaultTransformer<>())
         .subscribe(

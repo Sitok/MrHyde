@@ -16,7 +16,7 @@ import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.FileUtils;
-import org.faudroids.mrhyde.git.GitManagerFactory;
+import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
@@ -56,7 +56,7 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
   @BindView(R.id.add) protected AddFloatingActionButton addButton;
 
   protected Repository repository;
-  @Inject GitManagerFactory gitManagerFactory;
+  @Inject RepositoriesManager repositoriesManager;
   @Inject JekyllManagerFactory jekyllManagerFactory;
   protected JekyllManager jekyllManager;
 
@@ -112,7 +112,7 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
     // get arguments
     repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     jekyllManager = jekyllManagerFactory.createJekyllManager(
-        gitManagerFactory.openRepository(repository)
+        repositoriesManager.openRepository(repository)
     );
 
     // set title
