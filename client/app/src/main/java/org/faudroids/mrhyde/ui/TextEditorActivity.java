@@ -172,6 +172,7 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
     if (!isEditMode()) {
       menu.findItem(R.id.action_undo).setVisible(false);
       menu.findItem(R.id.action_redo).setVisible(false);
+      menu.findItem(R.id.action_insert_markdown).setVisible(false);
     }
 
     return true;
