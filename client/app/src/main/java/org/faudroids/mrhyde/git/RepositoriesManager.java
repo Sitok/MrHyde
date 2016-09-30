@@ -63,11 +63,6 @@ public class RepositoriesManager {
         });
   }
 
-  @Deprecated
-  public Observable<Boolean> hasRepositoryBeenCloned(Repository repository) {
-    return gitManagerFactory.hasRepositoryBeenCloned(repository);
-  }
-
   /**
    * Opens a clone repository (= create an instance of {@link GitManager}).
    */
