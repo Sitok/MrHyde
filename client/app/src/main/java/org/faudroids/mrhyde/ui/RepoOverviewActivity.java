@@ -243,7 +243,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
           if (jekyllContent.drafts.isEmpty()) draftsCard.setVisibility(View.GONE);
           else draftsCard.setVisibility(View.VISIBLE);
 
-          // refresh action bar backgroud drawable
+          // refresh action bar background drawable
           onScrollChanged();
 
         }, new ErrorActionBuilder()

@@ -42,7 +42,6 @@
         <activity android:name=".ui.ImageViewerActivity" />
         <activity android:name=".ui.CommitActivity" />
         <activity android:name=".ui.PreviewActivity" />
-        <activity android:name=".ui.SelectRepoActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
