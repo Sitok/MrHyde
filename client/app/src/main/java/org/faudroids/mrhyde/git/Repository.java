@@ -12,17 +12,19 @@ import java.io.Serializable;
  */
 public class Repository implements Serializable {
 
-  protected final String name;
-  protected final String cloneUrl;
-  protected final Optional<RepositoryOwner> owner;
-
+  private final String name;
+  private final String cloneUrl;
+  private final boolean isFavorite;
+  private final Optional<RepositoryOwner> owner;
 
   public Repository(
       @NonNull String name,
       @NonNull String cloneUrl,
+      boolean isFavorite,
       @NonNull Optional<RepositoryOwner> owner) {
     this.name = name;
     this.cloneUrl = cloneUrl;
+    this.isFavorite = isFavorite;
     this.owner = owner;
   }
 
@@ -38,6 +40,10 @@ public class Repository implements Serializable {
     return owner;
   }
 
+  public boolean isFavorite() {
+    return isFavorite;
+  }
+
   public String getFullName() {
     if (!owner.isPresent()) {
       return name;
@@ -50,20 +56,22 @@ public class Repository implements Serializable {
     if (this == o) return true;
     if (!(o instanceof Repository)) return false;
     Repository that = (Repository) o;
-    return Objects.equal(name, that.name) &&
+    return isFavorite == that.isFavorite &&
+        Objects.equal(name, that.name) &&
         Objects.equal(cloneUrl, that.cloneUrl) &&
         Objects.equal(owner, that.owner);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, cloneUrl, owner);
+    return Objects.hashCode(name, cloneUrl, owner, isFavorite);
   }
 
   public static Repository fromGitHubRepository(org.eclipse.egit.github.core.Repository gitHubRepo) {
     return new Repository(
         gitHubRepo.getName(),
         gitHubRepo.getCloneUrl(),
+        false,
         Optional.of(RepositoryOwner.fromGitHubUser(gitHubRepo.getOwner()))
     );
   }

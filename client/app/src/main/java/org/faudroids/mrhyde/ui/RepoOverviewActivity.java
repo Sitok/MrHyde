@@ -190,19 +190,26 @@ public final class RepoOverviewActivity extends AbstractActivity {
     scrollView.setOnScrollListener((scrollView1, l, t, oldL, oldT) -> RepoOverviewActivity.this.onScrollChanged());
 
     // setup favourite button
-    if (gitHubManager.isRepositoryFavourite(repository)) {
+    if (repository.isFavorite()) {
       favouriteButton.setSelected(true);
     }
     favouriteButton.setOnClickListener(v -> {
-      if (favouriteButton.isSelected()) {
-        gitHubManager.unmarkRepositoryAsFavourite(repository);
-        favouriteButton.setSelected(false);
-        Toast.makeText(RepoOverviewActivity.this, getString(R.string.unmarked_toast), Toast.LENGTH_SHORT).show();
-      } else {
-        gitHubManager.markRepositoryAsFavourite(repository);
-        favouriteButton.setSelected(true);
-        Toast.makeText(RepoOverviewActivity.this, getString(R.string.marked_toast), Toast.LENGTH_SHORT).show();
-      }
+      compositeSubscription.add(repositoriesManager
+          .setRepositoryFavoriteStatus(repository, !repository.isFavorite())
+          .compose(new DefaultTransformer<>())
+          .subscribe(
+              updatedRepository -> {
+                repository = updatedRepository;
+                favouriteButton.setSelected(repository.isFavorite());
+                Toast.makeText(
+                    RepoOverviewActivity.this,
+                    getString(repository.isFavorite() ? R.string.marked_toast : R.string.unmarked_toast),
+                    Toast.LENGTH_SHORT
+                ).show();
+              }, new ErrorActionBuilder()
+                  .add(new DefaultErrorAction(RepoOverviewActivity.this, "failed to set favorite status"))
+                  .add(new HideSpinnerAction(RepoOverviewActivity.this))
+                  .build()));
     });
 
     // git related menu items

@@ -101,6 +101,25 @@ public class RepositoriesManager {
   }
 
   /**
+   * Sets the favorite field of a repository.
+   * @return the updated repository.
+   */
+  public Observable<Repository> setRepositoryFavoriteStatus(Repository repository, boolean isFavorite) {
+    Repository updatedRepo = new Repository(
+        repository.getName(),
+        repository.getCloneUrl(),
+        isFavorite,
+        repository.getOwner()
+    );
+    repositoriesCache.remove(repository);
+    repositoriesCache.add(updatedRepo);
+    return ObservableUtils.fromSynchronousCall(() -> {
+      repositoriesDb.put(KEY_REPOS, repositoriesCache.toArray());
+      return updatedRepo;
+    });
+  }
+
+  /**
    * Checks if a pre v1 repository can be imported.
    */
   public boolean canPreV1RepoBeImported(@NonNull Repository repository) {

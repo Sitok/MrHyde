@@ -17,6 +17,7 @@ import org.faudroids.mrhyde.ui.utils.CircleTransformation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -52,11 +53,22 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
 
   public void setItems(Collection<Repository> repositoryList) {
     this.repositoryList.clear();
-    this.repositoryList.addAll(repositoryList);
+    List<Repository> nonFavoriteRepositories = new ArrayList<>(repositoryList);
+
+    // sort alphabetically and by favorite status
     Collections.sort(
-        this.repositoryList,
+        nonFavoriteRepositories,
         (lhs, rhs) -> lhs.getFullName().compareTo(rhs.getFullName())
     );
+
+    Iterator<Repository> iter = nonFavoriteRepositories.iterator();
+    while (iter.hasNext()) {
+      Repository repo = iter.next();
+      if (!repo.isFavorite()) continue;
+      this.repositoryList.add(repo);
+      iter.remove();
+    }
+    this.repositoryList.addAll(nonFavoriteRepositories);
     notifyDataSetChanged();
   }
 
@@ -66,12 +78,14 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
     private final View containerView;
     private final ImageView iconView;
     private final TextView titleView;
+    private final View heartView;
 
     public RepoViewHolder(View view) {
       super(view);
       this.containerView = view.findViewById(R.id.container);
       this.iconView = (ImageView) view.findViewById(R.id.icon);
       this.titleView = (TextView) view.findViewById(R.id.title);
+      this.heartView = view.findViewById(R.id.heart);
     }
 
     public void setRepo(final Repository repo) {
@@ -83,6 +97,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
           .into(iconView);
       titleView.setText(repo.getFullName());
       containerView.setOnClickListener(v -> selectionListener.onRepositorySelected(repo));
+      heartView.setVisibility(repo.isFavorite() ? View.VISIBLE : View.GONE);
     }
   }
 

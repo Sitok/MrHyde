@@ -38,6 +38,7 @@ public class GitModule {
             public void write(Kryo kryo, Output output, Repository repository) {
               output.writeString(repository.getName());
               output.writeString(repository.getCloneUrl());
+              output.writeBoolean(repository.isFavorite());
               RepositoryOwner owner = repository.getOwner().orNull();
               if (owner != null) {
                 output.writeString(owner.getUsername());
@@ -51,13 +52,14 @@ public class GitModule {
             public Repository read(Kryo kryo, Input input, Class<Repository> type) {
               String name = input.readString();
               String cloneUrl = input.readString();
+              boolean isFavorite = input.readBoolean();
 
               String username = input.readString();
               String avatarUrl = input.readString();
               RepositoryOwner owner = null;
               if (username != null) owner = new RepositoryOwner(username, Optional.fromNullable(avatarUrl));
 
-              return new Repository(name, cloneUrl, Optional.fromNullable(owner));
+              return new Repository(name, cloneUrl, isFavorite, Optional.fromNullable(owner));
             }
           })
           .build();
