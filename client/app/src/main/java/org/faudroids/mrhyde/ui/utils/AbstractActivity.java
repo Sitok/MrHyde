@@ -22,13 +22,15 @@ public abstract class AbstractActivity extends AppCompatActivity {
 	@BindView(R.id.spinner) protected View spinnerContainerView;
 	@BindView(R.id.spinner_image) protected ImageView spinnerImageView;
 
+  protected boolean showBackButton = true;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// show action bar back button
 		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
+		if (actionBar != null && showBackButton) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			actionBar.setHomeButtonEnabled(true);
 		}

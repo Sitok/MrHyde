@@ -4,6 +4,7 @@ import org.faudroids.mrhyde.git.GitModule;
 import org.faudroids.mrhyde.github.GitHubModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
 import org.faudroids.mrhyde.ui.AllReposFragment;
+import org.faudroids.mrhyde.ui.ClonedReposActivity;
 import org.faudroids.mrhyde.ui.CommitActivity;
 import org.faudroids.mrhyde.ui.DirActivity;
 import org.faudroids.mrhyde.ui.DraftsActivity;
@@ -15,7 +16,9 @@ import org.faudroids.mrhyde.ui.PostsActivity;
 import org.faudroids.mrhyde.ui.PreviewActivity;
 import org.faudroids.mrhyde.ui.RepoOverviewActivity;
 import org.faudroids.mrhyde.ui.SelectDirActivity;
+import org.faudroids.mrhyde.ui.CloneGitHubRepoActivity;
 import org.faudroids.mrhyde.ui.SelectRepoActivity;
+import org.faudroids.mrhyde.ui.SettingsActivity;
 import org.faudroids.mrhyde.ui.SettingsFragment;
 import org.faudroids.mrhyde.ui.TextEditorActivity;
 
@@ -28,6 +31,9 @@ import dagger.Component;
 public interface AppComponent {
   void inject(MrHydeApp app);
   void inject(LoginActivity activity);
+  void inject(ClonedReposActivity activity);
+  void inject(CloneGitHubRepoActivity activity);
+  void inject(SettingsActivity activity);
   void inject(MainDrawerActivity activity);
   void inject(SelectRepoActivity activity);
   void inject(PostsActivity activity);

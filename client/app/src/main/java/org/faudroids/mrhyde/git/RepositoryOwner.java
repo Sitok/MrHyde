@@ -2,6 +2,7 @@ package org.faudroids.mrhyde.git;
 
 import android.support.annotation.NonNull;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 import org.eclipse.egit.github.core.User;
@@ -31,6 +32,19 @@ public class RepositoryOwner implements Serializable {
     return avatarUrl;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof RepositoryOwner)) return false;
+    RepositoryOwner that = (RepositoryOwner) o;
+    return Objects.equal(username, that.username) &&
+        Objects.equal(avatarUrl, that.avatarUrl);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(username, avatarUrl);
+  }
 
   public static RepositoryOwner fromGitHubUser(User gitHubUser) {
     return new RepositoryOwner(

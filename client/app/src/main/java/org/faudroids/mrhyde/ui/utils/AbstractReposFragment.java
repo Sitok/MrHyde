@@ -46,7 +46,7 @@ public abstract class AbstractReposFragment extends AbstractFragment {
 
 
   public AbstractReposFragment() {
-    this(R.layout.fragment_repos);
+    this(R.layout.activity_cloned_repos);
   }
 
 

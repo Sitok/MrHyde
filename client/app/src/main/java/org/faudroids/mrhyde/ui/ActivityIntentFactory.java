@@ -24,20 +24,22 @@ public class ActivityIntentFactory {
 	}
 
 
+  public Intent createRepoOverviewIntent(Repository repository) {
+    Intent intent = new Intent(context, RepoOverviewActivity.class);
+    intent.putExtra(RepoOverviewActivity.EXTRA_REPOSITORY, repository);
+    return intent;
+  }
+
 	public Intent createPostsIntent(Repository repository) {
 		Intent intent = new Intent(context, PostsActivity.class);
-		Bundle extras = new Bundle();
-		extras.putSerializable(PostsActivity.EXTRA_REPOSITORY, repository);
-		intent.putExtras(extras);
+    intent.putExtra(PostsActivity.EXTRA_REPOSITORY, repository);
 		return intent;
 	}
 
 
 	public Intent createDraftsIntent(Repository repository) {
 		Intent intent = new Intent(context, DraftsActivity.class);
-		Bundle extras = new Bundle();
-		extras.putSerializable(DraftsActivity.EXTRA_REPOSITORY, repository);
-		intent.putExtras(extras);
+    intent.putExtra(DraftsActivity.EXTRA_REPOSITORY, repository);
 		return intent;
 	}
 

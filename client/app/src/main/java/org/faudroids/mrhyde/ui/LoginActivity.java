@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -22,7 +21,6 @@ import org.faudroids.mrhyde.github.Email;
 import org.faudroids.mrhyde.github.GitHubAuthApi;
 import org.faudroids.mrhyde.github.GitHubEmailsApi;
 import org.faudroids.mrhyde.github.LoginManager;
-import org.faudroids.mrhyde.github.TokenDetails;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -41,8 +39,6 @@ import javax.net.ssl.HttpsURLConnection;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 
@@ -78,13 +74,10 @@ public final class LoginActivity extends AbstractActivity {
 		}
 
 		// setup UI
-		loginButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				loginRunning = true;
-				startLogin(null);
-			}
-		});
+		loginButton.setOnClickListener(arg0 -> {
+      loginRunning = true;
+      startLogin(null);
+    });
 
 		// check for interrupted login attempt
 		if (savedInstanceState != null) {
@@ -156,48 +149,42 @@ public final class LoginActivity extends AbstractActivity {
 		String clientSecret = getString(R.string.gitHubClientSecret);
 		showSpinner();
 		compositeSubscription.add(gitHubAuthApi.getAccessToken(clientId, clientSecret, code)
-				.flatMap(new Func1<TokenDetails, Observable<LoginManager.Account>>() {
-					@Override
-					public Observable<LoginManager.Account> call(TokenDetails tokenDetails) {
-						try {
-							// load user
-							UserService userService = new UserService();
-							userService.getClient().setOAuth2Token(tokenDetails.getAccessToken());
-							User user = userService.getUser();
-							List<Email> emails = gitHubEmailsApi.getEmails(tokenDetails.getAccessToken());
-							Email primaryEmail = null;
-							for (Email email : emails) {
-								if (email.isPrimary()) {
-									primaryEmail = email;
-									break;
-								}
-							}
-							if (primaryEmail == null && !emails.isEmpty()) primaryEmail = emails.get(0);
-							String emailString = (primaryEmail == null) ? "dummy" : primaryEmail.getEmail();
+				.flatMap(tokenDetails -> {
+          try {
+            // load user
+            UserService userService = new UserService();
+            userService.getClient().setOAuth2Token(tokenDetails.getAccessToken());
+            User user = userService.getUser();
+            List<Email> emails = gitHubEmailsApi.getEmails(tokenDetails.getAccessToken());
+            Email primaryEmail = null;
+            for (Email email : emails) {
+              if (email.isPrimary()) {
+                primaryEmail = email;
+                break;
+              }
+            }
+            if (primaryEmail == null && !emails.isEmpty()) primaryEmail = emails.get(0);
+            String emailString = (primaryEmail == null) ? "dummy" : primaryEmail.getEmail();
 
-							// load avatar
-							URL url = new URL(user.getAvatarUrl());
-							HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-							connection.setDoInput(true);
-							connection.connect();
-							InputStream input = connection.getInputStream();
-							Bitmap avatar = BitmapFactory.decodeStream(input);
-							return Observable.just(new LoginManager.Account(tokenDetails.getAccessToken(), user.getLogin(), emailString, avatar));
+            // load avatar
+            URL url = new URL(user.getAvatarUrl());
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap avatar = BitmapFactory.decodeStream(input);
+            return Observable.just(new LoginManager.Account(tokenDetails.getAccessToken(), user.getLogin(), emailString, avatar));
 
-						} catch (IOException e) {
-							return Observable.error(e);
-						}
-					}
-				})
+          } catch (IOException e) {
+            return Observable.error(e);
+          }
+        })
 				.compose(new DefaultTransformer<LoginManager.Account>())
-				.subscribe(new Action1<LoginManager.Account>() {
-					@Override
-					public void call(LoginManager.Account account) {
-						Timber.d("gotten token " + account.getAccessToken());
-						loginManager.setAccount(account);
-						onLoginSuccess();
-					}
-				}, new ErrorActionBuilder()
+				.subscribe(account -> {
+          Timber.d("gotten token " + account.getAccessToken());
+          loginManager.setAccount(account);
+          onLoginSuccess();
+        }, new ErrorActionBuilder()
 						.add(new DefaultErrorAction(this, "failed to get token"))
 						.add(new HideSpinnerAction(this))
 						.build()));
@@ -205,7 +192,7 @@ public final class LoginActivity extends AbstractActivity {
 
 
 	private void onLoginSuccess() {
-		startActivity(new Intent(LoginActivity.this, MainDrawerActivity.class));
+		startActivity(new Intent(LoginActivity.this, ClonedReposActivity.class));
 		finish();
 	}
 
