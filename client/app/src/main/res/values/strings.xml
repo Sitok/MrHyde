@@ -37,6 +37,7 @@
     <string name="action_redo">Redo</string>
     <string name="action_publish_draft">Publish draft</string>
     <string name="action_unpublish_post">Unpublish post</string>
+    <string name="action_insert_markdown">Insert markdown</string>
 
     <string name="clone_repo_title">Clone repository</string>
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
@@ -229,4 +230,33 @@
     <string name="help_got_it">Got it!</string>
     <string name="help_publish_draft_title">Publishing drafts</string>
     <string name="help_publish_draft_message">To move a draft to the post directory long click on it.</string>
+
+    <string name="markdown_bold">Bold font</string>
+    <string name="markdown_italic">Italic font</string>
+    <string name="markdown_link">Insert link</string>
+    <string name="markdown_image">Insert an image</string>
+    <string name="markdown_h1">Insert H1 heading</string>
+    <string name="markdown_h2">Insert H2 heading</string>
+    <string name="markdown_h3">Insert H3 heading</string>
+    <string name="markdown_h4">Insert H4 heading</string>
+    <string name="markdown_h5">Insert H5 heading</string>
+    <string name="markdown_h6">Insert H6 heading</string>
+    <string name="markdown_ul">Create list from selection</string>
+    <string name="markdown_ol">Create ordered list from selection</string>
+    <string name="markdown_quote">Quote selection</string>
+    <string name="markdown_code">Create code block from selection</string>
+
+    <string name="markdown_element_bold">**</string>
+    <string name="markdown_element_italic">_</string>
+    <string name="markdown_element_link">[]()</string>
+    <string name="markdown_element_image">![]()</string>
+    <string name="markdown_element_list">*</string>
+    <string name="markdown_element_h1">#</string>
+    <string name="markdown_element_h2">##</string>
+    <string name="markdown_element_h3">###</string>
+    <string name="markdown_element_h4">####</string>
+    <string name="markdown_element_h5">#####</string>
+    <string name="markdown_element_h6">######</string>
+    <string name="markdown_element_quote">></string>
+    <string name="markdown_element_code">&#160;&#160;&#160;&#160;</string>
 </resources>

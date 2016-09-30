@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.ui;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -40,7 +41,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public final class TextEditorActivity extends AbstractActivity {
+public final class TextEditorActivity extends AbstractActivity implements MarkdownFragment.MarkdownActionListener {
 
   private static final int EDITOR_MAX_HISTORY = 100;
 
@@ -75,6 +76,8 @@ public final class TextEditorActivity extends AbstractActivity {
   private File file;
   private String savedFileContent; // last saved content
   private boolean showingLineNumbers;
+
+	private MarkdownFragment fragment;
 
 
   @Override
@@ -211,6 +214,9 @@ public final class TextEditorActivity extends AbstractActivity {
         startActivity(intentFactory.createPreviewIntent(repository));
         return true;
 
+			case R.id.action_insert_markdown:
+				showOverlay();
+				return true;
     }
     return super.onOptionsItemSelected(item);
   }
@@ -351,6 +357,10 @@ public final class TextEditorActivity extends AbstractActivity {
     updateLineNumbers();
   }
 
+  private void showOverlay() {
+    MarkdownFragment mdf = new MarkdownFragment();
+    mdf.show(getFragmentManager(), "MarkdownFragment");
+  }
 
   private void updateLineNumbers() {
     if (showingLineNumbers) {
@@ -383,6 +393,229 @@ public final class TextEditorActivity extends AbstractActivity {
     });
   }
 
+	@Override
+	public void onInsertBoldText(DialogFragment dialog) {
+		this.insertElement(R.string.markdown_element_bold);
+	}
+
+	@Override
+	public void onInsertItalicText(DialogFragment dialog) {
+		this.insertElement(R.string.markdown_element_italic);
+	}
+
+	@Override
+	public void onInsertLink(DialogFragment dialog) {
+		this.insertElement(R.string.markdown_element_link);
+	}
+
+	@Override
+	public void onInsertImage(DialogFragment dialog) {
+		this.insertElement(R.string.markdown_element_image);
+	}
+
+	@Override
+	public void onInsertQuote(DialogFragment dialog) {
+		this.insertElement(R.string.markdown_element_quote);
+	}
+
+	@Override
+	public void onInsertCode(DialogFragment dialog) {
+		this.insertElement(R.string.markdown_element_code);
+	}
+
+	@Override
+	public void onInsertUnorderedList(DialogFragment dialog) {
+		this.createList(false);
+	}
+
+	@Override
+	public void onInsertOrderedList(DialogFragment dialog) {
+		this.createList(true);
+	}
+
+	@Override
+	public void onInsertH1(DialogFragment dialog) {
+		this.makeHeading(R.string.markdown_element_h1);
+	}
+
+	@Override
+	public void onInsertH2(DialogFragment dialog) {
+		this.makeHeading(R.string.markdown_element_h2);
+	}
+
+	@Override
+	public void onInsertH3(DialogFragment dialog) {
+		this.makeHeading(R.string.markdown_element_h3);
+	}
+
+	@Override
+	public void onInsertH4(DialogFragment dialog) {
+		this.makeHeading(R.string.markdown_element_h4);
+	}
+
+	@Override
+	public void onInsertH5(DialogFragment dialog) {
+		this.makeHeading(R.string.markdown_element_h5);
+	}
+
+	@Override
+	public void onInsertH6(DialogFragment dialog) {
+		this.makeHeading(R.string.markdown_element_h6);
+	}
+
+	private void insertElement(int separatorString) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		int offset = 0;
+
+		String separator = getResources().getString(separatorString);
+		String text = editText.getText().toString();
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+		if(start == end) {
+			switch(separatorString) {
+				case R.string.markdown_element_bold:
+				case R.string.markdown_element_italic:
+					sb.append(separator);
+					sb.append(separator);
+					offset = sb.length()/2;
+					break;
+				case R.string.markdown_element_image:
+					sb.append(separator);
+					sb.append(" ");
+					offset = 2;
+					break;
+				case R.string.markdown_element_link:
+					sb.append(separator);
+					sb.append(" ");
+					offset = 1;
+					break;
+				case R.string.markdown_element_code:
+				case R.string.markdown_element_quote:
+					sb.append("\n");
+                    sb.append(separator);
+                    sb.append(" ");
+					offset = sb.length();
+					break;
+				default:
+					break;
+			}
+		} else {
+			switch(separatorString) {
+				case R.string.markdown_element_bold:
+				case R.string.markdown_element_italic:
+					sb.append(separator);
+					sb.append(text.substring(start, end));
+					sb.append(separator);
+					offset = sb.length();
+					break;
+				case R.string.markdown_element_image:
+					sb.append(separator);
+					sb.append(" ");
+					offset = 2;
+					break;
+				case R.string.markdown_element_link:
+                    sb.append(separator);
+                    sb.append(" ");
+					offset = 1;
+					break;
+				case R.string.markdown_element_code:
+				case R.string.markdown_element_quote:
+                    sb.append("\n");
+					for (String part : edited) {
+						sb.append(separator);
+						sb.append(" ");
+						sb.append(part);
+						sb.append("\n");
+					}
+					sb.append("\n");
+					offset = sb.length();
+					break;
+				default:
+					break;
+			}
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + offset);
+	}
+
+	private void makeHeading(int headingString) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		String text = editText.getText().toString();
+		String heading = getResources().getString(headingString);
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+
+		if (start == end) {
+			sb.append("\n");
+			sb.append(heading);
+			sb.append(" ");
+		} else {
+			sb.append("\n");
+			sb.append(heading);
+			for (String part : edited) {
+				sb.append(" ");
+				sb.append(part);
+			}
+			sb.append("\n\n");
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + sb.toString().length());
+	}
+
+	private void createList(boolean ordered) {
+		int start = editText.getSelectionStart();
+		int end = editText.getSelectionEnd();
+		String text = editText.getText().toString();
+		String[] edited = text.substring(start, end).split("\n");
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n");
+		if(start == end) {
+			if(ordered) {
+				sb.append("1.");
+				sb.append(" ");
+			} else {
+				String elem = getResources().getString(R.string.markdown_element_list);
+				sb.append(elem);
+				sb.append(" ");
+			}
+		} else {
+			if (ordered) {
+				for (int idx = 0; idx < edited.length; ++idx) {
+					sb.append(String.valueOf(idx + 1));
+					sb.append(". ");
+					sb.append(edited[idx]);
+					sb.append("\n");
+				}
+				sb.append("\n");
+			} else {
+				String elem = getResources().getString(R.string.markdown_element_list);
+				for (String part : edited) {
+					sb.append(elem);
+					sb.append(" ");
+					sb.append(part);
+					sb.append("\n");
+				}
+				sb.append("\n");
+			}
+		}
+
+		String result = text.substring(0, start) + sb.toString() + text.substring(end, text
+				.length());
+
+		editText.setText(result, EditText.BufferType.EDITABLE);
+		editText.setSelection(start + sb.toString().length());
+	}
 
   /**
    * State of the {@link EditText}.
