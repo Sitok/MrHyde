@@ -110,6 +110,7 @@ public class RepositoriesManager {
         repository.getCloneUrl(),
         isFavorite,
         repository.getAuthType(),
+        repository.getRootDir(),
         repository.getOwner()
     );
     repositoriesCache.remove(repository);

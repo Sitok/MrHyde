@@ -67,7 +67,7 @@ public class PreviewManager {
                   .flatMap(binaryFileName -> {
                     Timber.d("reading binary file " + binaryFileName);
                     return fileUtils
-                        .readFile(new File(gitManager.getRootDir(), binaryFileName))
+                        .readFile(new File(gitManager.getRepository().getRootDir(), binaryFileName))
                         .map(data -> new BinaryFile(
                             binaryFileName,
                             Base64.encodeToString(data, Base64.DEFAULT)
@@ -95,7 +95,7 @@ public class PreviewManager {
     return gitManager
         .status()
         .flatMap(status -> {
-          File rootDir = gitManager.getRootDir();
+          File rootDir = gitManager.getRepository().getRootDir();
 
           // all changed files
           Set<String> allFiles = status.getUncommittedChanges();

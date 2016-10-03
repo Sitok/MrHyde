@@ -25,8 +25,6 @@ import timber.log.Timber;
 @Singleton
 class GitManagerFactory {
 
-  private static final String PATH_REPOS_GITHUB = "github";
-
   private final Context context;
   private final LoginManager loginManager;
   private final FileUtils fileUtils;
@@ -46,9 +44,8 @@ class GitManagerFactory {
 
   public GitManager openRepository(@NonNull final Repository repository) {
     try {
-      File rootDir = getRepoRootDir(repository);
-      Git client = Git.open(rootDir);
-      return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
+      Git client = Git.open(repository.getRootDir());
+      return new GitManager(repository, client, fileUtils, gitCommandAuthAdapter, loginManager);
     } catch (IOException e) {
       Timber.e(e, "Failed to open local git repository");
       return null;
@@ -57,19 +54,17 @@ class GitManagerFactory {
 
   public Observable<GitManager> cloneRepository(@NonNull Repository repository, boolean importPreV1Repo) {
     return ObservableUtils.fromSynchronousCall(() -> {
-      File rootDir = getRepoRootDir(repository);
-
       // clone repo
       Git client = gitCommandAuthAdapter.wrap(Git
           .cloneRepository()
           .setURI(repository.getCloneUrl())
-          .setDirectory(rootDir))
+          .setDirectory(repository.getRootDir()))
           .call();
 
       // copy v1 files
       File preV1RootDir = getPreV1RootDir(repository);
       if (importPreV1Repo) {
-        copyFiles(preV1RootDir, rootDir);
+        copyFiles(preV1RootDir, repository.getRootDir());
       }
 
       // delete pre v1 files
@@ -77,14 +72,14 @@ class GitManagerFactory {
         fileUtils.deleteFile(preV1RootDir).toBlocking().first();
       }
 
-      return new GitManager(repository, client, rootDir, fileUtils, gitCommandAuthAdapter, loginManager);
+      return new GitManager(repository, client, fileUtils, gitCommandAuthAdapter, loginManager);
     });
   }
 
   public Observable<Boolean> hasRepositoryBeenCloned(@NonNull Repository repository) {
     return ObservableUtils.fromSynchronousCall(() -> {
       try {
-        Git client = Git.open(getRepoRootDir(repository));
+        Git client = Git.open(repository.getRootDir());
         return client.getRepository().getDirectory().exists();
       } catch (RepositoryNotFoundException e) {
         return false;
@@ -95,10 +90,6 @@ class GitManagerFactory {
   public boolean canPreV1RepoBeImported(@NonNull Repository repository) {
     File oldRootDir = getPreV1RootDir(repository);
     return oldRootDir.exists() && oldRootDir.listFiles().length > 0;
-  }
-
-  private File getRepoRootDir(@NonNull Repository repository) {
-    return new File(context.getFilesDir(), PATH_REPOS_GITHUB + "/" + repository.getFullName());
   }
 
   private File getPreV1RootDir(@NonNull Repository repository) {

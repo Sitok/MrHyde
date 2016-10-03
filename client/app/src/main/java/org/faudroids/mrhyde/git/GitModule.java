@@ -11,6 +11,8 @@ import com.snappydb.DB;
 import com.snappydb.SnappyDB;
 import com.snappydb.SnappydbException;
 
+import java.io.File;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -40,6 +42,7 @@ public class GitModule {
               output.writeString(repository.getCloneUrl());
               output.writeBoolean(repository.isFavorite());
               output.writeString(repository.getAuthType().name());
+              output.writeString(repository.getRootDir().getAbsolutePath());
               RepositoryOwner owner = repository.getOwner().orNull();
               if (owner != null) {
                 output.writeString(owner.getUsername());
@@ -55,13 +58,14 @@ public class GitModule {
               String cloneUrl = input.readString();
               boolean isFavorite = input.readBoolean();
               AuthType authType = AuthType.valueOf(input.readString());
+              File rootDir = new File(input.readString());
 
               String username = input.readString();
               String avatarUrl = input.readString();
               RepositoryOwner owner = null;
               if (username != null) owner = new RepositoryOwner(username, Optional.fromNullable(avatarUrl));
 
-              return new Repository(name, cloneUrl, isFavorite, authType, Optional.fromNullable(owner));
+              return new Repository(name, cloneUrl, isFavorite, authType, rootDir, Optional.fromNullable(owner));
             }
           })
           .build();

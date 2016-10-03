@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
-import org.eclipse.egit.github.core.User;
-
 import java.io.Serializable;
 
 /**
@@ -44,12 +42,5 @@ public class RepositoryOwner implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hashCode(username, avatarUrl);
-  }
-
-  public static RepositoryOwner fromGitHubUser(User gitHubUser) {
-    return new RepositoryOwner(
-        gitHubUser.getLogin(),
-        Optional.fromNullable(gitHubUser.getAvatarUrl())
-    );
   }
 }

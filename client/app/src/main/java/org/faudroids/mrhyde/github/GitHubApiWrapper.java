@@ -4,6 +4,7 @@ package org.faudroids.mrhyde.github;
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.faudroids.mrhyde.git.Repository;
+import org.faudroids.mrhyde.git.RepositoryFactory;
 import org.faudroids.mrhyde.git.RepositoryOwner;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
@@ -21,14 +22,17 @@ public final class GitHubApiWrapper {
 
 	private final RepositoryService repositoryService;
 	private final OrganizationService organizationService;
+  private final RepositoryFactory repositoryFactory;
 
 	@Inject
 	public GitHubApiWrapper(
 			RepositoryService repositoryService,
-			OrganizationService organizationService) {
+			OrganizationService organizationService,
+      RepositoryFactory repositoryFactory) {
 
 		this.repositoryService = repositoryService;
 		this.organizationService = organizationService;
+    this.repositoryFactory = repositoryFactory;
 	}
 
 
@@ -36,7 +40,7 @@ public final class GitHubApiWrapper {
     return ObservableUtils
         .fromSynchronousCall(repositoryService::getRepositories)
         .flatMap(Observable::from)
-        .map(Repository::fromGitHubRepository)
+        .map(repositoryFactory::fromGitHubRepository)
         .toList();
   }
 
@@ -45,7 +49,7 @@ public final class GitHubApiWrapper {
     return ObservableUtils
         .fromSynchronousCall(() -> repositoryService.getOrgRepositories(orgName))
         .flatMap(Observable::from)
-        .map(Repository::fromGitHubRepository)
+        .map(repositoryFactory::fromGitHubRepository)
         .toList();
   }
 
@@ -53,7 +57,7 @@ public final class GitHubApiWrapper {
 	public Observable<Repository> getRepository(final String ownerLogin, final String repoName) {
     return ObservableUtils
         .fromSynchronousCall(() -> repositoryService.getRepository(ownerLogin, repoName))
-        .map(Repository::fromGitHubRepository);
+        .map(repositoryFactory::fromGitHubRepository);
 	}
 
 
@@ -61,7 +65,7 @@ public final class GitHubApiWrapper {
     return ObservableUtils
         .fromSynchronousCall(organizationService::getOrganizations)
         .flatMap(Observable::from)
-        .map(RepositoryOwner::fromGitHubUser)
+        .map(repositoryFactory::fromGitHubUser)
         .toList();
 	}
 

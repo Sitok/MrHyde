@@ -45,8 +45,8 @@ public class JekyllManager {
   JekyllManager(Context context, FileUtils fileUtils, GitManager gitManager) {
     this.context = context;
     this.fileUtils = fileUtils;
-    this.dirPosts = new File(gitManager.getRootDir(), DIR_NAME_POSTS);
-    this.dirDrafts = new File(gitManager.getRootDir(), DIR_NAME_DRAFTS);
+    this.dirPosts = new File(gitManager.getRepository().getRootDir(), DIR_NAME_POSTS);
+    this.dirDrafts = new File(gitManager.getRepository().getRootDir(), DIR_NAME_DRAFTS);
   }
 
 

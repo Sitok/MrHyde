@@ -144,7 +144,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
     gitActionBarMenu = new GitActionBarMenu(
         this,
         () -> {
-         fileAdapter.setSelectedDir(gitManager.getRootDir());
+         fileAdapter.setSelectedDir(gitManager.getRepository().getRootDir());
           refreshTree();
         },
         gitManager,
@@ -467,7 +467,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
 
   @Override
   protected FileAdapter createAdapter() {
-    return new LongClickFileAdapter(gitManager.getRootDir());
+    return new LongClickFileAdapter(gitManager.getRepository().getRootDir());
   }
 
 

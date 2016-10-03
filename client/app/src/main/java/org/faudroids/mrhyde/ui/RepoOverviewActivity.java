@@ -366,7 +366,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
    */
   private boolean assertRepoNotEmpty() {
     // check for empty repository
-    File rootDir = gitManager.getRootDir();
+    File rootDir = gitManager.getRepository().getRootDir();
     if (rootDir.listFiles().length > 1
         || !(rootDir.listFiles().length == 1 && rootDir.listFiles()[0].getName().equals(".git"))) {
       return true;

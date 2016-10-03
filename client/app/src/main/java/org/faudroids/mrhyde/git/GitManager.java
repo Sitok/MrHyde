@@ -25,7 +25,6 @@ import org.faudroids.mrhyde.github.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +42,6 @@ public class GitManager {
 
   private final Repository repository;
   private final Git gitClient;
-  private final File rootDir;
   private final FileUtils fileUtils;
   private final GitCommandAuthAdapter gitCommandAuthAdapter;
   private final LoginManager loginManager;
@@ -51,13 +49,11 @@ public class GitManager {
   public GitManager(
       @NonNull Repository repository,
       @NonNull Git gitClient,
-      @NonNull File rootDir,
       @NonNull FileUtils fileUtils,
       @NonNull GitCommandAuthAdapter gitCommandAuthAdapter,
       @NonNull LoginManager loginManager) {
     this.repository = repository;
     this.gitClient = gitClient;
-    this.rootDir = rootDir;
     this.fileUtils = fileUtils;
     this.gitCommandAuthAdapter = gitCommandAuthAdapter;
     this.loginManager = loginManager;
@@ -65,11 +61,7 @@ public class GitManager {
 
 
   Observable<Void> deleteAllLocalContent() {
-    return fileUtils.deleteFile(rootDir);
-  }
-
-  public File getRootDir() {
-    return rootDir;
+    return fileUtils.deleteFile(repository.getRootDir());
   }
 
   public Repository getRepository() {

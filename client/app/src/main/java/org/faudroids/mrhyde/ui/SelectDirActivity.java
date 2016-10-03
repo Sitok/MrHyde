@@ -54,7 +54,7 @@ public final class SelectDirActivity extends AbstractDirActivity {
 
   @Override
   protected FileAdapter createAdapter() {
-    return new AlphaFileAdapter(gitManager.getRootDir());
+    return new AlphaFileAdapter(gitManager.getRepository().getRootDir());
   }
 
 

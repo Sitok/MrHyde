@@ -95,13 +95,13 @@ abstract class AbstractDirActivity extends AbstractActivity {
     if (savedInstanceState != null) {
       fileAdapter.onRestoreInstanceState(savedInstanceState);
     } else {
-      fileAdapter.setSelectedDir(gitManager.getRootDir());
+      fileAdapter.setSelectedDir(gitManager.getRepository().getRootDir());
     }
   }
 
 
   protected FileAdapter createAdapter() {
-    return new FileAdapter(gitManager.getRootDir());
+    return new FileAdapter(gitManager.getRepository().getRootDir());
   }
 
 

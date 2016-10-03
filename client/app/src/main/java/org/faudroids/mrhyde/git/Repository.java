@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -15,19 +16,22 @@ public class Repository implements Serializable {
   private final String name;
   private final String cloneUrl;
   private final boolean isFavorite;
-  private final Optional<RepositoryOwner> owner;
   private final AuthType authType;
+  private final File rootDir;
+  private final Optional<RepositoryOwner> owner;
 
   public Repository(
       @NonNull String name,
       @NonNull String cloneUrl,
       boolean isFavorite,
       @NonNull AuthType authType,
+      @NonNull File rootDir,
       @NonNull Optional<RepositoryOwner> owner) {
     this.name = name;
     this.cloneUrl = cloneUrl;
     this.isFavorite = isFavorite;
     this.authType = authType;
+    this.rootDir = rootDir;
     this.owner = owner;
   }
 
@@ -58,6 +62,10 @@ public class Repository implements Serializable {
     return authType;
   }
 
+  public File getRootDir() {
+    return rootDir;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -66,23 +74,13 @@ public class Repository implements Serializable {
     return isFavorite == that.isFavorite &&
         Objects.equal(name, that.name) &&
         Objects.equal(cloneUrl, that.cloneUrl) &&
-        Objects.equal(owner, that.owner) &&
-        authType == that.authType;
+        authType == that.authType &&
+        Objects.equal(rootDir, that.rootDir) &&
+        Objects.equal(owner, that.owner);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, cloneUrl, isFavorite, owner, authType);
+    return Objects.hashCode(name, cloneUrl, isFavorite, authType, rootDir, owner);
   }
-
-  public static Repository fromGitHubRepository(org.eclipse.egit.github.core.Repository gitHubRepo) {
-    return new Repository(
-        gitHubRepo.getName(),
-        gitHubRepo.getCloneUrl(),
-        false,
-        AuthType.GITHUB_API_TOKEN,
-        Optional.of(RepositoryOwner.fromGitHubUser(gitHubRepo.getOwner()))
-    );
-  }
-
 }
