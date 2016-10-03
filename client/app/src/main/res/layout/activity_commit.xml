@@ -182,7 +182,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/commit_action"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/green_selector"
+                android:textColor="@android:color/white"
+                android:enabled="false"
+                />
+
+            <Button
+                android:id="@+id/commit_and_push_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/commit_and_push_action"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/green_selector"
                 android:textColor="@android:color/white"
                 android:enabled="false"

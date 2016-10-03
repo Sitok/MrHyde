@@ -160,7 +160,9 @@
     <string name="commit_message">Commit Message</string>
     <string name="commit_message_default">Mr Hyde was here …</string>
     <string name="commit_action">Commit</string>
+    <string name="commit_and_push_action">Commit + Push</string>
     <string name="commit_success">Commit success</string>
+    <string name="commit_and_push_success">Commit + Push success</string>
     <string name="push_success">Push successful</string>
     <string name="pull_success">Pull successful</string>
     <string name="switch_branch_success">Switched to branch %1$s</string>

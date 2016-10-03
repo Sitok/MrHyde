@@ -59,8 +59,11 @@ public final class CommitActivity extends AbstractActivity {
   @BindView(R.id.message) protected EditText messageView;
 
   @BindView(R.id.commit_button) protected Button commitButton;
+  @BindView(R.id.commit_and_push_button) protected Button commitAndPushButton;
 
   @Inject RepositoriesManager repositoriesManager;
+
+  private GitManager gitManager;
 
 
   @Override
@@ -73,7 +76,7 @@ public final class CommitActivity extends AbstractActivity {
     setTitle(getString(R.string.title_commit));
     changedFilesTitleView.setText(getString(R.string.commit_changed_files, ""));
     final Repository repository = (Repository) getIntent().getSerializableExtra(EXTRA_REPOSITORY);
-    final GitManager gitManager = repositoriesManager.openRepository(repository);
+    gitManager = repositoriesManager.openRepository(repository);
 
     // load file content
     compositeSubscription.add(Observable.zip(
@@ -111,29 +114,19 @@ public final class CommitActivity extends AbstractActivity {
 
           // enable commit btn if changes are present
           commitButton.setEnabled(changedFiles.size() > 0);
+          commitAndPushButton.setEnabled(changedFiles.size() > 0);
         }, new ErrorActionBuilder()
             .add(new DefaultErrorAction(this, "failed to load git changes"))
             .build()));
 
     // setup commit button
     commitButton.setOnClickListener(v -> {
-      showSpinner();
-      String commitMessage = messageView.getText().toString();
-      if ("".equals(commitMessage)) commitMessage = messageView.getHint().toString();
-
-      compositeSubscription.add(gitManager.commitAllChanges(commitMessage)
-          .compose(new DefaultTransformer<Void>())
-          .subscribe(nothing -> {
-            hideSpinner();
-            Timber.d("commit success");
-            setResult(RESULT_OK);
-            Toast.makeText(CommitActivity.this, getString(R.string.commit_success), Toast.LENGTH_LONG).show();
-            finish();
-          }, new ErrorActionBuilder()
-              .add(new DefaultErrorAction(CommitActivity.this, "failed to commit"))
-              .add(new HideSpinnerAction(CommitActivity.this))
-              .build()));
+      commitChanges(false);
     });
+    commitAndPushButton.setOnClickListener(v -> {
+      commitChanges(true);
+    });
+
 
     // setup expand buttons
     changedFilesLayout.setOnClickListener(v -> toggleExpand(changedFilesExpandButton, changedFilesView));
@@ -155,6 +148,30 @@ public final class CommitActivity extends AbstractActivity {
         messageExpandButton.setBackgroundResource(R.drawable.ic_expand_less);
       }
     }
+  }
+
+  private void commitChanges(boolean pushChanges) {
+    showSpinner();
+    String commitMessage = messageView.getText().toString();
+    if ("".equals(commitMessage)) commitMessage = messageView.getHint().toString();
+
+    compositeSubscription.add(gitManager.commitAllChanges(commitMessage)
+        .flatMap(aVoid -> {
+          if (pushChanges) return gitManager.push();
+          return Observable.just(null);
+        })
+        .compose(new DefaultTransformer<>())
+        .subscribe(nothing -> {
+          hideSpinner();
+          Timber.d("commit success");
+          setResult(RESULT_OK);
+          int msgRes = !pushChanges ? R.string.commit_success : R.string.commit_and_push_success;
+          Toast.makeText(CommitActivity.this, getString(msgRes), Toast.LENGTH_LONG).show();
+          finish();
+        }, new ErrorActionBuilder()
+            .add(new DefaultErrorAction(CommitActivity.this, "failed to commit"))
+            .add(new HideSpinnerAction(CommitActivity.this))
+            .build()));
   }
 
 
