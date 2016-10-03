@@ -391,7 +391,10 @@ public final class TextEditorActivity extends AbstractActivity {
     new MaterialDialog.Builder(this)
         .title(R.string.action_insert_markdown)
         .items(actionItemStrings)
-        .itemsCallback((dialog, itemView, position, text) -> actionItems.get(position).actionFunc.call())
+        .itemsCallback((dialog, itemView, position, text) -> {
+          actionItems.get(position).actionFunc.call();
+          inputMethodManager.showSoftInput(null, 0);
+        })
         .negativeText(android.R.string.cancel)
         .show();
   }
