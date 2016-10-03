@@ -39,6 +39,7 @@ public class GitModule {
               output.writeString(repository.getName());
               output.writeString(repository.getCloneUrl());
               output.writeBoolean(repository.isFavorite());
+              output.writeString(repository.getAuthType().name());
               RepositoryOwner owner = repository.getOwner().orNull();
               if (owner != null) {
                 output.writeString(owner.getUsername());
@@ -53,13 +54,14 @@ public class GitModule {
               String name = input.readString();
               String cloneUrl = input.readString();
               boolean isFavorite = input.readBoolean();
+              AuthType authType = AuthType.valueOf(input.readString());
 
               String username = input.readString();
               String avatarUrl = input.readString();
               RepositoryOwner owner = null;
               if (username != null) owner = new RepositoryOwner(username, Optional.fromNullable(avatarUrl));
 
-              return new Repository(name, cloneUrl, isFavorite, Optional.fromNullable(owner));
+              return new Repository(name, cloneUrl, isFavorite, authType, Optional.fromNullable(owner));
             }
           })
           .build();
