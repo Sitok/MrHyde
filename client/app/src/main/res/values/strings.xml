@@ -43,6 +43,9 @@
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
     <string name="clone_repo_confirm">Clone</string>
 
+    <string name="clone_status_title">Cloning %1$s</string>
+    <string name="clone_status_message">Fingers crossed!!</string>
+
     <string name="import_repo_title">Import old repository</string>
     <string name="import_repo_message">
         Local repository detected. This version of MrHyde uses a format for repositories that is incompatible

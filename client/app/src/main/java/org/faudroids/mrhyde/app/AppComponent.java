@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.app;
 
+import org.faudroids.mrhyde.git.CloneRepositoryService;
 import org.faudroids.mrhyde.git.GitModule;
 import org.faudroids.mrhyde.github.GitHubModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
@@ -38,4 +39,5 @@ public interface AppComponent {
   void inject(RepoOverviewActivity activit);
   void inject(ImageViewerActivity activit);
   void inject(PreviewActivity activit);
+  void inject(CloneRepositoryService service);
 }

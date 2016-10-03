@@ -3,7 +3,7 @@ package org.faudroids.mrhyde.utils;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action1;
 
-abstract class AbstractErrorAction implements Action1<Throwable> {
+public abstract class AbstractErrorAction implements Action1<Throwable> {
 
 	private Action1<Throwable> nextAction = null;
 

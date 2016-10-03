@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.app;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
 
@@ -27,6 +28,12 @@ public class AppModule {
   @Singleton
   InputMethodManager provideInputMethodManager(Context context) {
     return (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+  }
+
+  @Provides
+  @Singleton
+  NotificationManager provideNotificationManager(Context context) {
+    return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
   }
 
 }

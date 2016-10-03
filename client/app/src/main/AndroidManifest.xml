@@ -25,7 +25,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.ClonedReposActivity" />
-        <activity android:name=".ui.CloneGitHubRepoActivity" />
+        <activity
+            android:name=".ui.CloneGitHubRepoActivity"
+            android:launchMode="singleTask"
+            />
         <activity android:name=".ui.SettingsActivity" />
         <activity
             android:name=".ui.RepoOverviewActivity"
@@ -42,6 +45,11 @@
         <activity android:name=".ui.ImageViewerActivity" />
         <activity android:name=".ui.CommitActivity" />
         <activity android:name=".ui.PreviewActivity" />
+
+        <service
+            android:name=".git.CloneRepositoryService"
+            android:exported="false"
+            />
 
         <meta-data
             android:name="io.fabric.ApiKey"
