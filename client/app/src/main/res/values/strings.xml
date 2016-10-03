@@ -238,18 +238,18 @@
 
     <string name="markdown_bold">Bold font</string>
     <string name="markdown_italic">Italic font</string>
-    <string name="markdown_link">Insert link</string>
-    <string name="markdown_image">Insert an image</string>
-    <string name="markdown_h1">Insert H1 heading</string>
-    <string name="markdown_h2">Insert H2 heading</string>
-    <string name="markdown_h3">Insert H3 heading</string>
-    <string name="markdown_h4">Insert H4 heading</string>
-    <string name="markdown_h5">Insert H5 heading</string>
-    <string name="markdown_h6">Insert H6 heading</string>
-    <string name="markdown_ul">Create list from selection</string>
-    <string name="markdown_ol">Create ordered list from selection</string>
-    <string name="markdown_quote">Quote selection</string>
-    <string name="markdown_code">Create code block from selection</string>
+    <string name="markdown_link">Link</string>
+    <string name="markdown_image">Image Link</string>
+    <string name="markdown_h1">H1 heading</string>
+    <string name="markdown_h2">H2 heading</string>
+    <string name="markdown_h3">H3 heading</string>
+    <string name="markdown_h4">H4 heading</string>
+    <string name="markdown_h5">H5 heading</string>
+    <string name="markdown_h6">H6 heading</string>
+    <string name="markdown_ul">List from selection</string>
+    <string name="markdown_ol">Ordered list from selection</string>
+    <string name="markdown_quote">Quote from selection</string>
+    <string name="markdown_code">Code block from selection</string>
 
     <string name="markdown_element_bold">**</string>
     <string name="markdown_element_italic">_</string>

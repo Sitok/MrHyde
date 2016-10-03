@@ -1,6 +1,5 @@
 package org.faudroids.mrhyde.ui;
 
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -19,6 +18,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.common.collect.Lists;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
@@ -34,14 +34,16 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 import timber.log.Timber;
 
-public final class TextEditorActivity extends AbstractActivity implements MarkdownFragment.MarkdownActionListener {
+public final class TextEditorActivity extends AbstractActivity {
 
   private static final int EDITOR_MAX_HISTORY = 100;
 
@@ -76,8 +78,6 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
   private File file;
   private String savedFileContent; // last saved content
   private boolean showingLineNumbers;
-
-	private MarkdownFragment fragment;
 
 
   @Override
@@ -183,7 +183,6 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
-        Timber.d("back pressed");
         if (isEditMode()) stopEditMode();
         else onBackPressed();
         return true;
@@ -216,7 +215,7 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
         return true;
 
 			case R.id.action_insert_markdown:
-				showOverlay();
+				showMarkdownInsertionDialog();
 				return true;
     }
     return super.onOptionsItemSelected(item);
@@ -358,9 +357,43 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
     updateLineNumbers();
   }
 
-  private void showOverlay() {
-    MarkdownFragment mdf = new MarkdownFragment();
-    mdf.show(getFragmentManager(), "MarkdownFragment");
+  private void showMarkdownInsertionDialog() {
+    class MdInsertionAction {
+      final int descriptionRes;
+      final Action0 actionFunc;
+      public MdInsertionAction(int descriptionRes, Action0 actionFunc) {
+        this.descriptionRes = descriptionRes;
+        this.actionFunc = actionFunc;
+      }
+    }
+
+    List<MdInsertionAction> actionItems = Lists.newArrayList(
+        new MdInsertionAction(R.string.markdown_italic, () -> insertMdElement(R.string.markdown_element_italic)),
+        new MdInsertionAction(R.string.markdown_bold, () -> insertMdElement(R.string.markdown_element_bold)),
+        new MdInsertionAction(R.string.markdown_link, () -> insertMdElement(R.string.markdown_element_link)),
+        new MdInsertionAction(R.string.markdown_image, () -> insertMdElement(R.string.markdown_element_image)),
+        new MdInsertionAction(R.string.markdown_quote, () -> insertMdElement(R.string.markdown_element_quote)),
+        new MdInsertionAction(R.string.markdown_code, () -> insertMdElement(R.string.markdown_element_code)),
+        new MdInsertionAction(R.string.markdown_ul, () -> insertMdList(false)),
+        new MdInsertionAction(R.string.markdown_ol, () -> insertMdList(true)),
+        new MdInsertionAction(R.string.markdown_h1, () -> insertMdHeading(R.string.markdown_element_h1)),
+        new MdInsertionAction(R.string.markdown_h2, () -> insertMdHeading(R.string.markdown_element_h2)),
+        new MdInsertionAction(R.string.markdown_h3, () -> insertMdHeading(R.string.markdown_element_h3)),
+        new MdInsertionAction(R.string.markdown_h4, () -> insertMdHeading(R.string.markdown_element_h4)),
+        new MdInsertionAction(R.string.markdown_h5, () -> insertMdHeading(R.string.markdown_element_h5)),
+        new MdInsertionAction(R.string.markdown_h6, () -> insertMdHeading(R.string.markdown_element_h6))
+    );
+    List<String> actionItemStrings = Lists.newArrayList();
+    for (MdInsertionAction action : actionItems) {
+      actionItemStrings.add(getString(action.descriptionRes));
+    }
+
+    new MaterialDialog.Builder(this)
+        .title(R.string.action_insert_markdown)
+        .items(actionItemStrings)
+        .itemsCallback((dialog, itemView, position, text) -> actionItems.get(position).actionFunc.call())
+        .negativeText(android.R.string.cancel)
+        .show();
   }
 
   private void updateLineNumbers() {
@@ -394,77 +427,8 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
     });
   }
 
-	@Override
-	public void onInsertBoldText(DialogFragment dialog) {
-		this.insertElement(R.string.markdown_element_bold);
-	}
 
-	@Override
-	public void onInsertItalicText(DialogFragment dialog) {
-		this.insertElement(R.string.markdown_element_italic);
-	}
-
-	@Override
-	public void onInsertLink(DialogFragment dialog) {
-		this.insertElement(R.string.markdown_element_link);
-	}
-
-	@Override
-	public void onInsertImage(DialogFragment dialog) {
-		this.insertElement(R.string.markdown_element_image);
-	}
-
-	@Override
-	public void onInsertQuote(DialogFragment dialog) {
-		this.insertElement(R.string.markdown_element_quote);
-	}
-
-	@Override
-	public void onInsertCode(DialogFragment dialog) {
-		this.insertElement(R.string.markdown_element_code);
-	}
-
-	@Override
-	public void onInsertUnorderedList(DialogFragment dialog) {
-		this.createList(false);
-	}
-
-	@Override
-	public void onInsertOrderedList(DialogFragment dialog) {
-		this.createList(true);
-	}
-
-	@Override
-	public void onInsertH1(DialogFragment dialog) {
-		this.makeHeading(R.string.markdown_element_h1);
-	}
-
-	@Override
-	public void onInsertH2(DialogFragment dialog) {
-		this.makeHeading(R.string.markdown_element_h2);
-	}
-
-	@Override
-	public void onInsertH3(DialogFragment dialog) {
-		this.makeHeading(R.string.markdown_element_h3);
-	}
-
-	@Override
-	public void onInsertH4(DialogFragment dialog) {
-		this.makeHeading(R.string.markdown_element_h4);
-	}
-
-	@Override
-	public void onInsertH5(DialogFragment dialog) {
-		this.makeHeading(R.string.markdown_element_h5);
-	}
-
-	@Override
-	public void onInsertH6(DialogFragment dialog) {
-		this.makeHeading(R.string.markdown_element_h6);
-	}
-
-	private void insertElement(int separatorString) {
+	private void insertMdElement(int separatorString) {
 		int start = editText.getSelectionStart();
 		int end = editText.getSelectionEnd();
 		int offset = 0;
@@ -544,7 +508,7 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
 		editText.setSelection(start + offset);
 	}
 
-	private void makeHeading(int headingString) {
+	private void insertMdHeading(int headingString) {
 		int start = editText.getSelectionStart();
 		int end = editText.getSelectionEnd();
 		String text = editText.getText().toString();
@@ -573,7 +537,7 @@ public final class TextEditorActivity extends AbstractActivity implements Markdo
 		editText.setSelection(start + sb.toString().length());
 	}
 
-	private void createList(boolean ordered) {
+	private void insertMdList(boolean ordered) {
 		int start = editText.getSelectionStart();
 		int end = editText.getSelectionEnd();
 		String text = editText.getText().toString();
