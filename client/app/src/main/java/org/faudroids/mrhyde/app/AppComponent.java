@@ -16,6 +16,7 @@ import org.faudroids.mrhyde.ui.PreviewActivity;
 import org.faudroids.mrhyde.ui.RepoOverviewActivity;
 import org.faudroids.mrhyde.ui.SelectDirActivity;
 import org.faudroids.mrhyde.ui.SettingsActivity;
+import org.faudroids.mrhyde.ui.SplashScreenActivity;
 import org.faudroids.mrhyde.ui.TextEditorActivity;
 
 import javax.inject.Singleton;
@@ -26,6 +27,7 @@ import dagger.Component;
 @Component(modules = {AppModule.class, GitHubModule.class, JekyllModule.class, GitModule.class})
 public interface AppComponent {
   void inject(MrHydeApp app);
+  void inject(SplashScreenActivity activity);
   void inject(LoginActivity activity);
   void inject(ClonedReposActivity activity);
   void inject(CloneGitHubRepoActivity activity);

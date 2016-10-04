@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="109.24721"
+   height="30.036894"
+   viewBox="0 0 109.24721 30.036894"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="ic_app_name.svg"
+   inkscape:export-filename="/home/maddoc/android/MrHyde/client/app/images/ic_app_name.png"
+   inkscape:export-xdpi="410.49518"
+   inkscape:export-ydpi="410.49518">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="58.132611"
+     inkscape:cy="15.935409"
+     inkscape:document-units="px"
+     inkscape:current-layer="flowRoot4155"
+     showgrid="false"
+     inkscape:window-width="1916"
+     inkscape:window-height="1125"
+     inkscape:window-x="1680"
+     inkscape:window-y="54"
+     inkscape:window-maximized="0"
+     units="px"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:showpageshadow="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-6.2926269,-983.26293)">
+    <g
+       transform="matrix(2.4942953,0,0,2.4942953,-323.20159,-31.380995)"
+       style="font-style:normal;font-weight:normal;font-size:12.5px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot4155">
+      <path
+         d="m 134.91284,407.27409 1.98364,6.18286 1.97754,-6.18286 2.81983,0 0,8.88672 -2.14844,0 0,-2.0752 0.20752,-4.24804 -2.14844,6.32324 -1.41601,0 -2.15454,-6.32935 0.20752,4.25415 0,2.0752 -2.14234,0 0,-8.88672 2.81372,0 z"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';fill:#424242;fill-opacity:1"
+         id="path4142" />
+      <path
+         d="m 146.96118,411.41838 -0.67749,-0.0488 q -0.97046,0 -1.24512,0.61035 l 0,4.18091 -2.05688,0 0,-6.60401 1.92871,0 0.0671,0.84839 q 0.5188,-0.97046 1.44653,-0.97046 0.32959,0 0.57373,0.0732 l -0.0366,1.9104 z"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';fill:#424242;fill-opacity:1"
+         id="path4144" />
+      <path
+         d="m 155.22534,416.16081 -2.13013,0 0,-3.71094 -3.15551,0 0,3.71094 -2.14234,0 0,-8.88672 2.14234,0 0,3.52783 3.15551,0 0,-3.52783 2.13013,0 0,8.88672 z"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';fill:#424242;fill-opacity:1"
+         id="path4146" />
+      <path
+         d="m 159.13159,413.27995 1.09863,-3.72315 2.20337,0 -2.69165,7.70874 -0.11596,0.28077 q -0.57373,1.28173 -2.02637,1.28173 -0.40283,0 -0.84839,-0.12207 l 0,-1.47094 0.26856,0 q 0.43334,0 0.65918,-0.12818 0.23193,-0.12207 0.34179,-0.44555 l 0.1648,-0.43946 -2.29493,-6.66504 2.19727,0 1.0437,3.72315 z"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';fill:#424242;fill-opacity:1"
+         id="path4148" />
+      <path
+         d="m 162.62891,412.80998 q 0,-1.56861 0.67749,-2.47193 0.67749,-0.90332 1.89209,-0.90332 0.88501,0 1.48925,0.6958 l 0,-3.34472 2.06299,0 0,9.375 -1.84936,0 -0.10376,-0.70801 q -0.63477,0.83008 -1.61133,0.83008 -1.17798,0 -1.86768,-0.90332 -0.68969,-0.90332 -0.68969,-2.56958 z m 2.05688,0.12817 q 0,1.75781 1.02539,1.75781 0.6836,0 0.97656,-0.57373 l 0,-2.51465 q -0.28076,-0.58593 -0.96435,-0.58593 -0.95215,0 -1.0315,1.53808 l -0.006,0.37842 z"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';fill:#424242;fill-opacity:1"
+         id="path4150" />
+      <path
+         d="m 173.11475,416.28288 q -1.51978,0 -2.45972,-0.90332 -0.93994,-0.90943 -0.93994,-2.36206 l 0,-0.1709 q 0,-1.01319 0.37231,-1.78833 0.37842,-0.77515 1.09864,-1.19629 0.72021,-0.42725 1.70898,-0.42725 1.3916,0 2.19727,0.8667 0.80566,0.8606 0.80566,2.40479 l 0,0.79956 -4.08936,0 q 0.10987,0.55542 0.48218,0.8728 0.37232,0.31738 0.96436,0.31738 0.97656,0 1.52588,-0.68359 l 0.93994,1.11084 q -0.38452,0.53101 -1.09253,0.84839 -0.70191,0.31128 -1.51367,0.31128 z m -0.23194,-5.26123 q -0.90332,0 -1.07422,1.19629 l 2.0752,0 0,-0.1587 q 0.0122,-0.49438 -0.25025,-0.76293 -0.26245,-0.27466 -0.75073,-0.27466 z"
+         style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Roboto;-inkscape-font-specification:'Roboto Heavy';fill:#424242;fill-opacity:1"
+         id="path4152" />
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4155-3"
+       style="font-style:normal;font-weight:normal;font-size:31.17869186px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="translate(57.550585,888.55835)"><flowRegion
+         id="flowRegion4157-6"><rect
+           id="rect4159-7"
+           width="1190.1351"
+           height="484.60596"
+           x="-2.7991173"
+           y="-7.3894453" /></flowRegion><flowPara
+         id="flowPara4161-5"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Droid Sans';-inkscape-font-specification:'Droid Sans Bold';fill:#424242;fill-opacity:1">MrHyde</flowPara></flowRoot>  </g>
+</svg>
