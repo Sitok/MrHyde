@@ -10,7 +10,7 @@ import org.faudroids.mrhyde.ui.CommitActivity;
 import org.faudroids.mrhyde.ui.DirActivity;
 import org.faudroids.mrhyde.ui.DraftsActivity;
 import org.faudroids.mrhyde.ui.ImageViewerActivity;
-import org.faudroids.mrhyde.ui.LoginActivity;
+import org.faudroids.mrhyde.ui.GitHubLoginActivity;
 import org.faudroids.mrhyde.ui.PostsActivity;
 import org.faudroids.mrhyde.ui.PreviewActivity;
 import org.faudroids.mrhyde.ui.RepoOverviewActivity;
@@ -28,7 +28,7 @@ import dagger.Component;
 public interface AppComponent {
   void inject(MrHydeApp app);
   void inject(SplashScreenActivity activity);
-  void inject(LoginActivity activity);
+  void inject(GitHubLoginActivity activity);
   void inject(ClonedReposActivity activity);
   void inject(CloneGitHubRepoActivity activity);
   void inject(SettingsActivity activity);

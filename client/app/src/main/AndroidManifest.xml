@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.GitHubLoginActivity"
             android:theme="@style/AppTheme.NoActionBar"
             />
         <activity android:name=".ui.ClonedReposActivity" />

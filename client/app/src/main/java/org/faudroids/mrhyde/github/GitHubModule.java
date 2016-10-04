@@ -1,7 +1,6 @@
 package org.faudroids.mrhyde.github;
 
 
-import org.eclipse.egit.github.core.service.GitHubService;
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.faudroids.mrhyde.auth.LoginManager;
@@ -35,21 +34,15 @@ public class GitHubModule {
 
   @Singleton
   @Provides
-  public RepositoryService provideRepositoryService(LoginManager loginManager) {
-    return setAuthToken(new RepositoryService(), loginManager);
+  public RepositoryService provideRepositoryService() {
+    return new RepositoryService();
   }
 
 
   @Singleton
   @Provides
-  public OrganizationService provideOrganizationService(LoginManager loginManager) {
-    return setAuthToken(new OrganizationService(), loginManager);
-  }
-
-
-  private <T extends GitHubService> T setAuthToken(T service, LoginManager loginManager) {
-    service.getClient().setOAuth2Token(loginManager.getAccount().getAccessToken());
-    return service;
+  public OrganizationService provideOrganizationService() {
+    return new OrganizationService();
   }
 
 }

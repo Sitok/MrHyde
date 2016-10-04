@@ -46,7 +46,7 @@ public class SettingsActivity extends AbstractActivity {
     logout.setOnClickListener(v -> {
       loginManager.clearAccount();
       finish();
-      startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
+      startActivity(new Intent(SettingsActivity.this, GitHubLoginActivity.class));
     });
   }
 
