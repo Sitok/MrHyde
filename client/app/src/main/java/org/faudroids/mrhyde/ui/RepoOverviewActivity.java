@@ -56,61 +56,61 @@ import rx.Observable;
 
 public final class RepoOverviewActivity extends AbstractActivity {
 
-	public static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
+  public static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
 
-	private static final int
-			REQUEST_SHOW_LIST = 42,
-			REQUEST_SHOW_ALL_FILES = 43;
+  private static final int
+      REQUEST_SHOW_LIST = 42,
+      REQUEST_SHOW_ALL_FILES = 43;
 
-	@BindView(R.id.scroll_view) protected ObservableScrollView scrollView;
-	@BindView(R.id.image_overview_background) protected ImageView overviewBackgroundImage;
-	@BindView(R.id.image_repo_owner) protected ImageView repoOwnerImage;
-	@BindView(R.id.text_post_count) protected TextView postDraftCountView;
-	@BindView(R.id.button_favourite) protected ImageButton favouriteButton;
-	private Drawable actionBarDrawable;
+  @BindView(R.id.scroll_view) protected ObservableScrollView scrollView;
+  @BindView(R.id.image_overview_background) protected ImageView overviewBackgroundImage;
+  @BindView(R.id.image_repo_owner) protected ImageView repoOwnerImage;
+  @BindView(R.id.text_post_count) protected TextView postDraftCountView;
+  @BindView(R.id.button_favourite) protected ImageButton favouriteButton;
+  private Drawable actionBarDrawable;
 
-	@Inject JekyllUiUtils jekyllUiUtils;
-	@BindView(R.id.header_posts) protected View postsHeader;
-	@BindView(R.id.list_posts) protected ListView postsListView;
-	private PostsListAdapter postsListAdapter;
-	@BindView(R.id.item_no_posts) protected View noPostsView;
+  @Inject JekyllUiUtils jekyllUiUtils;
+  @BindView(R.id.header_posts) protected View postsHeader;
+  @BindView(R.id.list_posts) protected ListView postsListView;
+  private PostsListAdapter postsListAdapter;
+  @BindView(R.id.item_no_posts) protected View noPostsView;
 
-	@BindView(R.id.card_drafts) protected View draftsCard;
-	@BindView(R.id.header_drafts) protected View draftsHeader;
-	@BindView(R.id.list_drafts) protected ListView draftsListView;
-	private DraftsListAdapter draftsListAdapter;
+  @BindView(R.id.card_drafts) protected View draftsCard;
+  @BindView(R.id.header_drafts) protected View draftsHeader;
+  @BindView(R.id.list_drafts) protected ListView draftsListView;
+  private DraftsListAdapter draftsListAdapter;
 
-	@BindView(R.id.card_all_files) protected View allFilesView;
+  @BindView(R.id.card_all_files) protected View allFilesView;
 
-	@BindView(R.id.add) protected FloatingActionsMenu addButton;
-	@BindView(R.id.add_post) protected FloatingActionButton addPostButton;
-	@BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
-	@BindView(R.id.tint) protected View tintView;
+  @BindView(R.id.add) protected FloatingActionsMenu addButton;
+  @BindView(R.id.add_post) protected FloatingActionButton addPostButton;
+  @BindView(R.id.add_draft) protected FloatingActionButton addDraftButton;
+  @BindView(R.id.tint) protected View tintView;
 
-	private Repository repository;
-	@Inject JekyllManagerFactory jekyllManagerFactory;
-	private JekyllManager jekyllManager;
+  private Repository repository;
+  @Inject JekyllManagerFactory jekyllManagerFactory;
+  private JekyllManager jekyllManager;
   @Inject GitHubManager gitHubManager;
   @Inject RepositoriesManager repositoriesManager;
   private GitManager gitManager;
 
-	@Inject ActivityIntentFactory intentFactory;
+  @Inject ActivityIntentFactory intentFactory;
 
   private GitActionBarMenu gitActionBarMenu;
 
 
-	@Override
-	public void onCreate(final Bundle savedInstanceState) {
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
     ((MrHydeApp) getApplication()).getComponent().inject(this);
-		super.onCreate(savedInstanceState);
+    super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_repo_overview);
     ButterKnife.bind(this);
 
-		// get arguments
-		repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
+    // get arguments
+    repository = (Repository) this.getIntent().getSerializableExtra(EXTRA_REPOSITORY);
     gitManager = repositoriesManager.openRepository(repository);
-		jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
-		setTitle(repository.getName());
+    jekyllManager = jekyllManagerFactory.createJekyllManager(gitManager);
+    setTitle(repository.getName());
 
     // check for empty repos
     if (!this.assertRepoNotEmpty()) return;
@@ -119,44 +119,44 @@ public final class RepoOverviewActivity extends AbstractActivity {
     postsListAdapter = new PostsListAdapter(this);
     postsListView.setAdapter(postsListAdapter);
 
-		// setup drafts lists
-		draftsListAdapter = new DraftsListAdapter(this);
-		draftsListView.setAdapter(draftsListAdapter);
+    // setup drafts lists
+    draftsListAdapter = new DraftsListAdapter(this);
+    draftsListView.setAdapter(draftsListAdapter);
 
-		// load content
-		showSpinner();
-		loadJekyllContent();
+    // load content
+    showSpinner();
+    loadJekyllContent();
 
-		// setup posts clicks
-		postsHeader.setOnClickListener(
+    // setup posts clicks
+    postsHeader.setOnClickListener(
         v -> startActivityForResult(intentFactory.createPostsIntent(repository), REQUEST_SHOW_LIST)
     );
 
-		// setup drafts clicks
-		draftsHeader.setOnClickListener(
+    // setup drafts clicks
+    draftsHeader.setOnClickListener(
         v -> startActivityForResult(intentFactory.createDraftsIntent(repository), REQUEST_SHOW_LIST)
     );
 
-		// setup all files card
-		allFilesView.setOnClickListener(v -> {
+    // setup all files card
+    allFilesView.setOnClickListener(v -> {
       Intent intent = new Intent(RepoOverviewActivity.this, DirActivity.class);
       intent.putExtra(DirActivity.EXTRA_REPOSITORY, repository);
       startActivityForResult(intent, REQUEST_SHOW_ALL_FILES);
     });
 
-		// setup add buttons
-		addButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
-			@Override
-			public void onMenuExpanded() {
-				tintView.animate().alpha(1).setDuration(200).start();
-			}
+    // setup add buttons
+    addButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+      @Override
+      public void onMenuExpanded() {
+        tintView.animate().alpha(1).setDuration(200).start();
+      }
 
-			@Override
-			public void onMenuCollapsed() {
-				tintView.animate().alpha(0).setDuration(200).start();
-			}
-		});
-		addPostButton.setOnClickListener(v -> {
+      @Override
+      public void onMenuCollapsed() {
+        tintView.animate().alpha(0).setDuration(200).start();
+      }
+    });
+    addPostButton.setOnClickListener(v -> {
       addButton.collapse();
       jekyllUiUtils.showNewPostDialog(
           RepoOverviewActivity.this,
@@ -166,7 +166,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
           post -> loadJekyllContent()
       );
     });
-		addDraftButton.setOnClickListener(v -> {
+    addDraftButton.setOnClickListener(v -> {
       addButton.collapse();
       jekyllUiUtils.showNewDraftDialog(
           RepoOverviewActivity.this,
@@ -175,17 +175,17 @@ public final class RepoOverviewActivity extends AbstractActivity {
           Optional.<File>absent(),
           draft -> loadJekyllContent());
     });
-		tintView.setOnClickListener(v -> addButton.collapse());
+    tintView.setOnClickListener(v -> addButton.collapse());
 
-		// load owner image
-		Picasso.with(this)
-				.load(repository.getOwner().get().getAvatarUrl().orNull())
-				.resizeDimen(R.dimen.overview_owner_icon_size_max, R.dimen.overview_owner_icon_size_max)
-				.placeholder(R.drawable.octocat_black)
-				.into(repoOwnerImage);
+    // load owner image
+    Picasso.with(this)
+        .load(repository.getOwner().get().getAvatarUrl().orNull())
+        .resizeDimen(R.dimen.overview_owner_icon_size_max, R.dimen.overview_owner_icon_size_max)
+        .placeholder(R.drawable.octocat_black)
+        .into(repoOwnerImage);
 
-		// setup scroll partially hides top image
-		actionBarDrawable = new ColorDrawable(getResources().getColor(R.color.colorPrimary));
+    // setup scroll partially hides top image
+    actionBarDrawable = new ColorDrawable(getResources().getColor(R.color.colorPrimary));
     getSupportActionBar().setBackgroundDrawable(actionBarDrawable);
     scrollView.setOnScrollListener((scrollView1, l, t, oldL, oldT) -> RepoOverviewActivity.this.onScrollChanged());
 
@@ -223,13 +223,13 @@ public final class RepoOverviewActivity extends AbstractActivity {
   }
 
 
-	private void loadJekyllContent() {
-		compositeSubscription.add(Observable.zip(
-				jekyllManager.getAllPosts(),
-				jekyllManager.getAllDrafts(),
+  private void loadJekyllContent() {
+    compositeSubscription.add(Observable.zip(
+        jekyllManager.getAllPosts(),
+        jekyllManager.getAllDrafts(),
         JekyllContent::new)
-				.compose(new DefaultTransformer<JekyllContent>())
-				.subscribe(jekyllContent -> {
+        .compose(new DefaultTransformer<JekyllContent>())
+        .subscribe(jekyllContent -> {
           if (isSpinnerVisible()) hideSpinner();
           actionBarDrawable.setAlpha(0); // delay until spinner is hidden
           invalidateOptionsMenu(); // re-enable options menu
@@ -254,84 +254,86 @@ public final class RepoOverviewActivity extends AbstractActivity {
           onScrollChanged();
 
         }, new ErrorActionBuilder()
-						.add(new DefaultErrorAction(RepoOverviewActivity.this, "failed to load posts"))
-						.add(new HideSpinnerAction(RepoOverviewActivity.this))
-						.build()));
-	}
+            .add(new DefaultErrorAction(RepoOverviewActivity.this, "failed to load posts"))
+            .add(new HideSpinnerAction(RepoOverviewActivity.this))
+            .build()));
+  }
 
 
-	// updates action bar and repo image during scroll
-	private void onScrollChanged() {
-		// show action bar color
-		final int headerHeight = overviewBackgroundImage.getHeight() - getSupportActionBar().getHeight();
-		final float ratio = (float) Math.min(Math.max(scrollView.getScrollY(), 0), headerHeight) / headerHeight;
+  // updates action bar and repo image during scroll
+  private void onScrollChanged() {
+    final int headerHeight = overviewBackgroundImage.getHeight() - getSupportActionBar().getHeight();
+    // comparison with zero fixes race condition between UI specs setup and measuring them
+    final float ratio = headerHeight == 0
+        ? 0
+        : (float) Math.min(Math.max(scrollView.getScrollY(), 0), headerHeight) / headerHeight;
 
-		final int newAlpha = (int) (ratio * 255);
-		actionBarDrawable.setAlpha(newAlpha);
+    final int newAlpha = (int) (ratio * 255);
+    actionBarDrawable.setAlpha(newAlpha);
 
-		// resize owner icon
-		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) repoOwnerImage.getLayoutParams();
-		float minSize = getResources().getDimension(R.dimen.overview_owner_icon_size_min);
-		float maxSize = getResources().getDimension(R.dimen.overview_owner_icon_size_max);
-		float minLeftMargin = getResources().getDimension(R.dimen.overview_owner_icon_margin_left);
-		float minTopMargin = getResources().getDimension(R.dimen.overview_owner_icon_margin_top);
-		float topMarginAddition = getResources().getDimension(R.dimen.overview_owner_icon_margin_top_addition);
-		float size = (minSize + (maxSize - minSize) * (1 - ratio));
-		params.height = (int) size;
-		params.width = (int) size;
-		params.leftMargin = (int) (minLeftMargin + (maxSize - size) / 2); // keep left margin stable
-		params.topMargin = (int) (minTopMargin + (maxSize - size) + topMarginAddition * ratio); // moves icon down while resizing
-		repoOwnerImage.setLayoutParams(params);
-	}
-
-
-	private <T> void setupFirstThreeEntries(List<T> items, ArrayAdapter<T> listAdapter) {
-		// get first 3 posts
-		List<T> firstItems = new ArrayList<>();
-		for (int i = 0; i < 3 && i < items.size(); ++i) {
-			firstItems.add(items.get(i));
-		}
-		listAdapter.clear();
-		listAdapter.addAll(firstItems);
-		listAdapter.notifyDataSetChanged();
-	}
+    // resize owner icon
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) repoOwnerImage.getLayoutParams();
+    float minSize = getResources().getDimension(R.dimen.overview_owner_icon_size_min);
+    float maxSize = getResources().getDimension(R.dimen.overview_owner_icon_size_max);
+    float minLeftMargin = getResources().getDimension(R.dimen.overview_owner_icon_margin_left);
+    float minTopMargin = getResources().getDimension(R.dimen.overview_owner_icon_margin_top);
+    float topMarginAddition = getResources().getDimension(R.dimen.overview_owner_icon_margin_top_addition);
+    float size = (minSize + (maxSize - minSize) * (1 - ratio));
+    params.height = (int) size;
+    params.width = (int) size;
+    params.leftMargin = (int) (minLeftMargin + (maxSize - size) / 2); // keep left margin stable
+    params.topMargin = (int) (minTopMargin + (maxSize - size) + topMarginAddition * ratio); // moves icon down while resizing
+    repoOwnerImage.setLayoutParams(params);
+  }
 
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch(requestCode) {
-			// update posts / drafts list (might have changed)
-			case REQUEST_SHOW_LIST:
-			case REQUEST_SHOW_ALL_FILES:
-				loadJekyllContent();
-				break;
-		}
-	}
+  private <T> void setupFirstThreeEntries(List<T> items, ArrayAdapter<T> listAdapter) {
+    // get first 3 posts
+    List<T> firstItems = new ArrayList<>();
+    for (int i = 0; i < 3 && i < items.size(); ++i) {
+      firstItems.add(items.get(i));
+    }
+    listAdapter.clear();
+    listAdapter.addAll(firstItems);
+    listAdapter.notifyDataSetChanged();
+  }
 
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_repo_overview, menu);
-		return true;
-	}
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      // update posts / drafts list (might have changed)
+      case REQUEST_SHOW_LIST:
+      case REQUEST_SHOW_ALL_FILES:
+        loadJekyllContent();
+        break;
+    }
+  }
 
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// hide menu during loading
-		if (isSpinnerVisible()) {
-			menu.findItem(R.id.action_commit).setVisible(false);
-			menu.findItem(R.id.action_preview).setVisible(false);
-			menu.findItem(R.id.action_delete_repo).setVisible(false);
-		}
-		return super.onPrepareOptionsMenu(menu);
-	}
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_repo_overview, menu);
+    return true;
+  }
 
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    // hide menu during loading
+    if (isSpinnerVisible()) {
+      menu.findItem(R.id.action_commit).setVisible(false);
+      menu.findItem(R.id.action_preview).setVisible(false);
+      menu.findItem(R.id.action_delete_repo).setVisible(false);
+    }
+    return super.onPrepareOptionsMenu(menu);
+  }
+
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
       case R.id.action_delete_repo:
         new MaterialDialog.Builder(this)
             .title(R.string.delete_repo_title)
@@ -352,12 +354,12 @@ public final class RepoOverviewActivity extends AbstractActivity {
                   );
             })
             .show();
-				return true;
-		}
+        return true;
+    }
 
     if (gitActionBarMenu.onOptionsItemSelected(item)) return true;
 
-		return super.onOptionsItemSelected(item);
+    return super.onOptionsItemSelected(item);
   }
 
 
@@ -403,59 +405,59 @@ public final class RepoOverviewActivity extends AbstractActivity {
           v -> startActivity(intentFactory.createTextEditorIntent(repository, item.getFile(), false))
       );
 
-			doGetView(view, item);
-			return view;
-		}
+      doGetView(view, item);
+      return view;
+    }
 
-		protected abstract void doGetView(View view, T item);
-	}
-
-
-	/**
-	 * List adapter for displaying {@link org.faudroids.mrhyde.jekyll.Post}s.
-	 */
-	private class PostsListAdapter extends AbstractListAdapter<Post> {
-
-		public PostsListAdapter(Context context) {
-			super(context, R.layout.item_overview_post);
-		}
-
-		@Override
-		protected void doGetView(View view, Post post) {
-			jekyllUiUtils.setPostOverview(view, post);
-		}
-	}
+    protected abstract void doGetView(View view, T item);
+  }
 
 
-	/**
-	 * List adapter for displaying {@link org.faudroids.mrhyde.jekyll.Draft}s.
-	 */
-	private class DraftsListAdapter extends AbstractListAdapter<Draft> {
+  /**
+   * List adapter for displaying {@link org.faudroids.mrhyde.jekyll.Post}s.
+   */
+  private class PostsListAdapter extends AbstractListAdapter<Post> {
 
-		public DraftsListAdapter(Context context) {
-			super(context, R.layout.item_overview_draft);
-		}
+    public PostsListAdapter(Context context) {
+      super(context, R.layout.item_overview_post);
+    }
 
-		@Override
-		protected void doGetView(View view, Draft draft) {
-			jekyllUiUtils.setDraftOverview(view, draft);
-		}
-	}
+    @Override
+    protected void doGetView(View view, Post post) {
+      jekyllUiUtils.setPostOverview(view, post);
+    }
+  }
 
 
-	/**
-	 * Container class for holding all loaded Jekyll content
-	 */
-	private static class JekyllContent {
+  /**
+   * List adapter for displaying {@link org.faudroids.mrhyde.jekyll.Draft}s.
+   */
+  private class DraftsListAdapter extends AbstractListAdapter<Draft> {
 
-		private final List<Post> posts;
-		private final List<Draft> drafts;
+    public DraftsListAdapter(Context context) {
+      super(context, R.layout.item_overview_draft);
+    }
 
-		public JekyllContent(List<Post> posts, List<Draft> drafts) {
-			this.posts = posts;
-			this.drafts = drafts;
-		}
+    @Override
+    protected void doGetView(View view, Draft draft) {
+      jekyllUiUtils.setDraftOverview(view, draft);
+    }
+  }
 
-	}
+
+  /**
+   * Container class for holding all loaded Jekyll content
+   */
+  private static class JekyllContent {
+
+    private final List<Post> posts;
+    private final List<Draft> drafts;
+
+    public JekyllContent(List<Post> posts, List<Draft> drafts) {
+      this.posts = posts;
+      this.drafts = drafts;
+    }
+
+  }
 
 }
