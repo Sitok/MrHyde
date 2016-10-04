@@ -103,8 +103,8 @@ public final class GitHubApi {
 
   private void assertAcccessTokenSet() {
     if (accessTokenSet) return;
-    repositoryService.getClient().setOAuth2Token(loginManager.getAccount().getAccessToken());
-    organizationService.getClient().setOAuth2Token(loginManager.getAccount().getAccessToken());
+    repositoryService.getClient().setOAuth2Token(loginManager.getGitHubAccount().getAccessToken());
+    organizationService.getClient().setOAuth2Token(loginManager.getGitHubAccount().getAccessToken());
     accessTokenSet = true;
   }
 

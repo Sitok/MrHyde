@@ -86,7 +86,7 @@ public class PreviewManager {
   private String getPreviewCloneUrl(GitManager gitManager) {
     // TODO this is not that great security wise. In the long run use https://help.github.com/articles/git-automation-with-oauth-tokens/
     return "https://"
-        + loginManager.getAccount().getAccessToken()
+        + loginManager.getGitHubAccount().getAccessToken()
         + ":x-oauth-basic@"
         + gitManager.getRepository().getCloneUrl().replaceFirst("https://", "");
   }

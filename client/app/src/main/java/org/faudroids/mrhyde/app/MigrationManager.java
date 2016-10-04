@@ -56,9 +56,9 @@ public class MigrationManager {
 	 * {@link LoginManager} logout to ensure mail fetched during next login.
 	 */
 	private void migrateToVersion4() {
-		Account account = loginManager.getAccount();
+		Account account = loginManager.getGitHubAccount();
 		if (account != null && (account.getEmail() == null || account.getEmail().isEmpty())) {
-			loginManager.clearAccount();
+			loginManager.clearGitHubAccount();
 		}
 	}
 

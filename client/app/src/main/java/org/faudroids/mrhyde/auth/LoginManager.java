@@ -28,7 +28,7 @@ public final class LoginManager {
   }
 
 
-  public void setAccount(Account account) {
+  public void setGitHubAccount(Account account) {
     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
     editor.putString(KEY_ACCESS_TOKEN, account.getAccessToken());
     editor.putString(KEY_LOGIN, account.getLogin());
@@ -38,7 +38,7 @@ public final class LoginManager {
   }
 
 
-  public Account getAccount() {
+  public Account getGitHubAccount() {
     if (accountCache == null) {
       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
       if (!prefs.contains(KEY_ACCESS_TOKEN)) return null;
@@ -53,7 +53,7 @@ public final class LoginManager {
 
 
   @SuppressWarnings("deprecation")
-  public void clearAccount() {
+  public void clearGitHubAccount() {
     // clear local credentials
     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
     editor.remove(KEY_ACCESS_TOKEN);

@@ -22,8 +22,8 @@ public class GitCommandAuthAdapter {
 
   public <T extends TransportCommand<T, ?>> T wrap(@NonNull T command) {
     return command.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-        loginManager.getAccount().getLogin(),
-        loginManager.getAccount().getAccessToken()
+        loginManager.getGitHubAccount().getLogin(),
+        loginManager.getGitHubAccount().getAccessToken()
     ));
   }
 

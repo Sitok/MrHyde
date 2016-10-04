@@ -88,7 +88,7 @@ public class GitManager {
           gitClient
               .commit()
               .setMessage(commitMsg)
-              .setCommitter(loginManager.getAccount().getLogin(), loginManager.getAccount().getEmail())
+              .setCommitter(loginManager.getGitHubAccount().getLogin(), loginManager.getGitHubAccount().getEmail())
               .call();
           return null;
         }));
