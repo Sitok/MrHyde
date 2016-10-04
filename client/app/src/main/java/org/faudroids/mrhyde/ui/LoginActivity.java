@@ -2,8 +2,6 @@ package org.faudroids.mrhyde.ui;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.WebView;
@@ -28,13 +26,10 @@ import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.net.ssl.HttpsURLConnection;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -166,14 +161,7 @@ public final class LoginActivity extends AbstractActivity {
             if (primaryEmail == null && !emails.isEmpty()) primaryEmail = emails.get(0);
             String emailString = (primaryEmail == null) ? "dummy" : primaryEmail.getEmail();
 
-            // load avatar
-            URL url = new URL(user.getAvatarUrl());
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap avatar = BitmapFactory.decodeStream(input);
-            return Observable.just(new LoginManager.Account(tokenDetails.getAccessToken(), user.getLogin(), emailString, avatar));
+            return Observable.just(new LoginManager.Account(tokenDetails.getAccessToken(), user.getLogin(), emailString));
 
           } catch (IOException e) {
             return Observable.error(e);
