@@ -15,10 +15,11 @@ import org.eclipse.egit.github.core.service.UserService;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MigrationManager;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.github.Email;
+import org.faudroids.mrhyde.auth.Account;
+import org.faudroids.mrhyde.github.GitHubEmail;
 import org.faudroids.mrhyde.github.GitHubAuthApi;
 import org.faudroids.mrhyde.github.GitHubEmailsApi;
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.LoginManager;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -150,9 +151,9 @@ public final class LoginActivity extends AbstractActivity {
             UserService userService = new UserService();
             userService.getClient().setOAuth2Token(tokenDetails.getAccessToken());
             User user = userService.getUser();
-            List<Email> emails = gitHubEmailsApi.getEmails(tokenDetails.getAccessToken());
-            Email primaryEmail = null;
-            for (Email email : emails) {
+            List<GitHubEmail> emails = gitHubEmailsApi.getEmails(tokenDetails.getAccessToken());
+            GitHubEmail primaryEmail = null;
+            for (GitHubEmail email : emails) {
               if (email.isPrimary()) {
                 primaryEmail = email;
                 break;
@@ -161,13 +162,13 @@ public final class LoginActivity extends AbstractActivity {
             if (primaryEmail == null && !emails.isEmpty()) primaryEmail = emails.get(0);
             String emailString = (primaryEmail == null) ? "dummy" : primaryEmail.getEmail();
 
-            return Observable.just(new LoginManager.Account(tokenDetails.getAccessToken(), user.getLogin(), emailString));
+            return Observable.just(new Account(tokenDetails.getAccessToken(), user.getLogin(), emailString));
 
           } catch (IOException e) {
             return Observable.error(e);
           }
         })
-				.compose(new DefaultTransformer<LoginManager.Account>())
+				.compose(new DefaultTransformer<Account>())
 				.subscribe(account -> {
           Timber.d("gotten token " + account.getAccessToken());
           loginManager.setAccount(account);

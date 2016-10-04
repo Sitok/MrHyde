@@ -21,7 +21,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.ByteArrayOutputStream;

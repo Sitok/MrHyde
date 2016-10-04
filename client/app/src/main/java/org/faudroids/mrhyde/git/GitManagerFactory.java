@@ -7,7 +7,7 @@ import com.google.common.io.Files;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.File;

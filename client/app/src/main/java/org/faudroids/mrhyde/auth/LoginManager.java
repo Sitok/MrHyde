@@ -1,4 +1,4 @@
-package org.faudroids.mrhyde.github;
+package org.faudroids.mrhyde.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -66,29 +66,5 @@ public final class LoginManager {
     cookieManager.removeAllCookie();
   }
 
-
-  public static final class Account {
-
-    private final String accessToken, login, email;
-
-    public Account(String accessToken, String login, String email) {
-      this.accessToken = accessToken;
-      this.login = login;
-      this.email = email;
-    }
-
-    public String getAccessToken() {
-      return accessToken;
-    }
-
-    public String getLogin() {
-      return login;
-    }
-
-    public String getEmail() {
-      return email;
-    }
-
-  }
 
 }

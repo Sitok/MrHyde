@@ -6,7 +6,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.Account;
+import org.faudroids.mrhyde.auth.LoginManager;
 
 import javax.inject.Inject;
 
@@ -55,7 +56,7 @@ public class MigrationManager {
 	 * {@link LoginManager} logout to ensure mail fetched during next login.
 	 */
 	private void migrateToVersion4() {
-		LoginManager.Account account = loginManager.getAccount();
+		Account account = loginManager.getAccount();
 		if (account != null && (account.getEmail() == null || account.getEmail().isEmpty())) {
 			loginManager.clearAccount();
 		}

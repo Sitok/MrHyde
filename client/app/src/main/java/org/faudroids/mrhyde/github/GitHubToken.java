@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * GitHub OAuth credentials (and some meta information ...).
  */
-public final class TokenDetails {
+public final class GitHubToken {
 
 	@SerializedName("access_token")
 	private String accessToken;

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.LoginManager;
 
 import javax.inject.Inject;
 

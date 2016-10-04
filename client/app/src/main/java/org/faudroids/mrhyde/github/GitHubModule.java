@@ -4,6 +4,7 @@ package org.faudroids.mrhyde.github;
 import org.eclipse.egit.github.core.service.GitHubService;
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
+import org.faudroids.mrhyde.auth.LoginManager;
 
 import javax.inject.Singleton;
 

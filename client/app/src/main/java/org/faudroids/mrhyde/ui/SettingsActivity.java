@@ -11,7 +11,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.LoginManager;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 
 import javax.inject.Inject;

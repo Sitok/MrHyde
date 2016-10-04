@@ -7,7 +7,7 @@ import android.util.Base64;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
-import org.faudroids.mrhyde.github.LoginManager;
+import org.faudroids.mrhyde.auth.LoginManager;
 
 import java.io.File;
 import java.io.IOException;

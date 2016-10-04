@@ -3,7 +3,7 @@ package org.faudroids.mrhyde.github;
 /**
  * Email belonging to a user on GitHub.
  */
-public class Email {
+public class GitHubEmail {
 
 	private String email;
 	private boolean verified, primary;

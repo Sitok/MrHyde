@@ -15,6 +15,6 @@ import retrofit.http.Query;
 public interface GitHubEmailsApi {
 
 	@GET("/user/emails")
-	List<Email> getEmails(@Query("access_token") String token);
+	List<GitHubEmail> getEmails(@Query("access_token") String token);
 
 }

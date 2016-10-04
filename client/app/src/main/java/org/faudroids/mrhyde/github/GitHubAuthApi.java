@@ -13,7 +13,7 @@ public interface GitHubAuthApi {
 
 	@POST("/login/oauth/access_token")
 	@Headers("Accept: application/json")
-	Observable<TokenDetails> getAccessToken(
+	Observable<GitHubToken> getAccessToken(
 			@Query("client_id") String clientId,
 			@Query("client_secret") String clientSecret,
 			@Query("code") String code);
