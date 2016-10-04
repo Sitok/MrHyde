@@ -16,10 +16,9 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MigrationManager;
 import org.faudroids.mrhyde.app.MrHydeApp;
 import org.faudroids.mrhyde.auth.Account;
-import org.faudroids.mrhyde.github.GitHubEmail;
-import org.faudroids.mrhyde.github.GitHubAuthApi;
-import org.faudroids.mrhyde.github.GitHubEmailsApi;
 import org.faudroids.mrhyde.auth.LoginManager;
+import org.faudroids.mrhyde.github.GitHubApi;
+import org.faudroids.mrhyde.github.GitHubEmail;
 import org.faudroids.mrhyde.ui.utils.AbstractActivity;
 import org.faudroids.mrhyde.utils.DefaultErrorAction;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
@@ -44,8 +43,7 @@ public final class LoginActivity extends AbstractActivity {
 	private static final String GITHUB_LOGIN_STATE = UUID.randomUUID().toString();
 
 	@BindView(R.id.login_button) protected Button loginButton;
-	@Inject GitHubAuthApi gitHubAuthApi;
-	@Inject GitHubEmailsApi gitHubEmailsApi;
+	@Inject GitHubApi gitHubApi;
 	@Inject LoginManager loginManager;
 	@Inject MigrationManager migrationManager;
 
@@ -141,17 +139,15 @@ public final class LoginActivity extends AbstractActivity {
 
 
 	private void getAccessToken(String code) {
-		String clientId = getString(R.string.gitHubClientId);
-		String clientSecret = getString(R.string.gitHubClientSecret);
 		showSpinner();
-		compositeSubscription.add(gitHubAuthApi.getAccessToken(clientId, clientSecret, code)
+		compositeSubscription.add(gitHubApi.getAccessToken(code)
 				.flatMap(tokenDetails -> {
           try {
             // load user
             UserService userService = new UserService();
             userService.getClient().setOAuth2Token(tokenDetails.getAccessToken());
             User user = userService.getUser();
-            List<GitHubEmail> emails = gitHubEmailsApi.getEmails(tokenDetails.getAccessToken());
+            List<GitHubEmail> emails = gitHubApi.getEmails(tokenDetails.getAccessToken()).toBlocking().first();
             GitHubEmail primaryEmail = null;
             for (GitHubEmail email : emails) {
               if (email.isPrimary()) {

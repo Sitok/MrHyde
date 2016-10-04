@@ -21,12 +21,12 @@ import rx.Observable;
 @Singleton
 public final class GitHubManager {
 
-  private final GitHubApiWrapper gitHubApiWrapper;
+  private final GitHubApi gitHubApi;
   private Map<String, Repository> allRepositoryMap;
 
   @Inject
-  GitHubManager(GitHubApiWrapper gitHubApiWrapper) {
-    this.gitHubApiWrapper = gitHubApiWrapper;
+  GitHubManager(GitHubApi gitHubApi) {
+    this.gitHubApi = gitHubApi;
   }
 
   public Observable<Collection<Repository>> getAllRepositories() {
@@ -37,10 +37,10 @@ public final class GitHubManager {
 
     // fetch
     return Observable.zip(
-        gitHubApiWrapper.getRepositories(),
-        gitHubApiWrapper.getOrganizations()
+        gitHubApi.getRepositories(),
+        gitHubApi.getOrganizations()
             .flatMap(Observable::from)
-            .flatMap(org -> gitHubApiWrapper.getOrgRepositories(org.getUsername()))
+            .flatMap(org -> gitHubApi.getOrgRepositories(org.getUsername()))
             .toList(),
         (userRepos, orgRepos) -> {
           List<Repository> allRepos = new ArrayList<>(userRepos);

@@ -1,8 +1,11 @@
 package org.faudroids.mrhyde.github;
 
 
+import android.content.Context;
+
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
+import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.git.RepositoryFactory;
 import org.faudroids.mrhyde.git.RepositoryOwner;
@@ -15,26 +18,45 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Simple wrapper class for converting the GitHuh client methods into an async version
- * by using RxJava.
+ * Facade pattern for accessing all relevant GitHub API endpoints.
  */
-public final class GitHubApiWrapper {
+public final class GitHubApi {
 
-	private final RepositoryService repositoryService;
-	private final OrganizationService organizationService;
+  private final Context context;
+  private final GitHubAuthApi authApi;
+  private final GitHubEmailsApi emailsApi;
+  private final RepositoryService repositoryService;
+  private final OrganizationService organizationService;
   private final RepositoryFactory repositoryFactory;
 
-	@Inject
-	public GitHubApiWrapper(
-			RepositoryService repositoryService,
-			OrganizationService organizationService,
+  @Inject
+  public GitHubApi(
+      Context context,
+      GitHubAuthApi authApi,
+      GitHubEmailsApi emailsApi,
+      RepositoryService repositoryService,
+      OrganizationService organizationService,
       RepositoryFactory repositoryFactory) {
 
-		this.repositoryService = repositoryService;
-		this.organizationService = organizationService;
+    this.context = context;
+    this.authApi = authApi;
+    this.emailsApi = emailsApi;
+    this.repositoryService = repositoryService;
+    this.organizationService = organizationService;
     this.repositoryFactory = repositoryFactory;
-	}
+  }
 
+  public Observable<GitHubToken> getAccessToken(String code) {
+    return authApi.getAccessToken(
+        context.getString(R.string.gitHubClientId),
+        context.getString(R.string.gitHubClientSecret),
+        code
+    );
+  }
+
+  public Observable<List<GitHubEmail>> getEmails(String token) {
+    return emailsApi.getEmails(token);
+  }
 
 	public Observable<List<Repository>> getRepositories() {
     return ObservableUtils
@@ -44,7 +66,6 @@ public final class GitHubApiWrapper {
         .toList();
   }
 
-
 	public Observable<List<Repository>> getOrgRepositories(final String orgName) {
     return ObservableUtils
         .fromSynchronousCall(() -> repositoryService.getOrgRepositories(orgName))
@@ -53,13 +74,11 @@ public final class GitHubApiWrapper {
         .toList();
   }
 
-
 	public Observable<Repository> getRepository(final String ownerLogin, final String repoName) {
     return ObservableUtils
         .fromSynchronousCall(() -> repositoryService.getRepository(ownerLogin, repoName))
         .map(repositoryFactory::fromGitHubRepository);
 	}
-
 
 	public Observable<List<RepositoryOwner>> getOrganizations() {
     return ObservableUtils
