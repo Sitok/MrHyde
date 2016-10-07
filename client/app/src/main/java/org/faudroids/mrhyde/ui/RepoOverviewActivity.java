@@ -90,7 +90,6 @@ public final class RepoOverviewActivity extends AbstractActivity {
   private Repository repository;
   @Inject JekyllManagerFactory jekyllManagerFactory;
   private JekyllManager jekyllManager;
-  @Inject GitHubManager gitHubManager;
   @Inject RepositoriesManager repositoriesManager;
   private GitManager gitManager;
 
