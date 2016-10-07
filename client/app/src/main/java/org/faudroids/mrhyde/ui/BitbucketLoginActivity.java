@@ -31,7 +31,7 @@ public final class BitbucketLoginActivity extends AbstractLoginActivity {
 
   @Override
   Intent getTargetIntent() {
-    return new Intent(this, ClonedReposActivity.class);
+    return new Intent(this, CloneBitbucketRepoActivity.class);
   }
 
   @Override

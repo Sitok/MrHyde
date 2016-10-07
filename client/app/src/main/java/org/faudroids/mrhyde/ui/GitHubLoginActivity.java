@@ -40,7 +40,7 @@ public final class GitHubLoginActivity extends AbstractLoginActivity<GitHubAccou
 
   @Override
   Intent getTargetIntent() {
-    return new Intent(this, ClonedReposActivity.class);
+    return new Intent(this, CloneGitHubRepoActivity.class);
   }
 
   @Override

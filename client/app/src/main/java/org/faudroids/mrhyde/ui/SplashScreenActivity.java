@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 
 /**
- * Forward to {@link GitHubLoginActivity}.
+ * Empty activity for showing the splash screen (activity background)
  */
 public final class SplashScreenActivity extends AbstractActivity {
 
@@ -25,7 +25,7 @@ public final class SplashScreenActivity extends AbstractActivity {
     // start migration if necessary
     migrationManager.doMigration();
 
-    startActivity(new Intent(this, BitbucketLoginActivity.class));
+    startActivity(new Intent(this, ClonedReposActivity.class));
     finish();
   }
 

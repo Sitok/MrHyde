@@ -1,6 +1,7 @@
 package org.faudroids.mrhyde.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
 import org.faudroids.mrhyde.R;
@@ -59,10 +63,39 @@ public class ClonedReposActivity
     loadRepositories();
 
     // setup clone new repo btn
-    cloneNewRepoBtn.setOnClickListener(view -> startActivityForResult(
-        new Intent(ClonedReposActivity.this, CloneBitbucketRepoActivity.class),
-        REQUEST_OVERVIEW
-    ));
+    cloneNewRepoBtn.setOnClickListener(view -> {
+      MaterialSimpleListAdapter adapter = new MaterialSimpleListAdapter((dialog, index, item) -> {
+        // show dialog for choosing git hosting provider
+        Class<?> targetClass;
+        if (item.getContent().toString().equals(getString(R.string.github))) {
+          targetClass = GitHubLoginActivity.class;
+        } else {
+          targetClass = BitbucketLoginActivity.class;
+        }
+        startActivityForResult(
+            new Intent(ClonedReposActivity.this, targetClass),
+            REQUEST_OVERVIEW
+        );
+        dialog.dismiss();
+      });
+      adapter.add(new MaterialSimpleListItem.Builder(this)
+          .content(R.string.github)
+          .icon(R.drawable.octocat_black)
+          .backgroundColor(Color.WHITE)
+          .build()
+      );
+      adapter.add(new MaterialSimpleListItem.Builder(this)
+          .content(R.string.bitbucket)
+          .icon(R.drawable.bitbucket_black)
+          .backgroundColor(Color.WHITE)
+          .build()
+      );
+
+      new MaterialDialog.Builder(this)
+          .title(R.string.select_git_hoster_title)
+          .adapter(adapter, null)
+          .show();
+    });
   }
 
   @Override
