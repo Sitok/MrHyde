@@ -3,9 +3,11 @@ package org.faudroids.mrhyde.auth;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.webkit.CookieManager;
 
 import org.faudroids.mrhyde.bitbucket.BitbucketAccount;
+import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubAccount;
 
 import javax.inject.Inject;
@@ -103,6 +105,18 @@ public final class LoginManager {
     editor.commit();
     clearCookies();
   }
+
+  public Account getAccount(@NonNull Repository repository) {
+    switch (repository.getAuthType()) {
+      case GITHUB_OAUTH2_ACCESS_TOKEN:
+        return getGitHubAccount();
+      case BITBUCKET_OAUTH2_ACCESS_TOKEN:
+        return getBitbucketAccount();
+      default:
+        throw new IllegalArgumentException("Unknown auth type " + repository.getAuthType());
+    }
+  }
+
 
   @SuppressWarnings("deprecation")
   private void clearCookies() {

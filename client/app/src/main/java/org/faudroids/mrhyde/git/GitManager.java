@@ -21,6 +21,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
+import org.faudroids.mrhyde.auth.Account;
 import org.faudroids.mrhyde.auth.LoginManager;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
@@ -85,11 +86,13 @@ public class GitManager {
           gitClient.add().addFilepattern(".").call();
 
           // commit
+          Account account = loginManager.getAccount(repository);
           gitClient
               .commit()
               .setMessage(commitMsg)
-              .setCommitter(loginManager.getGitHubAccount().getLogin(), loginManager.getGitHubAccount().getEmail())
+              .setCommitter(account.getLogin(), account.getEmail())
               .call();
+
           return null;
         }));
   }
