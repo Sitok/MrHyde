@@ -12,7 +12,6 @@ import android.support.v4.app.NotificationCompat;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.ui.CloneGitHubRepoActivity;
 import org.faudroids.mrhyde.utils.DefaultTransformer;
 
 import javax.inject.Inject;
@@ -27,6 +26,7 @@ public class CloneRepositoryService extends Service {
 
   public static final String EXTRA_REPOSITORY = "EXTRA_REPOSITORY";
   public static final String EXTRA_IMPORT_PRE_V1_REPOSITORY = "EXTRA_IMPORT_PRE_V1_REPOSITORY";
+  public static final String EXTRA_NOTIFICATION_TARGET_ACTIVITY = "EXTRA_NOTIFICATION_TARGET_ACTIVITY";
 
   private static final int NOTIFICATION_ID = 42;
 
@@ -58,9 +58,10 @@ public class CloneRepositoryService extends Service {
   public int onStartCommand(Intent intent, int flags, int startId) {
     repository = (Repository) intent.getSerializableExtra(EXTRA_REPOSITORY);
     boolean importPreV1Repo = intent.getBooleanExtra(EXTRA_IMPORT_PRE_V1_REPOSITORY, false);
+    Class<?> notificationTargetActivity = (Class<?>) intent.getSerializableExtra(EXTRA_NOTIFICATION_TARGET_ACTIVITY);
     cloneStatus = BehaviorSubject.create();
 
-    showCloneNotification();
+    showCloneNotification(notificationTargetActivity);
     repositoriesManager
         .cloneRepository(repository, importPreV1Repo)
         .compose(new DefaultTransformer<>())
@@ -79,11 +80,11 @@ public class CloneRepositoryService extends Service {
     return START_STICKY;
   }
 
-  private void showCloneNotification() {
+  private void showCloneNotification(Class<?> targetClass) {
     PendingIntent pendingIntent = PendingIntent.getActivity(
         getApplicationContext(),
         0,
-        new Intent(getApplicationContext(), CloneGitHubRepoActivity.class),
+        new Intent(getApplicationContext(), targetClass),
         PendingIntent.FLAG_UPDATE_CURRENT
     );
 

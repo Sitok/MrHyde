@@ -60,7 +60,7 @@ public class ClonedReposActivity
 
     // setup clone new repo btn
     cloneNewRepoBtn.setOnClickListener(view -> startActivityForResult(
-        new Intent(ClonedReposActivity.this, CloneGitHubRepoActivity.class),
+        new Intent(ClonedReposActivity.this, CloneBitbucketRepoActivity.class),
         REQUEST_OVERVIEW
     ));
   }

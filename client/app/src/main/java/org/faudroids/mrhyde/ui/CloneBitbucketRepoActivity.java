@@ -4,8 +4,8 @@ package org.faudroids.mrhyde.ui;
 import android.os.Bundle;
 
 import org.faudroids.mrhyde.app.MrHydeApp;
+import org.faudroids.mrhyde.bitbucket.BitbucketManager;
 import org.faudroids.mrhyde.git.Repository;
-import org.faudroids.mrhyde.github.GitHubManager;
 
 import java.util.Collection;
 
@@ -14,11 +14,11 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Displays a list of all available GitHub repositories.
+ * Displays a list of all available Bitbucket repositories.
  */
-public class CloneGitHubRepoActivity extends AbstractCloneRepoActivity {
+public class CloneBitbucketRepoActivity extends AbstractCloneRepoActivity {
 
-  @Inject protected GitHubManager gitHubManager;
+  @Inject protected BitbucketManager bitbucketManager;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,6 @@ public class CloneGitHubRepoActivity extends AbstractCloneRepoActivity {
 
   @Override
   Observable<Collection<Repository>> getAllRemoteRepositories() {
-    return gitHubManager.getAllRepositories();
+    return bitbucketManager.getAllRepositories();
   }
 }

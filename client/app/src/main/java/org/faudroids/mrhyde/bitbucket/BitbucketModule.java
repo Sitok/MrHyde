@@ -29,4 +29,17 @@ public class BitbucketModule {
         .create(BitbucketAuthApi.class);
   }
 
+  @Provides
+  @Singleton
+  public BitbucketGeneralApi provideBitbucketGeneralApi(LoginManager loginManager) {
+    return new RestAdapter.Builder()
+        .setEndpoint("https://api.bitbucket.org/2.0")
+        .setRequestInterceptor(request -> {
+          String accessToken = loginManager.getBitbucketAccount().getAccessToken();
+          request.addHeader("Authorization", "Bearer " + accessToken);
+        })
+        .build()
+        .create(BitbucketGeneralApi.class);
+  }
+
 }

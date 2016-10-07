@@ -33,6 +33,10 @@
             android:name=".ui.CloneGitHubRepoActivity"
             android:launchMode="singleTask"
             />
+        <activity
+            android:name=".ui.CloneBitbucketRepoActivity"
+            android:launchMode="singleTask"
+            />
         <activity android:name=".ui.SettingsActivity" />
         <activity
             android:name=".ui.RepoOverviewActivity"
