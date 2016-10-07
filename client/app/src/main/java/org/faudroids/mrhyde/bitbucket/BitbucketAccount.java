@@ -3,6 +3,7 @@ package org.faudroids.mrhyde.bitbucket;
 import com.google.common.base.Objects;
 
 import org.faudroids.mrhyde.auth.Account;
+import org.faudroids.mrhyde.auth.AccountVisitor;
 
 /**
  * Regular {@link org.faudroids.mrhyde.auth.Account}, except it also
@@ -19,6 +20,11 @@ public class BitbucketAccount extends Account {
 
   public String getRefreshToken() {
     return refreshToken;
+  }
+
+  @Override
+  public <P, R> R accept(AccountVisitor<P, R> visitor, P param) {
+    return visitor.visit(this, param);
   }
 
   @Override

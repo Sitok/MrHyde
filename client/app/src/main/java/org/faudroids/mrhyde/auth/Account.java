@@ -27,6 +27,8 @@ public abstract class Account {
     return email;
   }
 
+  public abstract <P, R> R accept(AccountVisitor<P, R> visitor, P param);
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
