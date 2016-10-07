@@ -1,5 +1,6 @@
 package org.faudroids.mrhyde.bitbucket;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -64,4 +65,22 @@ public class BitbucketApi {
       return repositories;
     });
   }
+
+  public Observable<BitbucketUser> getUser() {
+    return generalApi.getUser();
+  }
+
+  public Observable<Optional<String>> getUserPrimaryEmail() {
+    return generalApi
+        .getUserEmails()
+        .map(bitbucketEmailsPage -> {
+          for (BitbucketEmail email : bitbucketEmailsPage.getValues()) {
+            if (email.getType().equals("email") && email.isPrimary()) {
+              return Optional.of(email.getEmail());
+            }
+          }
+          return Optional.absent();
+        });
+  }
+
 }

@@ -14,4 +14,10 @@ public interface BitbucketGeneralApi {
 	@GET("/repositories")
   Observable<BitbucketRepositoriesPage> getRepositories(@Query("role") String role, @Query("after") String after);
 
+  @GET("/user")
+  Observable<BitbucketUser> getUser();
+
+  @GET("/user/emails")
+  Observable<BitbucketEmailsPage> getUserEmails();
+
 }
