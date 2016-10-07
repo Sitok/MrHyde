@@ -32,6 +32,10 @@ public class BitbucketApi {
     return authApi.getAccessToken("authorization_code", code);
   }
 
+  public Observable<BitbucketToken> refreshToken(String refreshToken) {
+    return authApi.refreshAccessToken("refresh_token", refreshToken);
+  }
+
   public Observable<List<Repository>> getRepositories(String role) {
     // get all repository pages
     return ObservableUtils.fromSynchronousCall(() -> {

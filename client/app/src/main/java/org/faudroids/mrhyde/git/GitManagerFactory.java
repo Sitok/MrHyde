@@ -57,10 +57,13 @@ class GitManagerFactory {
     return ObservableUtils.fromSynchronousCall(() -> {
       GitCommandAuthAdapter authAdapter = gitCommandAuthAdapterFactory.create(repository);
       // clone repo
-      Git client = authAdapter.wrap(Git
-          .cloneRepository()
-          .setURI(repository.getCloneUrl())
-          .setDirectory(repository.getRootDir()))
+      Git client = authAdapter
+          .wrap(Git
+              .cloneRepository()
+              .setURI(repository.getCloneUrl())
+              .setDirectory(repository.getRootDir())
+          )
+          .toBlocking().first()
           .call();
 
       // copy v1 files

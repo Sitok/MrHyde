@@ -148,17 +148,21 @@ public class GitManager {
   }
 
   public Observable<Void> pull() {
-    return ObservableUtils.fromSynchronousCall(() -> {
-      gitCommandAuthAdapter.wrap(gitClient.pull()).call();
-      return null;
-    });
+    return gitCommandAuthAdapter
+        .wrap(gitClient.pull())
+        .flatMap(pullCommand -> ObservableUtils.fromSynchronousCall(() -> {
+          pullCommand.call();
+          return null;
+        }));
   }
 
   public Observable<Void> push() {
-    return ObservableUtils.fromSynchronousCall(() -> {
-      gitCommandAuthAdapter.wrap(gitClient.push()).call();
-      return null;
-    });
+    return gitCommandAuthAdapter
+        .wrap(gitClient.push())
+        .flatMap(pullCommand -> ObservableUtils.fromSynchronousCall(() -> {
+          pullCommand.call();
+          return null;
+        }));
   }
 
   public Observable<Void> resetHardAndClean() {
