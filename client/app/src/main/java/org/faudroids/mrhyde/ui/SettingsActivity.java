@@ -1,10 +1,10 @@
 package org.faudroids.mrhyde.ui;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.text.Html;
+import android.view.View;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -25,7 +25,10 @@ public class SettingsActivity extends AbstractActivity {
   @BindView(R.id.versionTextView) protected TextView version;
   @BindView(R.id.authorTextView) protected TextView authors;
   @BindView(R.id.creditsTextView) protected TextView credits;
-  @BindView(R.id.logoutTextView) protected TextView logout;
+  @BindView(R.id.layout_github) protected View logoutGitHubLayout;
+  @BindView(R.id.tv_logout_github) protected TextView logoutGitHub;
+  @BindView(R.id.layout_bitbucket) protected View logoutBitbucketLayout;
+  @BindView(R.id.tv_logout_bitbucket) protected TextView logoutBitbucket;
 
   @Inject LoginManager loginManager;
 
@@ -43,11 +46,37 @@ public class SettingsActivity extends AbstractActivity {
     setOnClickDialogForTextView(credits, R.string.credits, R.string.credits_msg);
 
     // setup logout
-    logout.setOnClickListener(v -> {
-      loginManager.clearGitHubAccount();
-      finish();
-      startActivity(new Intent(SettingsActivity.this, GitHubLoginActivity.class));
-    });
+    if (loginManager.getGitHubAccount() != null) {
+      logoutGitHubLayout.setVisibility(View.VISIBLE);
+      logoutGitHub.setOnClickListener(v -> {
+        new MaterialDialog.Builder(this)
+            .title(R.string.logout_github_title)
+            .content(R.string.logout_message)
+            .positiveText(R.string.logout)
+            .negativeText(android.R.string.cancel)
+            .onPositive((dialog, which) -> {
+              loginManager.clearGitHubAccount();
+              logoutGitHubLayout.setVisibility(View.GONE);
+            })
+            .show();
+      });
+    }
+
+    if (loginManager.getBitbucketAccount() != null) {
+      logoutBitbucketLayout.setVisibility(View.VISIBLE);
+      logoutBitbucket.setOnClickListener(v -> {
+        new MaterialDialog.Builder(this)
+            .title(R.string.logout_bitbucket_title)
+            .content(R.string.logout_message)
+            .positiveText(R.string.logout)
+            .negativeText(android.R.string.cancel)
+            .onPositive((dialog, which) -> {
+              loginManager.clearBitbucketAccount();
+              logoutBitbucketLayout.setVisibility(View.GONE);
+            })
+            .show();
+      });
+    }
   }
 
   private String getVersion() {

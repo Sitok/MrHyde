@@ -217,7 +217,14 @@
         &lt;br&gt;
         Thanks everyone!
     </string>
+
+    <string name="logout_github">GitHub logout</string>
+    <string name="logout_bitbucket">Bitbucket logout</string>
+    <string name="logout_github_title">Logout from GitHub</string>
+    <string name="logout_bitbucket_title">Logout from Bitbucket</string>
+    <string name="logout_message">If you logout from your account, you won\'t be able to use connected repositories on your device.</string>
     <string name="logout">Logout</string>
+
     <string name="settings_quick_message">Made by a small team of night time coders in Erlangen, Germany\nThanks for your support!</string>
 
     <string name="feedback_mail_chooser">Thanks for the feedback!</string>
