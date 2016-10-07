@@ -43,6 +43,7 @@ public class RepositoryFactory {
         gitHubRepo.getCloneUrl(),
         false,
         AuthType.GITHUB_OAUTH2_ACCESS_TOKEN,
+        GitHostingProvider.GITHUB,
         rootDir,
         Optional.of(owner)
     );
@@ -76,13 +77,14 @@ public class RepositoryFactory {
         cloneUrl,
         false,
         AuthType.BITBUCKET_OAUTH2_ACCESS_TOKEN,
+        GitHostingProvider.BITBUCKET,
         rootDir,
         Optional.of(owner)
     );
   }
 
   public RepositoryOwner fromBitbucketUser(BitbucketUser bitbucketUser) {
-    String avatarUrl = bitbucketUser.getLinks().getAvatar() != null
+    String avatarUrl = bitbucketUser.getLinks().getAvatar() == null
         ? null
         : bitbucketUser.getLinks().getAvatar().getHref();
     bitbucketUser.getLinks().getAvatar();

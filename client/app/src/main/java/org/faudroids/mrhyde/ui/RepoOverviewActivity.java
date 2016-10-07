@@ -27,10 +27,10 @@ import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
+import org.faudroids.mrhyde.git.AvatarPlaceholder;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.RepositoriesManager;
 import org.faudroids.mrhyde.git.Repository;
-import org.faudroids.mrhyde.github.GitHubManager;
 import org.faudroids.mrhyde.jekyll.AbstractJekyllContent;
 import org.faudroids.mrhyde.jekyll.Draft;
 import org.faudroids.mrhyde.jekyll.JekyllManager;
@@ -180,7 +180,7 @@ public final class RepoOverviewActivity extends AbstractActivity {
     Picasso.with(this)
         .load(repository.getOwner().get().getAvatarUrl().orNull())
         .resizeDimen(R.dimen.overview_owner_icon_size_max, R.dimen.overview_owner_icon_size_max)
-        .placeholder(R.drawable.octocat_black)
+        .placeholder(repository.accept(new AvatarPlaceholder(), null))
         .into(repoOwnerImage);
 
     // setup scroll partially hides top image

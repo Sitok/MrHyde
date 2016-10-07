@@ -110,6 +110,7 @@ public class RepositoriesManager {
         repository.getCloneUrl(),
         isFavorite,
         repository.getAuthType(),
+        repository.getHostingProvider(),
         repository.getRootDir(),
         repository.getOwner()
     );

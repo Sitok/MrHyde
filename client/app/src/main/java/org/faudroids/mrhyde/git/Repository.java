@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * A single locally available repository.
+ * A single locally available or remote repository.
  */
 public class Repository implements Serializable {
 
@@ -17,6 +17,7 @@ public class Repository implements Serializable {
   private final String cloneUrl;
   private final boolean isFavorite;
   private final AuthType authType;
+  private final GitHostingProvider hostingProvider;
   private final File rootDir;
   private final Optional<RepositoryOwner> owner;
 
@@ -25,12 +26,14 @@ public class Repository implements Serializable {
       @NonNull String cloneUrl,
       boolean isFavorite,
       @NonNull AuthType authType,
+      @NonNull GitHostingProvider hostingProvider,
       @NonNull File rootDir,
       @NonNull Optional<RepositoryOwner> owner) {
     this.name = name;
     this.cloneUrl = cloneUrl;
     this.isFavorite = isFavorite;
     this.authType = authType;
+    this.hostingProvider = hostingProvider;
     this.rootDir = rootDir;
     this.owner = owner;
   }
@@ -62,8 +65,19 @@ public class Repository implements Serializable {
     return authType;
   }
 
+  public GitHostingProvider getHostingProvider() {
+    return hostingProvider;
+  }
+
   public File getRootDir() {
     return rootDir;
+  }
+
+  /**
+   * Convenience method.
+   */
+  public <P,R> R accept(GitHostingProviderVisitor<P,R> visitor, P param) {
+    return hostingProvider.accept(visitor, param);
   }
 
   @Override
@@ -75,12 +89,13 @@ public class Repository implements Serializable {
         Objects.equal(name, that.name) &&
         Objects.equal(cloneUrl, that.cloneUrl) &&
         authType == that.authType &&
+        hostingProvider == that.hostingProvider &&
         Objects.equal(rootDir, that.rootDir) &&
         Objects.equal(owner, that.owner);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, cloneUrl, isFavorite, authType, rootDir, owner);
+    return Objects.hashCode(name, cloneUrl, isFavorite, authType, hostingProvider, rootDir, owner);
   }
 }

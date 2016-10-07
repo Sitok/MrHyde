@@ -42,6 +42,7 @@ public class GitModule {
               output.writeString(repository.getCloneUrl());
               output.writeBoolean(repository.isFavorite());
               output.writeString(repository.getAuthType().name());
+              output.writeString(repository.getHostingProvider().name());
               output.writeString(repository.getRootDir().getAbsolutePath());
               RepositoryOwner owner = repository.getOwner().orNull();
               if (owner != null) {
@@ -58,6 +59,7 @@ public class GitModule {
               String cloneUrl = input.readString();
               boolean isFavorite = input.readBoolean();
               AuthType authType = AuthType.valueOf(input.readString());
+              GitHostingProvider hostingProvider = GitHostingProvider.valueOf(input.readString());
               File rootDir = new File(input.readString());
 
               String username = input.readString();
@@ -65,7 +67,7 @@ public class GitModule {
               RepositoryOwner owner = null;
               if (username != null) owner = new RepositoryOwner(username, Optional.fromNullable(avatarUrl));
 
-              return new Repository(name, cloneUrl, isFavorite, authType, rootDir, Optional.fromNullable(owner));
+              return new Repository(name, cloneUrl, isFavorite, authType, hostingProvider, rootDir, Optional.fromNullable(owner));
             }
           })
           .build();

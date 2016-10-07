@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.faudroids.mrhyde.R;
+import org.faudroids.mrhyde.git.AvatarPlaceholder;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.ui.utils.CircleTransformation;
 
@@ -28,6 +29,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
   private final Context context;
   private final RepositorySelectionListener selectionListener;
   private final List<Repository> repositoryList = new ArrayList<>();
+  private final AvatarPlaceholder avatarPlaceholder = new AvatarPlaceholder();
 
 
   public RepositoryRecyclerViewAdapter(Context context, RepositorySelectionListener selectionListener) {
@@ -92,7 +94,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
       Picasso.with(context)
           .load(repo.getOwner().get().getAvatarUrl().orNull())
           .resizeDimen(R.dimen.card_icon_size, R.dimen.card_icon_size)
-          .placeholder(R.drawable.octocat_black)
+          .placeholder(repo.accept(avatarPlaceholder, null))
           .transform(new CircleTransformation())
           .into(iconView);
       titleView.setText(repo.getFullName());
