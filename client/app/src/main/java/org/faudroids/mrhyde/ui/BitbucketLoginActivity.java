@@ -62,12 +62,11 @@ public final class BitbucketLoginActivity extends AbstractLoginActivity {
         .getAccessToken(accessCode)
         .flatMap(bitbucketToken -> {
           // tmp set account with credentials for authentication
-          loginManager.setBitbucketAccount(new BitbucketAccount(bitbucketToken.getAccessToken(), bitbucketToken.getRefreshToken(), "", ""));
+          loginManager.setBitbucketAccount(new BitbucketAccount(bitbucketToken.getRefreshToken(), "", ""));
           return Observable.zip(
               bitbucketApi.getUser(),
               bitbucketApi.getUserPrimaryEmail(),
               (bitbucketUser, email) -> new BitbucketAccount(
-                  bitbucketToken.getAccessToken(),
                   bitbucketToken.getRefreshToken(),
                   bitbucketUser.getUsername(),
                   email.or("")

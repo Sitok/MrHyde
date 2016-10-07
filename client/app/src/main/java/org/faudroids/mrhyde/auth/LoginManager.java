@@ -25,7 +25,6 @@ public final class LoginManager {
       GITHUB_KEY_EMAIL = "EMAIL";
 
   private static final String
-      BITBUCKET_KEY_ACCESS_TOKEN = "BITBUCKET_ACCESS_TOKEN",
       BITBUCKET_KEY_REFRESH_TOKEN = "BITBUCKET_REFRESH_TOKEN",
       BITBUCKET_KEY_LOGIN = "BITBUCKET_LOGIN",
       BITBUCKET_KEY_EMAIL = "BITBUCKET_EMAIL";
@@ -73,7 +72,6 @@ public final class LoginManager {
 
   public void setBitbucketAccount(BitbucketAccount account) {
     SharedPreferences.Editor editor = getPrefs().edit();
-    editor.putString(BITBUCKET_KEY_ACCESS_TOKEN, account.getAccessToken());
     editor.putString(BITBUCKET_KEY_REFRESH_TOKEN, account.getRefreshToken());
     editor.putString(BITBUCKET_KEY_LOGIN, account.getLogin());
     editor.putString(BITBUCKET_KEY_EMAIL, account.getEmail());
@@ -84,9 +82,8 @@ public final class LoginManager {
   public BitbucketAccount getBitbucketAccount() {
     if (bitbucketAccountCache == null) {
       SharedPreferences prefs = getPrefs();
-      if (!prefs.contains(BITBUCKET_KEY_ACCESS_TOKEN)) return null;
+      if (!prefs.contains(BITBUCKET_KEY_REFRESH_TOKEN)) return null;
       bitbucketAccountCache = new BitbucketAccount(
-          prefs.getString(BITBUCKET_KEY_ACCESS_TOKEN, null),
           prefs.getString(BITBUCKET_KEY_REFRESH_TOKEN, null),
           prefs.getString(BITBUCKET_KEY_LOGIN, null),
           prefs.getString(BITBUCKET_KEY_EMAIL, null)
@@ -98,7 +95,6 @@ public final class LoginManager {
   public void clearBitbucketAccount() {
     // clear local credentials
     SharedPreferences.Editor editor = getPrefs().edit();
-    editor.remove(BITBUCKET_KEY_ACCESS_TOKEN);
     editor.remove(BITBUCKET_KEY_REFRESH_TOKEN);
     editor.remove(BITBUCKET_KEY_LOGIN);
     editor.remove(BITBUCKET_KEY_EMAIL);

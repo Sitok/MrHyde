@@ -5,6 +5,7 @@ import android.util.Base64;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.auth.LoginManager;
+import org.faudroids.mrhyde.auth.OAuthAccessTokenProvider;
 
 import javax.inject.Singleton;
 
@@ -23,7 +24,10 @@ public class BitbucketModule {
         .setRequestInterceptor(request -> {
           String clientId = context.getString(R.string.bitbucketClientId);
           String clientSecret = context.getString(R.string.bitbucketClientSecret);
-          request.addHeader("Authorization", "Basic " + Base64.encodeToString((clientId + ":" + clientSecret).getBytes(), Base64.NO_WRAP));
+          request.addHeader(
+              "Authorization",
+              "Basic " + Base64.encodeToString((clientId + ":" + clientSecret).getBytes(), Base64.NO_WRAP)
+          );
         })
         .build()
         .create(BitbucketAuthApi.class);
@@ -31,11 +35,16 @@ public class BitbucketModule {
 
   @Provides
   @Singleton
-  public BitbucketGeneralApi provideBitbucketGeneralApi(LoginManager loginManager) {
+  public BitbucketGeneralApi provideBitbucketGeneralApi(
+      LoginManager loginManager,
+      OAuthAccessTokenProvider accessTokenProvider) {
     return new RestAdapter.Builder()
         .setEndpoint("https://api.bitbucket.org/2.0")
         .setRequestInterceptor(request -> {
-          String accessToken = loginManager.getBitbucketAccount().getAccessToken();
+          String accessToken = accessTokenProvider
+              .visit(loginManager.getBitbucketAccount(), null)
+              .toBlocking()
+              .first();
           request.addHeader("Authorization", "Bearer " + accessToken);
         })
         .build()

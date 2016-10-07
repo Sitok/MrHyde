@@ -1,7 +1,7 @@
 package org.faudroids.mrhyde.auth;
 
 import org.faudroids.mrhyde.bitbucket.BitbucketAccount;
-import org.faudroids.mrhyde.bitbucket.BitbucketApi;
+import org.faudroids.mrhyde.bitbucket.BitbucketAuthApi;
 import org.faudroids.mrhyde.bitbucket.BitbucketToken;
 import org.faudroids.mrhyde.github.GitHubAccount;
 
@@ -16,11 +16,11 @@ import timber.log.Timber;
  */
 public class OAuthAccessTokenProvider implements AccountVisitor<Void, Observable<String>> {
 
-  private final BitbucketApi bitbucketApi;
+  private final BitbucketAuthApi authApi;
 
   @Inject
-  OAuthAccessTokenProvider(BitbucketApi bitbucketApi) {
-    this.bitbucketApi = bitbucketApi;
+  OAuthAccessTokenProvider(BitbucketAuthApi authApi) {
+    this.authApi = authApi;
   }
 
   @Override
@@ -33,8 +33,8 @@ public class OAuthAccessTokenProvider implements AccountVisitor<Void, Observable
     // fetch new access token before every (!) bitbucket request. Access tokens expire within
     // 60 minutes (optimize?).
     Timber.d("Refreshing bitbucket access token");
-    return bitbucketApi
-        .refreshToken(account.getRefreshToken())
+    return authApi
+        .refreshAccessToken("refresh_token", account.getRefreshToken())
         .map(BitbucketToken::getAccessToken);
   }
 }

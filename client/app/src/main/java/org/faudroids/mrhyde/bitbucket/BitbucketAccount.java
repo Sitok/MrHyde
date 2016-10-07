@@ -13,8 +13,8 @@ public class BitbucketAccount extends Account {
 
   private final String refreshToken;
 
-  public BitbucketAccount(String accessToken, String refreshToken, String login, String email) {
-    super(accessToken, login, email);
+  public BitbucketAccount(String refreshToken, String login, String email) {
+    super(login, email);
     this.refreshToken = refreshToken;
   }
 

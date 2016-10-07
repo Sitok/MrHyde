@@ -7,16 +7,11 @@ import com.google.common.base.Objects;
  */
 public abstract class Account {
 
-  private final String accessToken, login, email;
+  private final String login, email;
 
-  public Account(String accessToken, String login, String email) {
-    this.accessToken = accessToken;
+  public Account(String login, String email) {
     this.login = login;
     this.email = email;
-  }
-
-  public String getAccessToken() {
-    return accessToken;
   }
 
   public String getLogin() {
@@ -34,13 +29,12 @@ public abstract class Account {
     if (this == o) return true;
     if (!(o instanceof Account)) return false;
     Account account = (Account) o;
-    return Objects.equal(accessToken, account.accessToken) &&
-        Objects.equal(login, account.login) &&
+    return Objects.equal(login, account.login) &&
         Objects.equal(email, account.email);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(accessToken, login, email);
+    return Objects.hashCode(login, email);
   }
 }

@@ -3,7 +3,6 @@ package org.faudroids.mrhyde.github;
 
 import org.eclipse.egit.github.core.service.OrganizationService;
 import org.eclipse.egit.github.core.service.RepositoryService;
-import org.faudroids.mrhyde.auth.LoginManager;
 
 import javax.inject.Singleton;
 
@@ -25,7 +24,7 @@ public class GitHubModule {
 
   @Singleton
   @Provides
-  public GitHubEmailsApi provideEmailsApi(final LoginManager loginManager) {
+  public GitHubEmailsApi provideEmailsApi() {
     return new RestAdapter.Builder()
         .setEndpoint("https://api.github.com")
         .build()
