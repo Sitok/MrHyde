@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 /**
  * A single authenticated account (e.g. GitHub, Bitbucket, etc.).
  */
-public final class Account {
+public abstract class Account {
 
   private final String accessToken, login, email;
 

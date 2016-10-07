@@ -1,9 +1,11 @@
 package org.faudroids.mrhyde.app;
 
+import org.faudroids.mrhyde.bitbucket.BitbucketModule;
 import org.faudroids.mrhyde.git.CloneRepositoryService;
 import org.faudroids.mrhyde.git.GitModule;
 import org.faudroids.mrhyde.github.GitHubModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
+import org.faudroids.mrhyde.ui.BitbucketLoginActivity;
 import org.faudroids.mrhyde.ui.CloneGitHubRepoActivity;
 import org.faudroids.mrhyde.ui.ClonedReposActivity;
 import org.faudroids.mrhyde.ui.CommitActivity;
@@ -24,11 +26,12 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {AppModule.class, GitHubModule.class, JekyllModule.class, GitModule.class})
+@Component(modules = {AppModule.class, GitHubModule.class, JekyllModule.class, GitModule.class, BitbucketModule.class})
 public interface AppComponent {
   void inject(MrHydeApp app);
   void inject(SplashScreenActivity activity);
   void inject(GitHubLoginActivity activity);
+  void inject(BitbucketLoginActivity activity);
   void inject(ClonedReposActivity activity);
   void inject(CloneGitHubRepoActivity activity);
   void inject(SettingsActivity activity);

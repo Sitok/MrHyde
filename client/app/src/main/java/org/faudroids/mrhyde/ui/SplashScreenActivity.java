@@ -25,7 +25,7 @@ public final class SplashScreenActivity extends AbstractActivity {
     // start migration if necessary
     migrationManager.doMigration();
 
-    startActivity(new Intent(this, GitHubLoginActivity.class));
+    startActivity(new Intent(this, BitbucketLoginActivity.class));
     finish();
   }
 

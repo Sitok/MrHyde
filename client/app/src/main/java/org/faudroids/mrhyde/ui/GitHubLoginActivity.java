@@ -10,8 +10,8 @@ import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.service.UserService;
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
-import org.faudroids.mrhyde.auth.Account;
 import org.faudroids.mrhyde.auth.LoginManager;
+import org.faudroids.mrhyde.github.GitHubAccount;
 import org.faudroids.mrhyde.github.GitHubApi;
 import org.faudroids.mrhyde.github.GitHubEmail;
 import org.faudroids.mrhyde.utils.ObservableUtils;
@@ -25,7 +25,7 @@ import rx.Observable;
 import timber.log.Timber;
 
 
-public final class GitHubLoginActivity extends AbstractLoginActivity {
+public final class GitHubLoginActivity extends AbstractLoginActivity<GitHubAccount> {
 
   private static final String GITHUB_LOGIN_STATE = UUID.randomUUID().toString();
 
@@ -40,7 +40,7 @@ public final class GitHubLoginActivity extends AbstractLoginActivity {
 
   @Override
   Intent getTargetIntent() {
-    return new Intent(GitHubLoginActivity.this, ClonedReposActivity.class);
+    return new Intent(this, ClonedReposActivity.class);
   }
 
   @Override
@@ -74,7 +74,7 @@ public final class GitHubLoginActivity extends AbstractLoginActivity {
   }
 
   @Override
-  Observable<Account> getAccountFromCode(String accessCode) {
+  Observable<GitHubAccount> getAccountFromCode(String accessCode) {
     return gitHubApi.getAccessToken(accessCode)
         .flatMap(tokenDetails -> ObservableUtils.fromSynchronousCall(() -> {
           UserService userService = new UserService();
@@ -91,17 +91,17 @@ public final class GitHubLoginActivity extends AbstractLoginActivity {
           if (primaryEmail == null && !emails.isEmpty()) primaryEmail = emails.get(0);
           String emailString = (primaryEmail == null) ? "dummy" : primaryEmail.getEmail();
 
-          return new Account(tokenDetails.getAccessToken(), user.getLogin(), emailString);
+          return new GitHubAccount(tokenDetails.getAccessToken(), user.getLogin(), emailString);
         }));
   }
 
   @Override
-  Account getStoredAccount() {
+  GitHubAccount getStoredAccount() {
     return loginManager.getGitHubAccount();
   }
 
   @Override
-  void storeAccount(Account account) {
+  void storeAccount(GitHubAccount account) {
     loginManager.setGitHubAccount(account);
   }
 

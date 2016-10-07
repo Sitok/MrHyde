@@ -6,6 +6,7 @@ import android.app.Application;
 import com.karumi.dexter.Dexter;
 
 import org.faudroids.mrhyde.BuildConfig;
+import org.faudroids.mrhyde.bitbucket.BitbucketModule;
 import org.faudroids.mrhyde.git.GitModule;
 import org.faudroids.mrhyde.github.GitHubModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
@@ -26,6 +27,7 @@ public class MrHydeApp extends Application {
         .gitHubModule(new GitHubModule())
         .jekyllModule(new JekyllModule())
         .gitModule(new GitModule())
+        .bitbucketModule(new BitbucketModule())
         .build();
 
     // setup logging

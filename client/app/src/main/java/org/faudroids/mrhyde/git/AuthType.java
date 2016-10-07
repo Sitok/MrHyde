@@ -5,6 +5,7 @@ package org.faudroids.mrhyde.git;
  */
 public enum AuthType {
 
-  GITHUB_API_TOKEN
+  GITHUB_OAUTH2_ACCESS_TOKEN,
+  BITBUCKET_OAUTH2_ACCESS_TOKEN;
 
 }

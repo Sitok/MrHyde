@@ -38,7 +38,7 @@ public class RepositoryFactory {
         name,
         gitHubRepo.getCloneUrl(),
         false,
-        AuthType.GITHUB_API_TOKEN,
+        AuthType.GITHUB_OAUTH2_ACCESS_TOKEN,
         rootDir,
         Optional.of(owner)
     );

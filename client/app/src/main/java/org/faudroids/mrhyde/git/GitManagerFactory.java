@@ -28,24 +28,25 @@ class GitManagerFactory {
   private final Context context;
   private final LoginManager loginManager;
   private final FileUtils fileUtils;
-  private final GitCommandAuthAdapter gitCommandAuthAdapter;
+  private final GitCommandAuthAdapterFactory gitCommandAuthAdapterFactory;
 
   @Inject
   public GitManagerFactory(
       Context context,
       LoginManager loginManager,
       FileUtils fileUtils,
-      GitCommandAuthAdapter gitCommandAuthAdapter) {
+      GitCommandAuthAdapterFactory gitCommandAuthAdapterFactory) {
     this.context = context;
     this.loginManager = loginManager;
     this.fileUtils = fileUtils;
-    this.gitCommandAuthAdapter = gitCommandAuthAdapter;
+    this.gitCommandAuthAdapterFactory = gitCommandAuthAdapterFactory;
   }
 
   public GitManager openRepository(@NonNull final Repository repository) {
     try {
       Git client = Git.open(repository.getRootDir());
-      return new GitManager(repository, client, fileUtils, gitCommandAuthAdapter, loginManager);
+      GitCommandAuthAdapter authAdapter = gitCommandAuthAdapterFactory.create(repository);
+      return new GitManager(repository, client, fileUtils, authAdapter, loginManager);
     } catch (IOException e) {
       Timber.e(e, "Failed to open local git repository");
       return null;
@@ -54,8 +55,9 @@ class GitManagerFactory {
 
   public Observable<GitManager> cloneRepository(@NonNull Repository repository, boolean importPreV1Repo) {
     return ObservableUtils.fromSynchronousCall(() -> {
+      GitCommandAuthAdapter authAdapter = gitCommandAuthAdapterFactory.create(repository);
       // clone repo
-      Git client = gitCommandAuthAdapter.wrap(Git
+      Git client = authAdapter.wrap(Git
           .cloneRepository()
           .setURI(repository.getCloneUrl())
           .setDirectory(repository.getRootDir()))
@@ -72,7 +74,7 @@ class GitManagerFactory {
         fileUtils.deleteFile(preV1RootDir).toBlocking().first();
       }
 
-      return new GitManager(repository, client, fileUtils, gitCommandAuthAdapter, loginManager);
+      return new GitManager(repository, client, fileUtils, authAdapter, loginManager);
     });
   }
 

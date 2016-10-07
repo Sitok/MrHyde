@@ -19,12 +19,13 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import butterknife.ButterKnife;
 import rx.Observable;
+import timber.log.Timber;
 
 
 /**
  * Base class for OAuth style login.
  */
-abstract class AbstractLoginActivity extends AbstractActivity {
+abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity {
 
   static class NotAuthenticatedException extends Exception {}
 
@@ -32,10 +33,10 @@ abstract class AbstractLoginActivity extends AbstractActivity {
   abstract @StringRes int getLoginDialogTitle();
   abstract String getLoginUrl();
   abstract Optional<String> getCodeFromUrl(String url) throws NotAuthenticatedException;
-  abstract Observable<Account> getAccountFromCode(String accessCode);
+  abstract Observable<T> getAccountFromCode(String accessCode);
 
-  abstract Account getStoredAccount();
-  abstract void storeAccount(Account account);
+  abstract T getStoredAccount();
+  abstract void storeAccount(T account);
 
 
   private MaterialDialog loginDialog = null;
@@ -81,6 +82,8 @@ abstract class AbstractLoginActivity extends AbstractActivity {
         .show();
 
     loginView = (WebView) loginDialog.getCustomView().findViewById(R.id.webview);
+    loginView.getSettings().setJavaScriptEnabled(true);
+    loginView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
     if (savedState != null) {
       loginView.restoreState(savedState);
     } else {
