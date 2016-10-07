@@ -1,7 +1,7 @@
 package org.faudroids.mrhyde.git;
 
 import org.faudroids.mrhyde.auth.LoginManager;
-import org.faudroids.mrhyde.bitbucket.BitbucketApi;
+import org.faudroids.mrhyde.auth.OAuthAccessTokenProvider;
 
 import javax.inject.Inject;
 
@@ -11,16 +11,16 @@ import javax.inject.Inject;
 public class GitCommandAuthAdapterFactory {
 
   private final LoginManager loginManager;
-  private final BitbucketApi bitbucketApi;
+  private final OAuthAccessTokenProvider accessTokenProvider;
 
   @Inject
-  GitCommandAuthAdapterFactory(LoginManager loginManager, BitbucketApi bitbucketApi) {
+  GitCommandAuthAdapterFactory(LoginManager loginManager, OAuthAccessTokenProvider accessTokenProvider) {
     this.loginManager = loginManager;
-    this.bitbucketApi = bitbucketApi;
+    this.accessTokenProvider = accessTokenProvider;
   }
 
   public GitCommandAuthAdapter create(Repository repository) {
-    return new GitCommandAuthAdapter(loginManager, bitbucketApi, repository);
+    return new GitCommandAuthAdapter(loginManager, accessTokenProvider, repository);
   }
 
 }
