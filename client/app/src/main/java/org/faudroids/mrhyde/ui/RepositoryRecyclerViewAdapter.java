@@ -80,6 +80,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
     private final View containerView;
     private final ImageView iconView;
     private final TextView titleView;
+    private final TextView hostingProviderView;
     private final View heartView;
 
     public RepoViewHolder(View view) {
@@ -87,6 +88,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
       this.containerView = view.findViewById(R.id.container);
       this.iconView = (ImageView) view.findViewById(R.id.icon);
       this.titleView = (TextView) view.findViewById(R.id.title);
+      this.hostingProviderView = (TextView) view.findViewById(R.id.host_provider);
       this.heartView = view.findViewById(R.id.heart);
     }
 
@@ -98,6 +100,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
           .transform(new CircleTransformation())
           .into(iconView);
       titleView.setText(repo.getFullName());
+      hostingProviderView.setText(repo.getHostingProvider().getNameRes());
       containerView.setOnClickListener(v -> selectionListener.onRepositorySelected(repo));
       heartView.setVisibility(repo.isFavorite() ? View.VISIBLE : View.GONE);
     }
