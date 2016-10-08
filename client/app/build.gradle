@@ -1,22 +1,17 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
-        mavenCentral()
+        jcenter()
     }
-
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     maven { url 'https://repo.eclipse.org/content/repositories/egit-releases/' }
 }
 
@@ -77,4 +72,7 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'com.snappydb:snappydb-lib:0.5.2'
     compile 'com.esotericsoftware.kryo:kryo:2.24.0'
+    compile 'com.google.android.gms:play-services-analytics:9.6.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
