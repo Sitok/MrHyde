@@ -279,4 +279,8 @@
     <string name="markdown_element_h6">######</string>
     <string name="markdown_element_quote">></string>
     <string name="markdown_element_code">&#160;&#160;&#160;&#160;</string>
+
+    <string name="welcome_title">Welcome</string>
+    <string name="welcome_msg">To get started with your awesome blog, sign in to your repository provider below.</string>
+    <string name="welcome_import">Upgrading? Don’t worry, you will have the option to import any old changes when cloning your repository.</string>
 </resources>

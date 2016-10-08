@@ -19,7 +19,6 @@ import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import butterknife.ButterKnife;
 import rx.Observable;
-import timber.log.Timber;
 
 
 /**
@@ -38,6 +37,9 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   abstract T getStoredAccount();
   abstract void storeAccount(T account);
 
+
+  // if true, this activity will simply finished when logged in, instead of going to the repos overview
+  public static final String EXTRA_DO_NOT_FORWARD_TO_NEXT_ACTIVITY = "EXTRA_DO_NOT_FORWARD_TO_NEXT_ACTIVITY";
 
   private MaterialDialog loginDialog = null;
   private WebView loginView = null;
@@ -78,7 +80,10 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
     loginDialog = new MaterialDialog.Builder(this)
         .title(getLoginDialogTitle())
         .customView(R.layout.dialog_login, false)
-        .cancelListener(dialogInterface -> finish())
+        .cancelListener(dialogInterface -> {
+          setResult(RESULT_CANCELED);
+          finish();
+        })
         .show();
 
     loginView = (WebView) loginDialog.getCustomView().findViewById(R.id.webview);
@@ -119,7 +124,11 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   }
 
   private void onLoginSuccess() {
-    startActivity(getTargetIntent());
+    boolean doNotForward = getIntent().getBooleanExtra(EXTRA_DO_NOT_FORWARD_TO_NEXT_ACTIVITY, false);
+    if (!doNotForward) {
+      startActivity(getTargetIntent());
+    }
+    setResult(RESULT_OK);
     finish();
   }
 

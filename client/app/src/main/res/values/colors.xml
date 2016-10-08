@@ -17,4 +17,10 @@
 
     <color name="blue">#ff0b98dd</color>
     <color name="blue_dark">#ff096b9b</color>
+
+    <color name="github">#ff333333</color>
+    <color name="github_light">#ff666666</color>
+    <color name="bitbucket">#ff205081</color>
+    <color name="bitbucket_light">#ff5383B4</color>
+
 </resources>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome_title"
+            android:gravity="center"
+            android:textSize="52sp"
+            android:fontFamily="sans-serif-thin"
+            style="@style/TextExtraLarge"
+            android:layout_marginBottom="30dp"
+            android:textColor="@android:color/white"
+            />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="50dp"
+            >
+
+            <android.support.v7.widget.CardView
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:elevation="1dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/welcome_msg"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginTop="50dp"
+                        android:textColor="@color/gray_dark"
+                        android:gravity="center"
+                        style="@style/Text"
+                        />
+
+                    <LinearLayout
+                        android:id="@+id/btn_github"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/github_selector"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginRight="70dp"
+                        android:descendantFocusability="blocksDescendants"
+                        android:padding="8dp"
+                        >
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/octocat_white"
+                            android:layout_marginLeft="10dp"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/github"
+                            android:textColor="@android:color/white"
+                            style="@style/Text"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_bitbucket"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginRight="70dp"
+                        android:background="@drawable/bitbucket_selector"
+                        android:layout_marginBottom="10dp"
+                        android:descendantFocusability="blocksDescendants"
+                        android:padding="8dp"
+                        >
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/bitbucket_white"
+                            android:layout_marginLeft="10dp"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bitbucket"
+                            style="@style/Text"
+                            android:layout_gravity="center"
+                            android:textColor="@android:color/white"
+                            android:layout_marginLeft="10dp"
+                            />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/txt_import"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/welcome_import"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/gray_dark"
+                        android:gravity="center"
+                        style="@style/Text"
+                        />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_background"
+                android:background="@drawable/transparent_circle"
+                android:elevation="0dp"
+                android:translationZ="3dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                android:paddingBottom="0dp"
+                />
+
+        </RelativeLayout>
+
+        <include layout="@layout/spinner"/>
+
+    </LinearLayout>
+
+</ScrollView>
