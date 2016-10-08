@@ -43,17 +43,14 @@
 -keepclassmembers class * {
     void *(**On*Event);
 }
--keep public class roboguice.**
 
-# Parcel library
--keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
-}
--keep class org.parceler.Parceler$$Parcels
+-keep class com.esotericsoftware.** { *; }
+-keep class java.beans.** { *; }
+-keep class sun.nio.ch.** { *; }
+
 
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
--dontwarn sun.misc.Unsafe
 -dontwarn roboguice.**
 -dontwarn com.squareup.**
 -dontwarn retrofit.**
@@ -62,6 +59,10 @@
 -dontwarn com.jcraft.**
 -dontwarn org.slf4j.**
 -dontwarn okio.BufferedSink
+-dontwarn java.lang.invoke.*
+-dontwarn java.beans.**
+-dontwarn sun.nio.ch.**
+-dontwarn sun.misc.**
 
 # required since appcompat v23, see also https://code.google.com/p/android/issues/detail?id=190237
 -keep class com.google.android.gms.** { *; }
