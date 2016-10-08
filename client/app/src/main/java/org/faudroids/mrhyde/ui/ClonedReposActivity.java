@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,7 +54,7 @@ public class ClonedReposActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_cloned_repos);
     ButterKnife.bind(this);
-    setTitle(R.string.title_cloned_repos);
+    setTitle(Html.fromHtml("<b>" + getString(R.string.app_name) + "</b>"));
 
     // setup list
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
