@@ -67,6 +67,7 @@ public final class LoginManager {
     editor.remove(GITHUB_KEY_LOGIN);
     editor.remove(GITHUB_KEY_EMAIL);
     editor.commit();
+    gitHubAccountCache = null;
     clearCookies();
   }
 
@@ -99,6 +100,7 @@ public final class LoginManager {
     editor.remove(BITBUCKET_KEY_LOGIN);
     editor.remove(BITBUCKET_KEY_EMAIL);
     editor.commit();
+    bitbucketAccountCache = null;
     clearCookies();
   }
 
