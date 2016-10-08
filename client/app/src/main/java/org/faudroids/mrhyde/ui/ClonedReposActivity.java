@@ -74,6 +74,7 @@ public class ClonedReposActivity
         tintView.animate().alpha(0).setDuration(200).start();
       }
     });
+    tintView.setOnClickListener(v -> cloneNewRepoBtn.collapse());
     githubLoginBtn.setOnClickListener(view -> {
       cloneNewRepoBtn.collapse();
       startActivityForResult(
