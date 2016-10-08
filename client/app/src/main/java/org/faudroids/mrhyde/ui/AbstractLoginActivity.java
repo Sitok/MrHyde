@@ -17,6 +17,7 @@ import org.faudroids.mrhyde.utils.DefaultTransformer;
 import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 
@@ -29,7 +30,7 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   static class NotAuthenticatedException extends Exception {}
 
   abstract Intent getTargetIntent();
-  abstract @StringRes int getLoginDialogTitle();
+  abstract @StringRes int getActivityTitle();
   abstract String getLoginUrl();
   abstract Optional<String> getCodeFromUrl(String url) throws NotAuthenticatedException;
   abstract Observable<T> getAccountFromCode(String accessCode);
@@ -41,14 +42,14 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   // if true, this activity will simply finished when logged in, instead of going to the repos overview
   public static final String EXTRA_DO_NOT_FORWARD_TO_NEXT_ACTIVITY = "EXTRA_DO_NOT_FORWARD_TO_NEXT_ACTIVITY";
 
-  private MaterialDialog loginDialog = null;
-  private WebView loginView = null;
+  @BindView(R.id.web_view) WebView loginView;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
     ButterKnife.bind(this);
+    setTitle(getActivityTitle());
 
     // check if logged in
     if (getStoredAccount() != null) {
@@ -65,28 +66,18 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   }
 
   @Override
-  public void onDestroy() {
-    hideDialog();
-    super.onDestroy();
-  }
-
-  @Override
   public void onSaveInstanceState(Bundle outState) {
     if (loginView != null) loginView.saveState(outState);
     super.onSaveInstanceState(outState);
   }
 
-  private void startLogin(Bundle savedState) {
-    loginDialog = new MaterialDialog.Builder(this)
-        .title(getLoginDialogTitle())
-        .customView(R.layout.dialog_login, false)
-        .cancelListener(dialogInterface -> {
-          setResult(RESULT_CANCELED);
-          finish();
-        })
-        .show();
+  @Override
+  public void onBackPressed() {
+    setResult(RESULT_CANCELED);
+    super.onBackPressed();
+  }
 
-    loginView = (WebView) loginDialog.getCustomView().findViewById(R.id.webview);
+  private void startLogin(Bundle savedState) {
     loginView.getSettings().setJavaScriptEnabled(true);
     loginView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
     if (savedState != null) {
@@ -110,7 +101,6 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   }
 
   private void getAccessToken(String code) {
-    hideDialog();
     showSpinner();
     compositeSubscription.add(getAccountFromCode(code)
         .compose(new DefaultTransformer<>())
@@ -133,7 +123,6 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
   }
 
   private void onAccessDenied() {
-    hideDialog();
     new MaterialDialog.Builder(this)
         .title(R.string.login_error_title)
         .content(R.string.login_error_message)
@@ -141,13 +130,6 @@ abstract class AbstractLoginActivity<T extends Account> extends AbstractActivity
         .onAny((dialog, which) -> startLogin(null))
         .cancelListener(dialogInterface -> startLogin(null))
         .show();
-  }
-
-  private void hideDialog() {
-    if (loginDialog == null) return;
-    loginDialog.dismiss();
-    loginDialog = null;
-    loginView = null;
   }
 
 }

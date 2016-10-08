@@ -25,14 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.BitbucketLoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity
-            android:name=".ui.GitHubLoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+        <activity android:name=".ui.GitHubLoginActivity" />
+        <activity android:name=".ui.BitbucketLoginActivity" />
         <activity android:name=".ui.ClonedReposActivity" />
         <activity
             android:name=".ui.CloneGitHubRepoActivity"

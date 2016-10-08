@@ -35,7 +35,7 @@ public final class BitbucketLoginActivity extends AbstractLoginActivity {
   }
 
   @Override
-  int getLoginDialogTitle() {
+  int getActivityTitle() {
     return R.string.login_with_bitbucket_title;
   }
 

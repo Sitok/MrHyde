@@ -44,7 +44,7 @@ public final class GitHubLoginActivity extends AbstractLoginActivity<GitHubAccou
   }
 
   @Override
-  int getLoginDialogTitle() {
+  int getActivityTitle() {
     return R.string.login_with_github_title;
   }
 
