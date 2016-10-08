@@ -1,7 +1,6 @@
 package org.faudroids.mrhyde.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
-import com.getbase.floatingactionbutton.AddFloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.app.MrHydeApp;
@@ -45,7 +42,10 @@ public class ClonedReposActivity
   @BindView(R.id.list) protected RecyclerView recyclerView;
   protected RepositoryRecyclerViewAdapter repoAdapter;
   @BindView(R.id.empty) protected TextView emptyView;
-  @BindView(R.id.add) protected AddFloatingActionButton cloneNewRepoBtn;
+  @BindView(R.id.add) protected FloatingActionsMenu cloneNewRepoBtn;
+  @BindView(R.id.add_github) protected FloatingActionButton githubLoginBtn;
+  @BindView(R.id.add_bitbucket) protected FloatingActionButton bitbucketLoginBtn;
+  @BindView(R.id.tint) protected View tintView;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -64,38 +64,29 @@ public class ClonedReposActivity
     loadRepositories();
 
     // setup clone new repo btn
-    cloneNewRepoBtn.setOnClickListener(view -> {
-      MaterialSimpleListAdapter adapter = new MaterialSimpleListAdapter((dialog, index, item) -> {
-        // show dialog for choosing git hosting provider
-        Class<?> targetClass;
-        if (item.getContent().toString().equals(getString(R.string.github))) {
-          targetClass = GitHubLoginActivity.class;
-        } else {
-          targetClass = BitbucketLoginActivity.class;
-        }
-        startActivityForResult(
-            new Intent(ClonedReposActivity.this, targetClass),
-            REQUEST_OVERVIEW
-        );
-        dialog.dismiss();
-      });
-      adapter.add(new MaterialSimpleListItem.Builder(this)
-          .content(R.string.github)
-          .icon(R.drawable.octocat_black)
-          .backgroundColor(Color.WHITE)
-          .build()
+    cloneNewRepoBtn.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+      @Override
+      public void onMenuExpanded() {
+        tintView.animate().alpha(1).setDuration(200).start();
+      }
+      @Override
+      public void onMenuCollapsed() {
+        tintView.animate().alpha(0).setDuration(200).start();
+      }
+    });
+    githubLoginBtn.setOnClickListener(view -> {
+      cloneNewRepoBtn.collapse();
+      startActivityForResult(
+          new Intent(ClonedReposActivity.this, GitHubLoginActivity.class),
+          REQUEST_OVERVIEW
       );
-      adapter.add(new MaterialSimpleListItem.Builder(this)
-          .content(R.string.bitbucket)
-          .icon(R.drawable.bitbucket_black)
-          .backgroundColor(Color.WHITE)
-          .build()
+    });
+    bitbucketLoginBtn.setOnClickListener(view -> {
+      cloneNewRepoBtn.collapse();
+      startActivityForResult(
+          new Intent(ClonedReposActivity.this, BitbucketLoginActivity.class),
+          REQUEST_OVERVIEW
       );
-
-      new MaterialDialog.Builder(this)
-          .title(R.string.select_git_hoster_title)
-          .adapter(adapter, null)
-          .show();
     });
   }
 

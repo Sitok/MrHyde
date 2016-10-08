@@ -25,18 +25,46 @@
         style="@style/TextSecondary"
         />
 
-    <com.getbase.floatingactionbutton.AddFloatingActionButton
+    <include layout="@layout/tint"/>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/add"
-        fab:fab_colorNormal="@color/red"
-        fab:fab_colorPressed="@color/red_dark"
-        fab:fab_plusIconColor="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginRight="16dp"
-        />
+        android:layout_marginBottom="16dp"
+        fab:fab_addButtonColorNormal="@color/red"
+        fab:fab_addButtonColorPressed="@color/red_dark"
+        fab:fab_addButtonPlusIconColor="@android:color/white"
+        fab:fab_labelsPosition="left"
+        fab:fab_labelStyle="@style/AddButtonLabelStyle"
+        >
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_github"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@android:color/white"
+            fab:fab_colorPressed="@color/gray_light_2"
+            fab:fab_icon="@drawable/octocat_black"
+            fab:fab_size="mini"
+            fab:fab_title="@string/github"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_bitbucket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@android:color/white"
+            fab:fab_colorPressed="@color/gray_light_2"
+            fab:fab_icon="@drawable/bitbucket_black"
+            fab:fab_size="mini"
+            fab:fab_title="@string/bitbucket"
+            />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     <include layout="@layout/spinner" />
 

@@ -52,7 +52,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'com.afollestad.material-dialogs:core:0.9.0.2'
-    compile 'com.afollestad.material-dialogs:commons:0.9.0.2'
     compile 'com.karumi:dexter:2.3.1'
     compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:4.0.1.201506240215-r'
     compile ('org.eclipse.jgit:org.eclipse.jgit:3.7.0.201502260915-r') {
