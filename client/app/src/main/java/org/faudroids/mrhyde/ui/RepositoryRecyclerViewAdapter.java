@@ -60,7 +60,7 @@ final class RepositoryRecyclerViewAdapter extends RecyclerView.Adapter<Repositor
     // sort alphabetically and by favorite status
     Collections.sort(
         nonFavoriteRepositories,
-        (lhs, rhs) -> lhs.getFullName().compareTo(rhs.getFullName())
+        (lhs, rhs) -> lhs.getFullName().toLowerCase().compareTo(rhs.getFullName().toLowerCase())
     );
 
     Iterator<Repository> iter = nonFavoriteRepositories.iterator();
