@@ -15,8 +15,8 @@ android {
         applicationId "org.faudroids.mrhyde"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 16
-        versionName "1.0.0-beta1"
+        versionCode 17
+        versionName "1.0.0-beta2"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
