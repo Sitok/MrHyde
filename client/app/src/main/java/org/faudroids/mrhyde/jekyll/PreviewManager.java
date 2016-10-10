@@ -158,9 +158,15 @@ public class PreviewManager {
     }
 
     @Override
-    public Observable<String> visit(GitLabAccount account, Repository param) {
-      // TODO
-      throw new UnsupportedOperationException();
+    public Observable<String> visit(GitLabAccount account, Repository repository) {
+      // TODO same considerations as above
+      return Observable.just(
+          String.format("https://%s:%s@%s",
+              account.getLogin(),
+              account.getPersonalAccessToken(),
+              repository.getCloneUrl().replaceFirst("https://", "")
+          )
+      );
     }
 
   }
