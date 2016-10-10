@@ -59,10 +59,10 @@ public class GitCommandAuthAdapter {
     }
 
     @Override
-    public CredentialsProvider visit(GitLabAccount account, String accessToken) {
+    public CredentialsProvider visit(GitLabAccount account, String nothing) {
       return new UsernamePasswordCredentialsProvider(
-          "gitlab-ci-token",
-          accessToken
+          account.getLogin(),
+          account.getPersonalAccessToken()
       );
     }
 

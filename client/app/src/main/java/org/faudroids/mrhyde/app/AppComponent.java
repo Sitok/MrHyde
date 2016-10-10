@@ -47,10 +47,10 @@ public interface AppComponent {
   void inject(DraftsActivity activity);
   void inject(SelectDirActivity activity);
   void inject(DirActivity activity);
-  void inject(TextEditorActivity activit);
-  void inject(CommitActivity activit);
-  void inject(RepoOverviewActivity activit);
-  void inject(ImageViewerActivity activit);
-  void inject(PreviewActivity activit);
+  void inject(TextEditorActivity activity);
+  void inject(CommitActivity activity);
+  void inject(RepoOverviewActivity activity);
+  void inject(ImageViewerActivity activity);
+  void inject(PreviewActivity activity);
   void inject(CloneRepositoryService service);
 }

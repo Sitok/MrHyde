@@ -5,7 +5,6 @@ import org.faudroids.mrhyde.bitbucket.BitbucketAuthApi;
 import org.faudroids.mrhyde.bitbucket.BitbucketToken;
 import org.faudroids.mrhyde.github.GitHubAccount;
 import org.faudroids.mrhyde.gitlab.GitLabAccount;
-import org.faudroids.mrhyde.gitlab.GitLabAuthApi;
 
 import javax.inject.Inject;
 
@@ -17,15 +16,11 @@ import rx.Observable;
  */
 public class OAuthAccessTokenProvider implements AccountVisitor<Void, Observable<String>> {
 
-  private final LoginManager loginManager;
   private final BitbucketAuthApi bitbucketAuthApi;
-  private final GitLabAuthApi gitLabAuthApi;
 
   @Inject
-  OAuthAccessTokenProvider(LoginManager loginManager, BitbucketAuthApi authApi, GitLabAuthApi gitLabAuthApi) {
-    this.loginManager = loginManager;
+  OAuthAccessTokenProvider(BitbucketAuthApi authApi) {
     this.bitbucketAuthApi = authApi;
-    this.gitLabAuthApi = gitLabAuthApi;
   }
 
   @Override
@@ -44,15 +39,7 @@ public class OAuthAccessTokenProvider implements AccountVisitor<Void, Observable
 
   @Override
   public Observable<String> visit(GitLabAccount account, Void param) {
-    return gitLabAuthApi
-        .refreshAccessToken("refresh_token", account.getRefreshToken())
-        .map(gitLabToken -> {
-          loginManager.setGitLabAccount(new GitLabAccount(
-              gitLabToken.getRefreshToken(),
-              account.getLogin(),
-              account.getEmail()
-          ));
-          return gitLabToken.getAccessToken();
-        });
+    // not supported!
+    return Observable.just(null);
   }
 }

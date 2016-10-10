@@ -6,20 +6,19 @@ import org.faudroids.mrhyde.auth.Account;
 import org.faudroids.mrhyde.auth.AccountVisitor;
 
 /**
- * Regular {@link Account}, except it also
- * stores the refresh token. GitLab access tokens expire every now and then.
+ * GitLab {@link Account}.
  */
 public class GitLabAccount extends Account {
 
-  private final String refreshToken;
+  private final String personalAccessToken;
 
-  public GitLabAccount(String refreshToken, String login, String email) {
+  public GitLabAccount(String personalAccessToken, String login, String email) {
     super(login, email);
-    this.refreshToken = refreshToken;
+    this.personalAccessToken = personalAccessToken;
   }
 
-  public String getRefreshToken() {
-    return refreshToken;
+  public String getPersonalAccessToken() {
+    return personalAccessToken;
   }
 
   @Override
@@ -33,11 +32,11 @@ public class GitLabAccount extends Account {
     if (!(o instanceof GitLabAccount)) return false;
     if (!super.equals(o)) return false;
     GitLabAccount that = (GitLabAccount) o;
-    return Objects.equal(refreshToken, that.refreshToken);
+    return Objects.equal(personalAccessToken, that.personalAccessToken);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), refreshToken);
+    return Objects.hashCode(super.hashCode(), personalAccessToken);
   }
 }

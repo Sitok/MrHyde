@@ -31,14 +31,14 @@ public final class LoginManager {
       BITBUCKET_KEY_EMAIL = "BITBUCKET_EMAIL";
 
   private static final String
-      GITLAB_KEY_REFRESH_TOKEN = "GITLAB_REFRESH_TOKEN",
+      GITLAB_KEY_PERSONAL_ACCESS_TOKEN = "GITLAB_PERSONAL_ACCESS_TOKEN",
       GITLAB_KEY_LOGIN = "GITLAB_LOGIN",
       GITLAB_KEY_EMAIL = "GITLAB_EMAIL";
 
   private final Context context;
   private GitHubAccount gitHubAccountCache = null;
   private BitbucketAccount bitbucketAccountCache = null;
-  private GitLabAccount gitLabAccoutCache = null;
+  private GitLabAccount gitLabAccountCache = null;
 
   @Inject
   LoginManager(Context context) {
@@ -112,36 +112,36 @@ public final class LoginManager {
   }
 
   public GitLabAccount getGitLabAccount() {
-    if (gitLabAccoutCache == null) {
+    if (gitLabAccountCache == null) {
       SharedPreferences prefs = getPrefs();
-      if (!prefs.contains(GITLAB_KEY_REFRESH_TOKEN)) return null;
-      gitLabAccoutCache = new GitLabAccount(
-          prefs.getString(GITLAB_KEY_REFRESH_TOKEN, null),
+      if (!prefs.contains(GITLAB_KEY_PERSONAL_ACCESS_TOKEN)) return null;
+      gitLabAccountCache = new GitLabAccount(
+          prefs.getString(GITLAB_KEY_PERSONAL_ACCESS_TOKEN, null),
           prefs.getString(GITLAB_KEY_LOGIN, null),
           prefs.getString(GITLAB_KEY_EMAIL, null)
       );
     }
-    return gitLabAccoutCache;
+    return gitLabAccountCache;
   }
 
   public void clearGitLabAccount() {
     // clear local credentials
     SharedPreferences.Editor editor = getPrefs().edit();
-    editor.remove(GITLAB_KEY_REFRESH_TOKEN);
+    editor.remove(GITLAB_KEY_PERSONAL_ACCESS_TOKEN);
     editor.remove(GITLAB_KEY_LOGIN);
     editor.remove(GITLAB_KEY_EMAIL);
     editor.commit();
-    gitLabAccoutCache = null;
+    gitLabAccountCache = null;
     clearCookies();
   }
 
   public void setGitLabAccount(GitLabAccount account) {
     SharedPreferences.Editor editor = getPrefs().edit();
-    editor.putString(GITLAB_KEY_REFRESH_TOKEN, account.getRefreshToken());
+    editor.putString(GITLAB_KEY_PERSONAL_ACCESS_TOKEN, account.getPersonalAccessToken());
     editor.putString(GITLAB_KEY_LOGIN, account.getLogin());
     editor.putString(GITLAB_KEY_EMAIL, account.getEmail());
     editor.commit();
-    gitLabAccoutCache = account;
+    gitLabAccountCache = account;
   }
 
   public Account getAccount(@NonNull Repository repository) {

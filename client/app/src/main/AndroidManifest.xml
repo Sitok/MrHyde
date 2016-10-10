@@ -27,7 +27,10 @@
         </activity>
         <activity android:name=".ui.GitHubLoginActivity" />
         <activity android:name=".ui.BitbucketLoginActivity" />
-        <activity android:name=".ui.GitLabLoginActivity" />
+        <activity
+            android:name=".ui.GitLabLoginActivity"
+            android:windowSoftInputMode="stateHidden"
+            />
         <activity android:name=".ui.ClonedReposActivity" />
         <activity
             android:name=".ui.CloneGitHubRepoActivity"

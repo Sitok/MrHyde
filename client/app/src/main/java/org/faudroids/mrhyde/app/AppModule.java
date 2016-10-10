@@ -1,6 +1,7 @@
 package org.faudroids.mrhyde.app;
 
 import android.app.NotificationManager;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
 
@@ -34,6 +35,12 @@ public class AppModule {
   @Singleton
   NotificationManager provideNotificationManager(Context context) {
     return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+  }
+
+  @Provides
+  @Singleton
+  ClipboardManager provideClipboardManager(Context context) {
+    return (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
   }
 
 }
