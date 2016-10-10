@@ -3,9 +3,13 @@ package org.faudroids.mrhyde.ui;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -33,6 +37,8 @@ import timber.log.Timber;
 
 public class GitLabLoginActivity extends AbstractActivity {
 
+  private static final String URL_GITLAB_CREATE_PERSONAL_ACCESS_TOKEN = "https://gitlab.com/profile/personal_access_tokens";
+
   @Inject GitLabApi gitLabApi;
   @Inject LoginManager loginManager;
   @Inject ClipboardManager clipboardManager;
@@ -58,11 +64,7 @@ public class GitLabLoginActivity extends AbstractActivity {
     ButterKnife.bind(this);
 
     if (savedInstanceState == null) {
-      new MaterialDialog.Builder(this)
-          .title(R.string.gitlab_login_help_title)
-          .content(R.string.gitlab_login_help_msg)
-          .positiveText(android.R.string.ok)
-          .show();
+      showHelpDialog();
     }
 
     // navigate to personal access token website
@@ -72,7 +74,7 @@ public class GitLabLoginActivity extends AbstractActivity {
     if (savedInstanceState != null) {
       webView.restoreState(savedInstanceState);
     } else {
-      webView.loadUrl("https://gitlab.com/profile/personal_access_tokens");
+      webView.loadUrl(URL_GITLAB_CREATE_PERSONAL_ACCESS_TOKEN);
     }
 
     // on confirm load profile info
@@ -152,6 +154,37 @@ public class GitLabLoginActivity extends AbstractActivity {
     }
     setResult(RESULT_OK);
     finish();
+  }
+
+  private void showHelpDialog() {
+    new MaterialDialog.Builder(this)
+        .title(R.string.gitlab_login_help_title)
+        .content(R.string.gitlab_login_help_msg)
+        .positiveText(android.R.string.ok)
+        .show();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_login_gitlab, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_open_in_browser:
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(URL_GITLAB_CREATE_PERSONAL_ACCESS_TOKEN));
+        startActivity(intent);
+        return true;
+
+      case R.id.action_help:
+        showHelpDialog();
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
 }

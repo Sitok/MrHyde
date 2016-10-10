@@ -44,6 +44,8 @@
     <string name="action_publish_draft">Publish draft</string>
     <string name="action_unpublish_post">Unpublish post</string>
     <string name="action_insert_markdown">Insert markdown</string>
+    <string name="action_open_in_browser">Open in browser</string>
+    <string name="action_help">Help</string>
 
     <string name="select_git_hoster_title">Select provider</string>
     <string name="github">GitHub</string>
