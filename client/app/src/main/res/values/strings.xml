@@ -12,7 +12,7 @@
     <string name="login_error_title">Access denied</string>
     <string name="login_error_message">Sorry, but it looks like username or password are incorrect.</string>
 
-    <string name="gitlab_login_token_hint">Your personal access token</string>
+    <string name="gitlab_login_token_hint">Paste your token here</string>
     <string name="gitlab_login_help_title">Create your personal access token</string>
     <string name="gitlab_login_help_msg">MrHyde needs a GitLab personal access token in order to
         list repositories and push changes.\n\nPlease create your token now and paste it below.</string>

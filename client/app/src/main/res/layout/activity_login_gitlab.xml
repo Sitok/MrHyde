@@ -44,14 +44,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_paste_gray"
                 android:background="@android:color/transparent"
-                />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/gray"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="16dp"
                 />
 
             <EditText
