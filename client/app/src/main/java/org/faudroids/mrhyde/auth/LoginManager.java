@@ -9,6 +9,7 @@ import android.webkit.CookieManager;
 import org.faudroids.mrhyde.bitbucket.BitbucketAccount;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubAccount;
+import org.faudroids.mrhyde.gitlab.GitLabAccount;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,9 +30,15 @@ public final class LoginManager {
       BITBUCKET_KEY_LOGIN = "BITBUCKET_LOGIN",
       BITBUCKET_KEY_EMAIL = "BITBUCKET_EMAIL";
 
+  private static final String
+      GITLAB_KEY_REFRESH_TOKEN = "GITLAB_REFRESH_TOKEN",
+      GITLAB_KEY_LOGIN = "GITLAB_LOGIN",
+      GITLAB_KEY_EMAIL = "GITLAB_EMAIL";
+
   private final Context context;
   private GitHubAccount gitHubAccountCache = null;
   private BitbucketAccount bitbucketAccountCache = null;
+  private GitLabAccount gitLabAccoutCache = null;
 
   @Inject
   LoginManager(Context context) {
@@ -104,12 +111,47 @@ public final class LoginManager {
     clearCookies();
   }
 
+  public GitLabAccount getGitLabAccount() {
+    if (gitLabAccoutCache == null) {
+      SharedPreferences prefs = getPrefs();
+      if (!prefs.contains(GITLAB_KEY_REFRESH_TOKEN)) return null;
+      gitLabAccoutCache = new GitLabAccount(
+          prefs.getString(GITLAB_KEY_REFRESH_TOKEN, null),
+          prefs.getString(GITLAB_KEY_LOGIN, null),
+          prefs.getString(GITLAB_KEY_EMAIL, null)
+      );
+    }
+    return gitLabAccoutCache;
+  }
+
+  public void clearGitLabAccount() {
+    // clear local credentials
+    SharedPreferences.Editor editor = getPrefs().edit();
+    editor.remove(GITLAB_KEY_REFRESH_TOKEN);
+    editor.remove(GITLAB_KEY_LOGIN);
+    editor.remove(GITLAB_KEY_EMAIL);
+    editor.commit();
+    gitLabAccoutCache = null;
+    clearCookies();
+  }
+
+  public void setGitLabAccount(GitLabAccount account) {
+    SharedPreferences.Editor editor = getPrefs().edit();
+    editor.putString(GITLAB_KEY_REFRESH_TOKEN, account.getRefreshToken());
+    editor.putString(GITLAB_KEY_LOGIN, account.getLogin());
+    editor.putString(GITLAB_KEY_EMAIL, account.getEmail());
+    editor.commit();
+    gitLabAccoutCache = account;
+  }
+
   public Account getAccount(@NonNull Repository repository) {
     switch (repository.getAuthType()) {
       case GITHUB_OAUTH2_ACCESS_TOKEN:
         return getGitHubAccount();
       case BITBUCKET_OAUTH2_ACCESS_TOKEN:
         return getBitbucketAccount();
+      case GITLAB_OAUTH2_ACCESS_TOKEN:
+        return getGitLabAccount();
       default:
         throw new IllegalArgumentException("Unknown auth type " + repository.getAuthType());
     }

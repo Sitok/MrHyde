@@ -8,6 +8,7 @@
 
     <string name="login_with_github_title">Login with GitHub</string>
     <string name="login_with_bitbucket_title">Login with Bitbucket</string>
+    <string name="login_with_gitlab_title">Login with GitLab</string>
     <string name="login_error_title">Access denied</string>
     <string name="login_error_message">Sorry, but it looks like username or password are incorrect.</string>
 
@@ -42,6 +43,7 @@
     <string name="select_git_hoster_title">Select provider</string>
     <string name="github">GitHub</string>
     <string name="bitbucket">Bitbucket</string>
+    <string name="gitlab">GitLab</string>
 
     <string name="clone_repo_title">Clone repository</string>
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
@@ -228,8 +230,10 @@
 
     <string name="logout_github">GitHub logout</string>
     <string name="logout_bitbucket">Bitbucket logout</string>
+    <string name="logout_gitlab">GitLab logout</string>
     <string name="logout_github_title">Logout from GitHub</string>
     <string name="logout_bitbucket_title">Logout from Bitbucket</string>
+    <string name="logout_gitlab_title">Logout from GitLab</string>
     <string name="logout_message">If you logout from your account, you won\'t be able to use connected repositories on your device.</string>
     <string name="logout">Logout</string>
 

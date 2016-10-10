@@ -120,6 +120,38 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/btn_gitlab"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginRight="70dp"
+                        android:background="@drawable/gitlab_selector"
+                        android:layout_marginBottom="10dp"
+                        android:descendantFocusability="blocksDescendants"
+                        android:padding="8dp"
+                        >
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/gitlab_white"
+                            android:layout_marginLeft="10dp"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/gitlab"
+                            style="@style/Text"
+                            android:layout_gravity="center"
+                            android:textColor="@android:color/white"
+                            android:layout_marginLeft="10dp"
+                            />
+
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/txt_import"
                         android:layout_width="match_parent"

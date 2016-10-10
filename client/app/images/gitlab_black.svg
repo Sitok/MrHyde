@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   viewBox="0 0 47.999998 47.999997"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="gitlab_black.svg">
+  <defs
+     id="defs4">
+    <path
+       d="M0,1173.3333 L1999.99995,1173.3333 L1999.99995,0 L0,0 L0,1173.3333 L0,1173.3333 Z"
+       id="path-1" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9999999"
+     inkscape:cx="11.363921"
+     inkscape:cy="35.671458"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1362"
+     inkscape:window-height="711"
+     inkscape:window-x="0"
+     inkscape:window-y="36"
+     inkscape:window-maximized="0"
+     units="px"
+     borderlayer="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1004.3622)">
+    <g
+       style="fill:#000000;fill-rule:evenodd;stroke:none;stroke-width:1;fill-opacity:1"
+       id="gitlab_logo"
+       sketch:type="MSLayerGroup"
+       transform="translate(-910.99681,371.57581)">
+      <g
+         style="fill:#000000;fill-opacity:1"
+         id="g10"
+         transform="matrix(1,0,0,-1,0,1174.3333)">
+        <g
+           style="fill:#000000;fill-opacity:1"
+           id="g16">
+          <g
+             style="fill:#000000;fill-opacity:1"
+             id="g18-Clipped">
+            <mask
+               id="mask-2"
+               sketch:name="path22"
+               fill="white">
+              <use
+                 height="100%"
+                 width="100%"
+                 y="0"
+                 x="0"
+                 xlink:href="#path-1"
+                 id="use4150" />
+            </mask>
+            <g
+               style="fill:#000000;fill-opacity:1"
+               id="path22" />
+            <g
+               style="fill:#000000;fill-opacity:1"
+               id="g44"
+               transform="matrix(0.0648372,0,0,0.0648372,919.00369,502.81428)">
+              <path
+                 style="fill:#000000;fill-opacity:1"
+                 inkscape:connector-curvature="0"
+                 d="m 491.99999,194.66666 -27.55867,84.81467 -54.61733,168.09733 c -2.80933,8.64799 -15.04533,8.64799 -17.856,0 l -54.61866,-168.09733 -181.36667,0 -54.62,168.09733 c -2.809329,8.64799 -15.045329,8.64799 -17.855995,0 L 28.889333,279.48133 1.332,194.66666 c -2.5146666,-7.736 0.24,-16.21066 6.8199998,-20.992 L 246.66533,0.38533332 485.17999,173.67466 c 6.58,4.78134 9.33333,13.256 6.82,20.992"
+                 id="path46"
+                 sketch:type="MSShapeGroup" />
+            </g>
+            <g
+               style="fill:#000000;fill-opacity:1"
+               id="g52"
+               transform="translate(605.86452,359.82693)">
+              <g
+                 style="fill:#000000;fill-opacity:1"
+                 id="path54" />
+            </g>
+            <g
+               style="fill:#000000;fill-opacity:1"
+               id="g60"
+               transform="translate(605.86452,359.82746)">
+              <g
+                 style="fill:#000000;fill-opacity:1"
+                 id="path62" />
+            </g>
+            <g
+               style="fill:#000000;fill-opacity:1"
+               id="g68"
+               transform="translate(605.86452,359.82693)">
+              <g
+                 style="fill:#000000;fill-opacity:1"
+                 id="path70" />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

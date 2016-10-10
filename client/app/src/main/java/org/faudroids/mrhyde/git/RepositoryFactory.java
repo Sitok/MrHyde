@@ -8,6 +8,8 @@ import org.eclipse.egit.github.core.User;
 import org.faudroids.mrhyde.bitbucket.BitbucketLink;
 import org.faudroids.mrhyde.bitbucket.BitbucketRepository;
 import org.faudroids.mrhyde.bitbucket.BitbucketUser;
+import org.faudroids.mrhyde.gitlab.GitLabProject;
+import org.faudroids.mrhyde.gitlab.GitLabProjectOwner;
 
 import java.io.File;
 
@@ -22,6 +24,7 @@ public class RepositoryFactory {
 
   private static final String PATH_REPOS_GITHUB = "github";
   private static final String PATH_REPOS_BITBUCKET = "bitbucket";
+  private static final String PATH_REPOS_GITLAB = "gitlab";
 
   private final Context context;
 
@@ -92,5 +95,28 @@ public class RepositoryFactory {
         bitbucketUser.getUsername(),
         Optional.fromNullable(avatarUrl)
     );
+  }
+
+  public Repository fromGitLabProject(GitLabProject gitLabProject) {
+    String name = gitLabProject.getName();
+    RepositoryOwner owner = fromGitLabUser(gitLabProject.getOwner());
+    File rootDir = new File(
+        context.getFilesDir(),
+        String.format("%s/%s/%s", PATH_REPOS_GITLAB, owner.getUsername(), name)
+    );
+
+    return new Repository(
+        name,
+        gitLabProject.getHttpUrlToRepo(),
+        false,
+        AuthType.GITLAB_OAUTH2_ACCESS_TOKEN,
+        GitHostingProvider.GITLAB,
+        rootDir,
+        Optional.of(owner)
+    );
+  }
+
+  public RepositoryOwner fromGitLabUser(GitLabProjectOwner gitLabUser) {
+    return new RepositoryOwner(gitLabUser.getName(), Optional.absent());
   }
 }

@@ -27,6 +27,7 @@
         </activity>
         <activity android:name=".ui.GitHubLoginActivity" />
         <activity android:name=".ui.BitbucketLoginActivity" />
+        <activity android:name=".ui.GitLabLoginActivity" />
         <activity android:name=".ui.ClonedReposActivity" />
         <activity
             android:name=".ui.CloneGitHubRepoActivity"
@@ -34,6 +35,10 @@
             />
         <activity
             android:name=".ui.CloneBitbucketRepoActivity"
+            android:launchMode="singleTask"
+            />
+        <activity
+            android:name=".ui.CloneGitLabRepoActivity"
             android:launchMode="singleTask"
             />
         <activity android:name=".ui.SettingsActivity" />

@@ -20,4 +20,11 @@ public class AvatarPlaceholder implements GitHostingProviderVisitor<Void, Intege
   public Integer visitBitbucket(Void param) {
     return R.drawable.bitbucket_black;
   }
+
+  @Override
+  @DrawableRes
+  public Integer visitGitLab(Void param) {
+    return R.drawable.gitlab_black;
+  }
+
 }

@@ -64,6 +64,17 @@
             fab:fab_title="@string/bitbucket"
             />
 
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_gitlab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@android:color/white"
+            fab:fab_colorPressed="@color/gray_light_2"
+            fab:fab_icon="@drawable/gitlab_black"
+            fab:fab_size="mini"
+            fab:fab_title="@string/gitlab"
+            />
+
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     <include layout="@layout/spinner" />

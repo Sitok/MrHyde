@@ -45,6 +45,7 @@ public class ClonedReposActivity
   @BindView(R.id.add) protected FloatingActionsMenu cloneNewRepoBtn;
   @BindView(R.id.add_github) protected FloatingActionButton githubLoginBtn;
   @BindView(R.id.add_bitbucket) protected FloatingActionButton bitbucketLoginBtn;
+  @BindView(R.id.add_gitlab) protected FloatingActionButton gitLabLoginBtn;
   @BindView(R.id.tint) protected View tintView;
 
   @Override
@@ -86,6 +87,13 @@ public class ClonedReposActivity
       cloneNewRepoBtn.collapse();
       startActivityForResult(
           new Intent(ClonedReposActivity.this, BitbucketLoginActivity.class),
+          REQUEST_OVERVIEW
+      );
+    });
+    gitLabLoginBtn.setOnClickListener(view -> {
+      cloneNewRepoBtn.collapse();
+      startActivityForResult(
+          new Intent(ClonedReposActivity.this, GitLabLoginActivity.class),
           REQUEST_OVERVIEW
       );
     });

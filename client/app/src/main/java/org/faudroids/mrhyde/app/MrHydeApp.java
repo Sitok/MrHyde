@@ -14,6 +14,7 @@ import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.bitbucket.BitbucketModule;
 import org.faudroids.mrhyde.git.GitModule;
 import org.faudroids.mrhyde.github.GitHubModule;
+import org.faudroids.mrhyde.gitlab.GitLabModule;
 import org.faudroids.mrhyde.jekyll.JekyllModule;
 
 import timber.log.Timber;
@@ -34,6 +35,7 @@ public class MrHydeApp extends Application {
         .jekyllModule(new JekyllModule())
         .gitModule(new GitModule())
         .bitbucketModule(new BitbucketModule())
+        .gitLabModule(new GitLabModule())
         .build();
 
     // setup google analytics

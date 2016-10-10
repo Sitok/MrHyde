@@ -20,6 +20,12 @@ public enum GitHostingProvider {
     public <P, R> R accept(GitHostingProviderVisitor<P, R> visitor, P param) {
       return visitor.visitBitbucket(param);
     }
+  },
+  GITLAB(R.string.gitlab) {
+    @Override
+    public <P, R> R accept(GitHostingProviderVisitor<P, R> visitor, P param) {
+      return visitor.visitGitLab(param);
+    }
   };
 
   @StringRes private final int nameRes;

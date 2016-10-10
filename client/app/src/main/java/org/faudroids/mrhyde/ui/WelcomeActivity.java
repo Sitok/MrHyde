@@ -20,6 +20,7 @@ public class WelcomeActivity extends AbstractActivity {
 
   private final int REQUEST_GITHUB_LOGIN = 42;
   private final int REQUEST_BITBUCKET_LOGIN = 43;
+  private final int REQUEST_GITLAB_LOGIN = 44;
 
   private final String PREFS_NAME = "PREFS_WELCOME_ACTIVITY";
   private final String KEY_WELCOME_SCREEN_VISITED = "WELCOME_SCREEN_VISITED";
@@ -29,6 +30,7 @@ public class WelcomeActivity extends AbstractActivity {
 
   @BindView(R.id.btn_github) protected View githubButton;
   @BindView(R.id.btn_bitbucket) protected View bitbucketButton;
+  @BindView(R.id.btn_gitlab) protected View gitlabButton;
   @BindView(R.id.txt_import) protected View importTextView;
 
   @Override
@@ -68,6 +70,11 @@ public class WelcomeActivity extends AbstractActivity {
       intent.putExtras(extras);
       startActivityForResult(intent, REQUEST_BITBUCKET_LOGIN);
     });
+    gitlabButton.setOnClickListener(view -> {
+      Intent intent = new Intent(WelcomeActivity.this, GitLabLoginActivity.class);
+      intent.putExtras(extras);
+      startActivityForResult(intent, REQUEST_GITLAB_LOGIN);
+    });
   }
 
   @Override
@@ -81,6 +88,9 @@ public class WelcomeActivity extends AbstractActivity {
         break;
       case REQUEST_BITBUCKET_LOGIN:
         startActivity(new Intent(this, CloneBitbucketRepoActivity.class));
+        break;
+      case REQUEST_GITLAB_LOGIN:
+        startActivity(new Intent(this, CloneGitLabRepoActivity.class));
         break;
     }
     getPrefs().edit().putBoolean(KEY_WELCOME_SCREEN_VISITED, true).commit();

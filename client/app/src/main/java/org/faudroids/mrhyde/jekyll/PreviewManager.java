@@ -14,6 +14,7 @@ import org.faudroids.mrhyde.git.FileUtils;
 import org.faudroids.mrhyde.git.GitManager;
 import org.faudroids.mrhyde.git.Repository;
 import org.faudroids.mrhyde.github.GitHubAccount;
+import org.faudroids.mrhyde.gitlab.GitLabAccount;
 
 import java.io.File;
 import java.io.IOException;
@@ -154,6 +155,12 @@ public class PreviewManager {
               accessToken,
               repository.getCloneUrl().split("@")[1]
           ));
+    }
+
+    @Override
+    public Observable<String> visit(GitLabAccount account, Repository param) {
+      // TODO
+      throw new UnsupportedOperationException();
     }
 
   }

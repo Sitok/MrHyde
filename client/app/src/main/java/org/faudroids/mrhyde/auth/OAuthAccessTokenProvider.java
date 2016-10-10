@@ -4,11 +4,12 @@ import org.faudroids.mrhyde.bitbucket.BitbucketAccount;
 import org.faudroids.mrhyde.bitbucket.BitbucketAuthApi;
 import org.faudroids.mrhyde.bitbucket.BitbucketToken;
 import org.faudroids.mrhyde.github.GitHubAccount;
+import org.faudroids.mrhyde.gitlab.GitLabAccount;
+import org.faudroids.mrhyde.gitlab.GitLabAuthApi;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * Creates if necessary an update to date OAuth2 access token
@@ -16,11 +17,15 @@ import timber.log.Timber;
  */
 public class OAuthAccessTokenProvider implements AccountVisitor<Void, Observable<String>> {
 
-  private final BitbucketAuthApi authApi;
+  private final LoginManager loginManager;
+  private final BitbucketAuthApi bitbucketAuthApi;
+  private final GitLabAuthApi gitLabAuthApi;
 
   @Inject
-  OAuthAccessTokenProvider(BitbucketAuthApi authApi) {
-    this.authApi = authApi;
+  OAuthAccessTokenProvider(LoginManager loginManager, BitbucketAuthApi authApi, GitLabAuthApi gitLabAuthApi) {
+    this.loginManager = loginManager;
+    this.bitbucketAuthApi = authApi;
+    this.gitLabAuthApi = gitLabAuthApi;
   }
 
   @Override
@@ -32,9 +37,22 @@ public class OAuthAccessTokenProvider implements AccountVisitor<Void, Observable
   public Observable<String> visit(BitbucketAccount account, Void param) {
     // fetch new access token before every (!) bitbucket request. Access tokens expire within
     // 60 minutes (optimize?).
-    Timber.d("Refreshing bitbucket access token");
-    return authApi
+    return bitbucketAuthApi
         .refreshAccessToken("refresh_token", account.getRefreshToken())
         .map(BitbucketToken::getAccessToken);
+  }
+
+  @Override
+  public Observable<String> visit(GitLabAccount account, Void param) {
+    return gitLabAuthApi
+        .refreshAccessToken("refresh_token", account.getRefreshToken())
+        .map(gitLabToken -> {
+          loginManager.setGitLabAccount(new GitLabAccount(
+              gitLabToken.getRefreshToken(),
+              account.getLogin(),
+              account.getEmail()
+          ));
+          return gitLabToken.getAccessToken();
+        });
   }
 }

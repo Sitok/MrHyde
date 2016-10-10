@@ -11,6 +11,7 @@ import org.faudroids.mrhyde.auth.LoginManager;
 import org.faudroids.mrhyde.auth.OAuthAccessTokenProvider;
 import org.faudroids.mrhyde.bitbucket.BitbucketAccount;
 import org.faudroids.mrhyde.github.GitHubAccount;
+import org.faudroids.mrhyde.gitlab.GitLabAccount;
 
 import rx.Observable;
 
@@ -51,13 +52,20 @@ public class GitCommandAuthAdapter {
 
     @Override
     public CredentialsProvider visit(BitbucketAccount account, String accessToken) {
-      // fetch new access token before every (!) bitbucket request. Access tokens expire within
-      // 60 minutes (optimize?).
       return new UsernamePasswordCredentialsProvider(
           "x-token-auth",
           accessToken
       );
     }
+
+    @Override
+    public CredentialsProvider visit(GitLabAccount account, String accessToken) {
+      return new UsernamePasswordCredentialsProvider(
+          "gitlab-ci-token",
+          accessToken
+      );
+    }
+
   }
 
 }

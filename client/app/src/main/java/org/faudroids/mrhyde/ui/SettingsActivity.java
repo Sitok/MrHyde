@@ -25,10 +25,15 @@ public class SettingsActivity extends AbstractActivity {
   @BindView(R.id.versionTextView) protected TextView version;
   @BindView(R.id.authorTextView) protected TextView authors;
   @BindView(R.id.creditsTextView) protected TextView credits;
+
   @BindView(R.id.layout_github) protected View logoutGitHubLayout;
   @BindView(R.id.tv_logout_github) protected TextView logoutGitHub;
+
   @BindView(R.id.layout_bitbucket) protected View logoutBitbucketLayout;
   @BindView(R.id.tv_logout_bitbucket) protected TextView logoutBitbucket;
+
+  @BindView(R.id.layout_gitlab) protected View logoutGitLabLayout;
+  @BindView(R.id.tv_logout_gitlab) protected TextView logoutGitLab;
 
   @Inject LoginManager loginManager;
 
@@ -73,6 +78,22 @@ public class SettingsActivity extends AbstractActivity {
             .onPositive((dialog, which) -> {
               loginManager.clearBitbucketAccount();
               logoutBitbucketLayout.setVisibility(View.GONE);
+            })
+            .show();
+      });
+    }
+
+    if (loginManager.getGitLabAccount() != null) {
+      logoutGitLabLayout.setVisibility(View.VISIBLE);
+      logoutGitLab.setOnClickListener(v -> {
+        new MaterialDialog.Builder(this)
+            .title(R.string.logout_gitlab_title)
+            .content(R.string.logout_message)
+            .positiveText(R.string.logout)
+            .negativeText(android.R.string.cancel)
+            .onPositive((dialog, which) -> {
+              loginManager.clearGitLabAccount();
+              logoutGitLabLayout.setVisibility(View.GONE);
             })
             .show();
       });

@@ -22,5 +22,7 @@
     <color name="github_light">#ff666666</color>
     <color name="bitbucket">#ff205081</color>
     <color name="bitbucket_light">#ff5383B4</color>
+    <color name="gitlab">#ffFC6D26</color>
+    <color name="gitlab_light">#ffFFA059</color>
 
 </resources>
