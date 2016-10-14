@@ -1,6 +1,8 @@
 package org.faudroids.mrhyde.ui;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -80,12 +82,14 @@ public class PreviewActivity extends AbstractActivity {
       showSpinner();
       compositeSubscription.add(previewManager
           .loadPreview(gitManager)
-          .compose(new DefaultTransformer<String>())
+          .compose(new DefaultTransformer<>())
           .subscribe(previewUrl1 -> {
-            Timber.d("getting url " + previewUrl1);
-            webView.loadUrl(previewUrl1);
-            hideSpinner();
-          },
+                Timber.d("getting url " + previewUrl1);
+                webView.loadUrl(previewUrl1);
+                previewUrl = previewUrl1;
+                invalidateOptionsMenu();
+                hideSpinner();
+              },
               new ErrorActionBuilder()
                   .add(new DefaultErrorAction(this, "failed to get preview from server"))
                   .add(new HideSpinnerAction(this))
@@ -103,10 +107,19 @@ public class PreviewActivity extends AbstractActivity {
 
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.findItem(R.id.action_open_in_browser).setVisible(previewUrl != null);
+    return true;
+  }
+
+
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-      case R.id.action_close:
-        finish();
+      case R.id.action_open_in_browser:
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+        browserIntent.setData(Uri.parse(previewUrl));
+        startActivity(browserIntent);
         return true;
     }
     return super.onOptionsItemSelected(item);
