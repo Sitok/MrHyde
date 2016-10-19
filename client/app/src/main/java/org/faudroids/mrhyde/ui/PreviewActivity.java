@@ -2,6 +2,7 @@ package org.faudroids.mrhyde.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ public class PreviewActivity extends AbstractActivity {
   @Inject PreviewManager previewManager;
   @BindView(R.id.web_view) protected WebView webView;
 
-  private String previewUrl;
+  private String currentUrl;
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   @Override
@@ -71,11 +72,17 @@ public class PreviewActivity extends AbstractActivity {
         view.loadUrl(url);
         return false;
       }
+
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        currentUrl = url;
+        super.onPageStarted(view, url, favicon);
+      }
     });
 
     // load preview
     if (savedInstanceState != null) {
-      previewUrl = savedInstanceState.getString(STATE_URL);
+      currentUrl = savedInstanceState.getString(STATE_URL);
       webView.restoreState(savedInstanceState);
 
     } else {
@@ -86,7 +93,7 @@ public class PreviewActivity extends AbstractActivity {
           .subscribe(previewUrl1 -> {
                 Timber.d("getting url " + previewUrl1);
                 webView.loadUrl(previewUrl1);
-                previewUrl = previewUrl1;
+                currentUrl = previewUrl1;
                 invalidateOptionsMenu();
                 hideSpinner();
               },
@@ -108,7 +115,7 @@ public class PreviewActivity extends AbstractActivity {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_open_in_browser).setVisible(previewUrl != null);
+    menu.findItem(R.id.action_open_in_browser).setVisible(currentUrl != null);
     return true;
   }
 
@@ -118,7 +125,7 @@ public class PreviewActivity extends AbstractActivity {
     switch (item.getItemId()) {
       case R.id.action_open_in_browser:
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-        browserIntent.setData(Uri.parse(previewUrl));
+        browserIntent.setData(Uri.parse(currentUrl));
         startActivity(browserIntent);
         return true;
     }
@@ -128,7 +135,7 @@ public class PreviewActivity extends AbstractActivity {
 
   @Override
   public void onSaveInstanceState(Bundle outState) {
-    outState.putSerializable(STATE_URL, previewUrl);
+    outState.putSerializable(STATE_URL, currentUrl);
     webView.saveState(outState);
   }
 
