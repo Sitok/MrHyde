@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_cloned_repos">Repositorios clonados</string>
+    <string name="title_clone_new_repo">Clonar nuevo repositorio</string>
+    <string name="title_preview">Vista previa</string>
+    <string name="title_commit">Cambios en commit</string>
+
+    <string name="login_with_github_title">Iniciar sesión con GitHub</string>
+    <string name="login_with_bitbucket_title">Iniciar sesión con Bitbucket</string>
+    <string name="login_with_gitlab_title">Iniciar sesión con GitLab</string>
+    <string name="login_error_title">Acceso denegado</string>
+    <string name="login_error_message">Lo sentimos, parece que tu usuario o contraseña son incorrectos.</string>
+
+    <string name="gitlab_login_token_hint">Pega tu token aquí</string>
+    <string name="gitlab_login_help_title">Crea tu token de acceso personal</string>
+    <string name="gitlab_login_help_msg">MrHyde necesita un token de acceso personal de GitLab para poder listar 
+        los repositorios y cambios realizados.\n\nPor favor crea tu token ahora y pégalo abajo.</string>
+
+    <string name="welcome_text">Bienvenido a \n MrHyde</string>
+
+    <string name="settings">Ajustes</string>
+    <string name="feedback">Feedback</string>
+
+    <string name="action_example">Ejemplo de acción</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Borrar</string>
+    <string name="action_rename">Renombrar</string>
+    <string name="action_move">Mover a …</string>
+    <string name="action_clone">Clonar repositorio</string>
+    <string name="action_commit">Commit</string>
+    <string name="action_remote">Remote</string>
+    <string name="action_pull">Pull</string>
+    <string name="action_push">Push</string>
+    <string name="action_switch_branch">Cambiar branch</string>
+    <string name="action_preview">Vista previa</string>
+    <string name="action_reset_repo">Restablecer repositorio</string>
+    <string name="action_delete_repo">Borrar repositorio local</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_show_line_numbers">Números de línea</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="action_redo">Rehacer</string>
+    <string name="action_publish_draft">Publicar borrador</string>
+    <string name="action_unpublish_post">Convertir a borrador</string>
+    <string name="action_insert_markdown">Insertar Markdown</string>
+    <string name="action_open_in_browser">Abrir en el navegador</string>
+    <string name="action_help">Ayuda</string>
+
+    <string name="select_git_hoster_title">Seleccionar proveedor</string>
+
+    <string name="clone_repo_title">Clonar repositorio</string>
+    <string name="clone_repo_message">¿Quieres clonar este repositorio a tu dispositivo ahora?</string>
+    <string name="clone_repo_confirm">Clonar</string>
+
+    <string name="clone_status_title">Clonando %1$s</string>
+    <string name="clone_status_message">¡Dedos cruzados!</string>
+
+    <string name="import_repo_title">Importar repositorios antiguos</string>
+    <string name="import_repo_message">
+        Repositorio local detectado. Esta versión de MrHyde usa un formato para los repositorios que es incompatible con versiones anteriores. 
+        Puedes intentar clonando este repositorio e importando los cambios del viejo formato, o simplemente sólo clonar el repositorio 
+        y empezar de nuevo.
+    </string>
+    <string name="import_repo_confirm">Clonar</string>
+    <string name="import_repo_check_import">Importar repositorio local</string>
+
+    <string name="switch_branch_title">Seleccionar branch</string>
+
+    <string name="select_destination_directory">Seleccionar directorio de destino</string>
+    <string name="move">Mover</string>
+    <string name="overwrite_file_title">Sobrescribir archivo</string>
+    <string name="overwrite_file_message">"¿Sobrescribir archivo existente %1$s?"</string>
+    <string name="overwrite_confirm">Sobrescribir</string>
+
+    <string name="file_moved">Archivo movido</string>
+    <string name="dir_moved">Directorio movido</string>
+    <string name="file_renamed">Archivo renombrado</string>
+    <string name="dir_renamed">Directorio renombrado</string>
+    <string name="file_deleted">Archivo eliminado</string>
+    <string name="dir_deleted">Directorio eliminado</string>
+
+    <string name="draft_published">Mover borrador a posts</string>
+    <string name="publish_draft_title">¿Publicar borrador?</string>
+    <string name="publish_draft_message">¿Quieres mover este borrador a %1$s?</string>
+    <string name="post_unpublished">Mover post a borradores</string>
+    <string name="unpublish_post_title">¿Convertir a borrador?</string>
+    <string name="unpublish_post_message">¿Quieres mover este post a %1$s?</string>
+
+    <string name="nothing_to_undo">Nada que deshacer</string>
+    <string name="nothing_to_redo">Nada que rehacer</string>
+
+    <string name="repos_last_update">Último guardado %1$s</string>
+
+    <plurals name="posts_count">
+        <item quantity="zero">Ningún post</item>
+        <item quantity="one">1 post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
+    <plurals name="drafts_count">
+        <item quantity="zero">sin borradores</item>
+        <item quantity="one">1 borrador</item>
+        <item quantity="other">%d borradores</item>
+    </plurals>
+    <string name="post_darft_count">%1$s &#8226; %2$s</string>
+    <string name="posts">Posts</string>
+    <string name="post">Post</string>
+    <string name="new_post">Nuevo post</string>
+    <string name="no_posts">Ningún posts todavía</string>
+    <string name="drafts">Borradores</string>
+    <string name="draft">Borrador</string>
+    <string name="new_draft">Nuevo borrador</string>
+    <string name="no_drafts">Sin borradores todavía</string>
+    <string name="all_files">Todos los archivos</string>
+    <string name="view_all_files">Ver todos los archivos</string>
+
+    <string name="filename">Nombre del archivo</string>
+    <string name="your_awesome_title">Tu asombroso título</string>
+
+    <string name="file_new_title">Nuevo archivo</string>
+    <string name="file_new_message">¿Cómo quieres llamarlo?</string>
+    <string name="image_new_title">Nueva imagen</string>
+    <string name="image_new_message">¿Cómo quieres llamarla?</string>
+    <string name="dir_new_title">Nuevo directorio</string>
+    <string name="dir_new_message">¿Cómo quieres llamarlo?</string>
+    <string name="file_already_exists">El archivo ya existe</string>
+    <string name="dir_empty">Vacío</string>
+
+    <string name="rename_dir_title">Renombrar directorio</string>
+    <string name="rename_file_title">Renombrar archivo</string>
+    <string name="rename_message">¿Cómo quieres llamarlo?</string>
+
+    <string name="delete_repo_title">Borrar repositorio local</string>
+    <string name="delete_repo_message">¿Borrar todo el contenido local de este repositorio? ¡No se puede deshacer!</string>
+    <string name="delete_repo_confirm">Borrar</string>
+
+    <string name="reset_repo_title">Restablecer repositorio</string>
+    <string name="reset_repo_message">
+        ¿Remover todos los cambios sin commit en este repositorio? Esto es lo mismo que ejecutar\n\ngit reset --hard HEAD\ngit clean -f -d\n\n¡No se puede deshacer!
+    </string>
+    <string name="reset_repo_confirm">Restablecer</string>
+    <string name="reset_repo_success">Repositorio restablecido</string>
+
+    <string name="delete_dir_title">Borrar directorio</string>
+    <string name="delete_file_title">Borrar archivo</string>
+    <string name="delete_message">¿Quieres borrar %1$s?</string>
+
+    <string name="text">Texto</string>
+    <string name="image">Imagen</string>
+    <string name="directory">Directorio</string>
+
+    <string name="no_cloned_repos">Ningún repositorio clonado todavía</string>
+
+    <string name="marked_toast">Repositorio añadido a la lista de favoritos</string>
+    <string name="unmarked_toast">Repositorio removido de la lista de favoritos</string>
+
+    <string name="save_title">Cambios sin guardar</string>
+    <string name="save_message">¿Guardar los cambios hechos a este archivo?</string>
+    <string name="save_ok">Guardar</string>
+    <string name="save_cancel">Descartar</string>
+
+    <string name="commit_changed_files">%1$s archivos modificados</string>
+    <string name="commit_deleted">%1$s (removidos)</string>
+    <string name="commit_git_diff">Git diff</string>
+    <string name="commit_message">Mensaje de commit</string>
+    <string name="commit_message_default">Mr Hyde estuvo aquí …</string>
+    <string name="commit_action">Commit</string>
+    <string name="commit_and_push_action">Commit + Push</string>
+    <string name="commit_success">Commit exitoso</string>
+    <string name="commit_and_push_success">Commit + Push exitoso</string>
+    <string name="push_success">Push exitoso</string>
+    <string name="pull_success">Pull exitoso</string>
+    <string name="switch_branch_success">Cambiado a branch %1$s</string>
+
+    <string name="version">Versión</string>
+    <string name="about">Acerca de</string>
+    <string name="about_msg">
+        Esta aplicación fue desarrollada como parte del reto Android: una aplicación cada mes por un año
+        (piensa en ello como un propósito de año nuevo). MrHyde es nuestro proyecto para Abril.&lt;br/&gt;
+        &lt;br/&gt;
+        Si quieres saber más, asegurate de visitar nuestro &lt;a href=&quot;http://faudroids.org&quot;&gt;sitio web&lt;/a&gt;.
+        Esta aplicación es &lt;b&gt;de código abierto&lt;/b&gt; y puedes encontrar todo en &lt;a href=&quot;https://github.com/FauDroids/MrHyde&quot;&gt;GitHub&lt;/a&gt;.&lt;br/&gt;
+        &lt;br/&gt;
+        Los desarrolladores son&lt;br/&gt;
+        &lt;br/&gt;
+        Philipp Eichhorn&lt;br/&gt;
+        Simon Hofmann&lt;br/&gt;
+        Julia Schottenhamml&lt;br/&gt;
+        Richard Baumann&lt;br/&gt;
+        &lt;br/&gt;
+        ¡A programar!
+    </string>
+    <string name="credits">Creditos</string>
+    <string name="credits_msg">
+        Esta aplicación está motorizada por un número de &lt;b&gt;proyectos de código abierto&lt;/b&gt; pequeños y grandes, 
+        que todos juntos han hecho posible este proyecto. No podríamos haberlo hecho sin ellos.
+        Para esos compañeros desarrolladores que usan parte de su tiempo para crear estas librerías: chicos, ustedes son geniales ¡sigan así!&lt;br&gt;
+        &lt;br&gt;
+        Las librerías usadas son:&lt;br&gt;
+        &lt;br&gt;
+        &lt;a href=&quot;https://github.com/JakeWharton/timber&quot;&gt;Timber&lt;/a&gt; por Jake Wharton&lt;br&gt;
+        &lt;a href=&quot;http://jakewharton.github.io/butterknife/&quot;&gt;Butter Knife&lt;/a&gt; por Jake Wharton&lt;br&gt;
+        &lt;a href=&quot;https://github.com/square/retrofit&quot;&gt;Retrofit&lt;/a&gt; por Square&lt;br&gt;
+        &lt;a href=&quot;https://github.com/square/picasso&quot;&gt;Picasso&lt;/a&gt; por Square&lt;br&gt;
+        &lt;a href=&quot;https://github.com/eclipse/jgit&quot;&gt;JGit Core&lt;/a&gt; por Eclipse&lt;br&gt;
+        &lt;a href=&quot;https://github.com/eclipse/egit-github&quot;&gt;Eclipse EGit GitHub API Core&lt;/a&gt; por Eclipse&lt;br&gt;
+        &lt;a href=&quot;https://github.com/ReactiveX/RxJava&quot;&gt;RxJava&lt;/a&gt; por ReactiveX&lt;br&gt;
+        &lt;a href=&quot;https://github.com/ReactiveX/RxAndroid&quot;&gt;RxAndroid&lt;/a&gt; por ReactiveX&lt;br&gt;
+        &lt;a href=&quot;https://github.com/futuresimple/android-floating-action-button&quot;&gt;Floating Action Button&lt;/a&gt; por futuresimple&lt;br&gt;
+        &lt;a href=&quot;https://github.com/MikeOrtiz/TouchImageView&quot;&gt;Touch Image View&lt;/a&gt; por Mike Ortiz&lt;br&gt;
+        &lt;a href=&quot;https://github.com/Karumi/Dexter&quot;&gt;Dexter&lt;/a&gt; por Karumi&lt;br&gt;
+        &lt;a href=&quot;https://github.com/afollestad/material-dialogs&quot;&gt;Material Dialogs&lt;/a&gt; por Aidan Follestad&lt;br&gt;
+        &lt;a href=&quot;https://github.com/nhachicha/SnappyDB&quot;&gt;SnappyDB&lt;/a&gt; por Nabil Hachicha&lt;br&gt;
+        &lt;a href=&quot;https://github.com/EsotericSoftware/kryo&quot;&gt;kryo&lt;/a&gt; por Esoteric Software&lt;br&gt;
+        &lt;a href=&quot;https://github.com/google/material-design-icons&quot;&gt;Material Design Icons&lt;/a&gt; por Google Inc.&lt;br&gt;
+        &lt;a href=&quot;https://github.com/google/guava&quot;&gt;Guava&lt;/a&gt; por Google Inc.&lt;br&gt;
+        &lt;a href=&quot;https://google.github.io/dagger/&quot;&gt;Dagger&lt;/a&gt; por Google Inc.&lt;br&gt;
+        &lt;a href=&quot;https://source.android.com/&quot;&gt;Android Open Source Project&lt;/a&gt; por Google Inc. y Open Handset Alliance&lt;br&gt;
+        &lt;br&gt;
+        Y por supuesto, estamos usando la grandiosa &lt;a href=&quot;https://developer.github.com/v3/&quot;&gt;API de GitHub&lt;/a&gt;,
+        probablemente la mejor plataforma para hospedar y colaborar en proyectos de código abierto que encontrarás.
+        &lt;br&gt;
+        &lt;br&gt;
+        ¡Gracias a todos!
+    </string>
+
+    <string name="logout_github">Salir de GitHub</string>
+    <string name="logout_bitbucket">Salir de Bitbucket</string>
+    <string name="logout_gitlab">Salir de GitLab</string>
+    <string name="logout_github_title">Cerrar sesión de GitHub</string>
+    <string name="logout_bitbucket_title">Cerrar sesión de Bitbucket</string>
+    <string name="logout_gitlab_title">Cerrar sesión de GitLab</string>
+    <string name="logout_message">Si sales de tu cuenta, no podrás usar los repositorios conectados a tu dispositivo.</string>
+    <string name="logout">Salir</string>
+
+    <string name="settings_quick_message">Hecho por un pequeño grupo de programadores nocturnos en Erlangen, Alemania\n¡Gracias por tu apoyo!</string>
+
+    <string name="feedback_mail_chooser">¡Gracias por el feedback!</string>
+    <string name="feedback_mail_subject">Feedback MrHyde</string>
+
+    <string name="error_internal_title">Eso no funcionó</string>
+    <string name="error_internal_message">Ups, esto es embarazoso. Ha ocurrido un error interno al procesar tu solicitud, ¡lo sentimos!</string>
+    <string name="error_internal_details">Detalles</string>
+    <string name="error_network_title">No hay conexión a internet</string>
+    <string name="error_network_message">No se ha podido realizar tu petición debido a un problema con la conexión a internet</string>
+    <string name="error_empty_repo_title">Repositorio vacío</string>
+    <string name="error_empty_repo_message">Parece que este repositorio está vacío. Desafortunadamente aún no soportamos repositorios vacíos, lo sentimos.</string>
+
+    <string name="help_got_it">¡Lo tengo!</string>
+    <string name="help_publish_draft_title">Publicar borradores</string>
+    <string name="help_publish_draft_message">Para mover un borrador a la carpeta de posts, mantenlo presionado.</string>
+
+    <string name="markdown_bold">Negrita</string>
+    <string name="markdown_italic">Cursiva</string>
+    <string name="markdown_link">Link</string>
+    <string name="markdown_image">Link a imagen</string>
+    <string name="markdown_h1">Título H1</string>
+    <string name="markdown_h2">Título H2</string>
+    <string name="markdown_h3">Título H3</string>
+    <string name="markdown_h4">Título H4</string>
+    <string name="markdown_h5">Título H5</string>
+    <string name="markdown_h6">Título H6</string>
+    <string name="markdown_ul">Lista de la selección</string>
+    <string name="markdown_ol">Lista ordenada de la selección</string>
+    <string name="markdown_quote">Cita de la selección</string>
+    <string name="markdown_code">Bloque de código de la selección</string>
+
+    <string name="welcome_title">Bienvenido</string>
+    <string name="welcome_msg">Para empezar con tu asombroso blog, inicia sesión abajo con tu proveedor de repositorio.</string>
+    <string name="welcome_import">¿Estás actualizando? No te preocupes, tendrás la opción de importar cualquier cambio antiguo cuando clones tu repositorio.</string>
+</resources>
