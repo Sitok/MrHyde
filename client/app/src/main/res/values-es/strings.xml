@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MrHyde</string>
-
     <string name="title_cloned_repos">Repositorios clonados</string>
     <string name="title_clone_new_repo">Clonar nuevo repositorio</string>
     <string name="title_preview">Vista previa</string>
@@ -49,9 +47,6 @@
     <string name="action_help">Ayuda</string>
 
     <string name="select_git_hoster_title">Seleccionar proveedor</string>
-    <string name="github">GitHub</string>
-    <string name="bitbucket">Bitbucket</string>
-    <string name="gitlab">GitLab</string>
 
     <string name="clone_repo_title">Clonar repositorio</string>
     <string name="clone_repo_message">¿Quieres clonar este repositorio a tu dispositivo ahora?</string>
@@ -120,24 +115,19 @@
 
     <string name="filename">Nombre del archivo</string>
     <string name="your_awesome_title">Tu asombroso título</string>
-    <string name="default_front_matter">---\nlayout: post\ntitle: %1$s\n---\n</string>
 
     <string name="file_new_title">Nuevo archivo</string>
     <string name="file_new_message">¿Cómo quieres llamarlo?</string>
-    <string name="file_new_hint">ducks.md</string>
     <string name="image_new_title">Nueva imagen</string>
     <string name="image_new_message">¿Cómo quieres llamarla?</string>
-    <string name="image_new_hint">duck.png</string>
     <string name="dir_new_title">Nuevo directorio</string>
     <string name="dir_new_message">¿Cómo quieres llamarlo?</string>
-    <string name="dir_new_hint">ducks</string>
     <string name="file_already_exists">El archivo ya existe</string>
     <string name="dir_empty">Vacío</string>
 
     <string name="rename_dir_title">Renombrar directorio</string>
     <string name="rename_file_title">Renombrar archivo</string>
     <string name="rename_message">¿Cómo quieres llamarlo?</string>
-    <string name="rename_hint">ducks.md</string>
 
     <string name="delete_repo_title">Borrar repositorio local</string>
     <string name="delete_repo_message">¿Borrar todo el contenido local de este repositorio? ¡No se puede deshacer!</string>
@@ -245,7 +235,6 @@
     <string name="settings_quick_message">Hecho por un pequeño grupo de programadores nocturnos en Erlangen, Alemania\n¡Gracias por tu apoyo!</string>
 
     <string name="feedback_mail_chooser">¡Gracias por el feedback!</string>
-    <string name="feedback_mail_address"> ideas@faudroids.org</string>
     <string name="feedback_mail_subject">Feedback MrHyde</string>
 
     <string name="error_internal_title">Eso no funcionó</string>
@@ -274,20 +263,6 @@
     <string name="markdown_ol">Lista ordenada de la selección</string>
     <string name="markdown_quote">Cita de la selección</string>
     <string name="markdown_code">Bloque de código de la selección</string>
-
-    <string name="markdown_element_bold">**</string>
-    <string name="markdown_element_italic">_</string>
-    <string name="markdown_element_link">[]()</string>
-    <string name="markdown_element_image">![]()</string>
-    <string name="markdown_element_list">*</string>
-    <string name="markdown_element_h1">#</string>
-    <string name="markdown_element_h2">##</string>
-    <string name="markdown_element_h3">###</string>
-    <string name="markdown_element_h4">####</string>
-    <string name="markdown_element_h5">#####</string>
-    <string name="markdown_element_h6">######</string>
-    <string name="markdown_element_quote">></string>
-    <string name="markdown_element_code">&#160;&#160;&#160;&#160;</string>
 
     <string name="welcome_title">Bienvenido</string>
     <string name="welcome_msg">Para empezar con tu asombroso blog, inicia sesión abajo con tu proveedor de repositorio.</string>
