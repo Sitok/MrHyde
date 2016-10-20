@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="title_cloned_repos">Geclonede repositories</string>
+    <string name="title_clone_new_repo">Clone een nieuwe repository</string>
+    <string name="title_preview">Voorvertoning</string>
+    <string name="title_commit">Commit verschil</string>
+
+    <string name="login_with_github_title">Inloggen met GitHub</string>
+    <string name="login_with_bitbucket_title">Inloggen met Bitbucket</string>
+    <string name="login_with_gitlab_title">Inloggen met GitLab</string>
+    <string name="login_error_title">Toegang geweigerd</string>
+    <string name="login_error_message">Sorry, maar je gebruikersnaam of wachtwoord is verkeerd.</string>
+
+    <string name="gitlab_login_token_hint">Plak je token hier</string>
+    <string name="gitlab_login_help_title">Maak je persoonlijke GitLab token</string>
+    <string name="gitlab_login_help_msg">MrHyde heeft een persoonlijke GitLab token nodig om een lijst van repositories te maken en verschillen te pushen.\n\nMaak je persoonlijke token nu en plak het hieronder.</string>
+
+    <string name="welcome_text">Welkom in \n MrHyde</string>
+
+    <string name="settings">Instellingen</string>
+    <string name="feedback">Feedback</string>
+
+    <string name="action_example">Voorbeeldactie</string>
+    <string name="action_settings">Instellingen</string>
+    <string name="action_edit">Aanpassen</string>
+    <string name="action_delete">Verwijder</string>
+    <string name="action_rename">Hernoem</string>
+    <string name="action_move">Verplaats naar …</string>
+    <string name="action_clone">Clone repository</string>
+    <string name="action_commit">Commit</string>
+    <string name="action_remote">Remote</string>
+    <string name="action_pull">Pull</string>
+    <string name="action_push">Push</string>
+    <string name="action_switch_branch">Wissel branch</string>
+    <string name="action_preview">Voorvertoning</string>
+    <string name="action_reset_repo">Reset repository</string>
+    <string name="action_delete_repo">Verwijder lokale repository</string>
+    <string name="action_close">Sluit</string>
+    <string name="action_show_line_numbers">Lijnnummering</string>
+    <string name="action_undo">Ongedaan maken</string>
+    <string name="action_redo">Opnieuw</string>
+    <string name="action_publish_draft">Publiceer concept</string>
+    <string name="action_unpublish_post">Verberg post</string>
+    <string name="action_insert_markdown">Voeg markdown in</string>
+    <string name="action_open_in_browser">Open in browser</string>
+    <string name="action_help">Help</string>
+
+    <string name="select_git_hoster_title">Kies een provider</string>
+
+    <string name="clone_repo_title">Clone repository</string>
+    <string name="clone_repo_message">Wil je deze repository naar je toestel clonen?</string>
+    <string name="clone_repo_confirm">Clone</string>
+
+    <string name="clone_status_title">%1$s aan het clonen</string>
+    <string name="clone_status_message">Even duimen!!</string>
+
+    <string name="import_repo_title">Importeer oude repository</string>
+    <string name="import_repo_message">
+        Lokale repository gedetecteerd. Deze versie van MrHyde gebruikt een formaat voor repositories die niet compatibel is met vorige versies. Je kan deze repository clonen en veranderingen importeren, of opnieuw beginnen.
+    </string>
+    <string name="import_repo_confirm">Clone</string>
+    <string name="import_repo_check_import">Importeer lokale repository</string>
+
+    <string name="switch_branch_title">Selecteer branch</string>
+
+    <string name="select_destination_directory">Select bestemmingsmap</string>
+    <string name="move">Verplaats</string>
+    <string name="overwrite_file_title">Bestand overschrijven</string>
+    <string name="overwrite_file_message">%1$s overschrijven?</string>
+    <string name="overwrite_confirm">Overschrijven</string>
+
+    <string name="file_moved">Bestand verplaatst</string>
+    <string name="dir_moved">Map verplaatst</string>
+    <string name="file_renamed">Bestand hernoemd</string>
+    <string name="dir_renamed">Map hernoemd</string>
+    <string name="file_deleted">Bestand verwijderd</string>
+    <string name="dir_deleted">Map vewijderd</string>
+
+    <string name="draft_published">Concept naar posts verplaatst</string>
+    <string name="publish_draft_title">Publiceer concept?</string>
+    <string name="publish_draft_message">Wil je dit concept naar %1$s verplaatsen?</string>
+    <string name="post_unpublished">Post naar concepten verplaats</string>
+    <string name="unpublish_post_title">Verberg post?</string>
+    <string name="unpublish_post_message">Wil je deze post naar %1$s verplaatsen?</string>
+
+    <string name="nothing_to_undo">Niets ongedaan te maken</string>
+    <string name="nothing_to_redo">Niets te herdoen</string>
+
+    <string name="repos_last_update">Laatst gepusht op %1$s</string>
+
+    <plurals name="posts_count">
+        <item quantity="zero">geen posts</item>
+        <item quantity="one">1 post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
+    <plurals name="drafts_count">
+        <item quantity="zero">geen concepten</item>
+        <item quantity="one">1 concept</item>
+        <item quantity="other">%d concepten</item>
+    </plurals>
+    <!-- name should be post_draft_count -->
+    <string name="post_darft_count">%1$s &#8226; %2$s</string>
+    <string name="posts">Posts</string>
+    <string name="post">Post</string>
+    <string name="new_post">Nieuwe post</string>
+    <string name="no_posts">Nog geen posts</string>
+    <string name="drafts">Concepten</string>
+    <string name="draft">Concept</string>
+    <string name="new_draft">Nieuw concept</string>
+    <string name="no_drafts">Nog geen concepten</string>
+    <string name="all_files">Alle bestanden</string>
+    <string name="view_all_files">Bekijk alle bestanden</string>
+
+    <string name="filename">Bestandsnaam</string>
+    <string name="your_awesome_title">Je supertitel</string>
+
+    <string name="file_new_title">Nieuw bestand</string>
+    <string name="file_new_message">Hoe wil je het noemen?</string>
+    <string name="file_new_hint">eenden.md</string>
+    <string name="image_new_title">Nieuwe afbeelding</string>
+    <string name="image_new_message">Hoe wil je het noemen?</string>
+    <string name="image_new_hint">eendje.png</string>
+    <string name="dir_new_title">Nieuwe map</string>
+    <string name="dir_new_message">Hoe wil je het noemen?</string>
+    <string name="dir_new_hint">eenden</string>
+    <string name="file_already_exists">Bestand bestaat al</string>
+    <string name="dir_empty">Niets</string>
+
+    <string name="rename_dir_title">Hernoem map</string>
+    <string name="rename_file_title">Hernoem bestand</string>
+    <string name="rename_message">Hoe wil je het noemen?</string>
+    <string name="rename_hint">eenden.md</string>
+
+    <string name="delete_repo_title">Verwijder lokale repository</string>
+    <string name="delete_repo_message">Verwijder alle lokale inhoud van deze repository? Dit kan niet ongedaan gemaakt worden!</string>
+    <string name="delete_repo_confirm">Verwijder</string>
+
+    <string name="reset_repo_title">Reset repository</string>
+    <string name="reset_repo_message">
+        Verwijder alle veranderingen die niet gecommit zijn? Dit is hetzelfde als\n\ngit reset --hard HEAD\ngit clean -f -d\n\nuitvoeren en kan niet ongedaan gemaakt worden!
+    </string>
+    <string name="reset_repo_confirm">Gereset</string>
+    <string name="reset_repo_success">Repository gereset</string>
+
+    <string name="delete_dir_title">Verwijder map</string>
+    <string name="delete_file_title">Verwijder bestand</string>
+    <string name="delete_message">Ben je zeker dat je %1$s wil verwijderen?</string>
+
+    <string name="text">Tekst</string>
+    <string name="image">Afbeelding</string>
+    <string name="directory">Map</string>
+
+    <string name="no_cloned_repos">Nog geen repositories gecloned</string>
+
+    <string name="marked_toast">Repository aan favorieten toegevoegd</string>
+    <string name="unmarked_toast">Repository van favorieten verwijderd</string>
+
+    <string name="save_title">Veranderingen nog niet opgeslagen</string>
+    <string name="save_message">Veranderingen opslaan?</string>
+    <string name="save_ok">Opslaan</string>
+    <string name="save_cancel">Niet opslaan</string>
+
+    <string name="commit_changed_files">%1$s veranderde bestanden</string>
+    <string name="commit_deleted">%1$s (verwijderd)</string>
+    <string name="commit_git_diff">Git diff</string>
+    <string name="commit_message">Commit Message</string>
+    <string name="commit_message_default">Mr Hyde was hier …</string>
+    <string name="commit_action">Commit</string>
+    <string name="commit_and_push_action">Commit + Push</string>
+    <string name="commit_success">Commit succesvol</string>
+    <string name="commit_and_push_success">Commit + Push succesvol</string>
+    <string name="push_success">Push succesvol</string>
+    <string name="pull_success">Pull succesvol</string>
+    <string name="switch_branch_success">Branch veranderd naar %1$s</string>
+
+    <string name="version">Versie</string>
+    <string name="about">Over</string>
+    <string name="about_msg">
+        Deze app was ontwikkeld als een deel van de Android Challenge: maak één ap per maand voor een heel jaar (zoals een nieuwjaarsresolutie). MrHyde is het project voor april.&lt;br/&gt;
+        &lt;br/&gt;
+        Als je meer wil weten, kijk dan zeker naar onze &lt;a href=&quot;http://faudroids.org&quot;&gt;website&lt;/a&gt;.
+        Deze app is &lt;b&gt;open source&lt;/b&gt; en je kan alles op &lt;a href=&quot;https://github.com/FauDroids/MrHyde&quot;&gt;GitHub&lt;/a&gt; vinden.&lt;br/&gt;
+        &lt;br/&gt;
+        We horen graaf van je! Stuur ons een &lt;a href=&quot;mailto:ideas@faudroids.org&quot;&gt;email&lt;/a&gt; en laat ons weten wat je denkt!&lt;br/&gt;
+        &lt;br/&gt;
+        De ontwikkelaars zijn&lt;br/&gt;
+        &lt;br/&gt;
+        Philipp Eichhorn&lt;br/&gt;
+        Simon Hofmann&lt;br/&gt;
+        Julia Schottenhamml&lt;br/&gt;
+        Richard Baumann&lt;br/&gt;
+        &lt;br/&gt;
+        Veel codeplezier!
+    </string>
+    <string name="credits">Credits</string>
+
+    <string name="logout_github">GitHub uitloggen</string>
+    <string name="logout_bitbucket">Bitbucket uitloggen</string>
+    <string name="logout_gitlab">GitLab uitloggen</string>
+    <string name="logout_github_title">Uitloggen bij GitHub</string>
+    <string name="logout_bitbucket_title">Uitloggen bij Bitbucket</string>
+    <string name="logout_gitlab_title">Uitloggen bij GitLab</string>
+
+    <string name="logout_message">Als je je uitlogt kan je niet meer aan de verbonden repositories op je toestel.</string>
+    <string name="logout">Uitloggen</string>
+
+    <string name="settings_quick_message">Gemaakt door een klein team van nachtcodeurs in Erlangen, Duitsland\nBedantk voor je ondersteuning!</string>
+
+    <string name="feedback_mail_chooser">bedankt voor je feedback!</string>
+    <string name="feedback_mail_address">ideas@faudroids.org</string>
+    <string name="feedback_mail_subject">Feedback MrHyde</string>
+
+    <string name="error_internal_title">Dat werkte niet!</string>
+    <string name="error_internal_message">Oeps, dit is gênant. Er is een interne fout gebeurt tijdens het genereren van je aanvraag, sorry!</string>
+    <string name="error_internal_details">Details</string>
+    <string name="error_network_title">Geen internetverbinding</string>
+    <string name="error_network_message">Je aanvraag kon niet uitgevoerd worden door een probleem met de internetverbinding</string>
+    <string name="error_empty_repo_title">Lege repository</string>
+    <string name="error_empty_repo_message">Het ziet er naar uit dat je repository leeg is. Momenteel ondersteunen we geen lege repositories, sorry.</string>
+
+    <string name="help_got_it">Super!</string>
+    <string name="help_publish_draft_title">Concepten publiceren</string>
+    <string name="help_publish_draft_message">Om een concept de publiceren moet je er lang op drukken.</string>
+
+    <string name="markdown_bold">Vet lettertype</string>
+    <string name="markdown_italic">Schuin lettertype</string>
+    <string name="markdown_link">Link</string>
+    <string name="markdown_image">Afbeeldingslink</string>
+    <string name="markdown_h1">H1 hoofding</string>
+    <string name="markdown_h2">H2 hoofding</string>
+    <string name="markdown_h3">H3 hoofding</string>
+    <string name="markdown_h4">H4 hoofding</string>
+    <string name="markdown_h5">H5 hoofding</string>
+    <string name="markdown_h6">H6 hoofding</string>
+    <string name="markdown_ul">Lijst van selectie</string>
+    <string name="markdown_ol">Georderde lijst van selectie</string>
+    <string name="markdown_quote">Quote van selectie</string>
+    <string name="markdown_code">Codeblok van selectie</string>
+
+    <string name="welcome_title">Welkom</string>
+    <string name="welcome_msg">Om te starten met je coole blog, log je in hieronder.</string>
+    <string name="welcome_import">Kom je van een oudere versie? Maak je geen zorgen, je kan je oude instellingen bewaren.</string>
+</resources>
