@@ -1,5 +1,5 @@
-<resources>
-    <string name="app_name">MrHyde</string>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name" translatable="false">MrHyde</string>
 
     <string name="title_cloned_repos">Cloned repositories</string>
     <string name="title_clone_new_repo">Clone new repository</string>
@@ -48,9 +48,9 @@
     <string name="action_help">Help</string>
 
     <string name="select_git_hoster_title">Select provider</string>
-    <string name="github">GitHub</string>
-    <string name="bitbucket">Bitbucket</string>
-    <string name="gitlab">GitLab</string>
+    <string name="github" translatable="false">GitHub</string>
+    <string name="bitbucket" translatable="false">Bitbucket</string>
+    <string name="gitlab" translatable="false">GitLab</string>
 
     <string name="clone_repo_title">Clone repository</string>
     <string name="clone_repo_message">Do you want to clone this repository to your device now?</string>
@@ -119,7 +119,7 @@
 
     <string name="filename">Filename</string>
     <string name="your_awesome_title">Your awesome title</string>
-    <string name="default_front_matter">---\nlayout: post\ntitle: %1$s\n---\n</string>
+    <string name="default_front_matter" translatable="false">---\nlayout: post\ntitle: %1$s\n---\n</string>
 
     <string name="file_new_title">New file</string>
     <string name="file_new_message">What do you want to call it?</string>
@@ -280,19 +280,19 @@
     <string name="markdown_quote">Quote from selection</string>
     <string name="markdown_code">Code block from selection</string>
 
-    <string name="markdown_element_bold">**</string>
-    <string name="markdown_element_italic">_</string>
-    <string name="markdown_element_link">[]()</string>
-    <string name="markdown_element_image">![]()</string>
-    <string name="markdown_element_list">*</string>
-    <string name="markdown_element_h1">#</string>
-    <string name="markdown_element_h2">##</string>
-    <string name="markdown_element_h3">###</string>
-    <string name="markdown_element_h4">####</string>
-    <string name="markdown_element_h5">#####</string>
-    <string name="markdown_element_h6">######</string>
-    <string name="markdown_element_quote">></string>
-    <string name="markdown_element_code">&#160;&#160;&#160;&#160;</string>
+    <string name="markdown_element_bold" translatable="false">**</string>
+    <string name="markdown_element_italic" translatable="false">_</string>
+    <string name="markdown_element_link" translatable="false">[]()</string>
+    <string name="markdown_element_image" translatable="false">![]()</string>
+    <string name="markdown_element_list" translatable="false">*</string>
+    <string name="markdown_element_h1" translatable="false">#</string>
+    <string name="markdown_element_h2" translatable="false">##</string>
+    <string name="markdown_element_h3" translatable="false">###</string>
+    <string name="markdown_element_h4" translatable="false">####</string>
+    <string name="markdown_element_h5" translatable="false">#####</string>
+    <string name="markdown_element_h6" translatable="false">######</string>
+    <string name="markdown_element_quote" translatable="false">></string>
+    <string name="markdown_element_code" translatable="false">&#160;&#160;&#160;&#160;</string>
 
     <string name="welcome_title">Welcome</string>
     <string name="welcome_msg">To get started with your awesome blog, sign in to your repository provider below.</string>
