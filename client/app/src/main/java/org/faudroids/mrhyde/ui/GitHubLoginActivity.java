@@ -52,7 +52,7 @@ public final class GitHubLoginActivity extends AbstractLoginActivity<GitHubAccou
   String getLoginUrl() {
     return "https://github.com/login/oauth/authorize?"
         + "&client_id=" + getString(R.string.gitHubClientId)
-        + "&scope=user%2Crepo"
+        + "&scope=read%3Aorg%2Cuser%3Aemail%2Crepo"
         + "&state=" + GITHUB_LOGIN_STATE;
   }
 
