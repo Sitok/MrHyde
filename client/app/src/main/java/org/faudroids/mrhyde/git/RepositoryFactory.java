@@ -37,7 +37,7 @@ public class RepositoryFactory {
     String name = gitHubRepo.getName();
     RepositoryOwner owner = fromGitHubUser(gitHubRepo.getOwner());
     File rootDir = new File(
-        context.getFilesDir(),
+        context.getExternalFilesDir(null),
         String.format("%s/%s/%s", PATH_REPOS_GITHUB, owner.getUsername(), name)
     );
 

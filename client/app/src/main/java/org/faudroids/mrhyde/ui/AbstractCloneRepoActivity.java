@@ -1,9 +1,11 @@
 package org.faudroids.mrhyde.ui;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +13,9 @@ import android.support.v7.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.base.Optional;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.single.EmptyPermissionListener;
 
 import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.git.CloneRepositoryService;
@@ -94,6 +99,21 @@ abstract class AbstractCloneRepoActivity
 
   @Override
   public void onRepositorySelected(Repository repository) {
+    // if below v16 start immediately
+    if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+      cloneRepository(repository);
+    } else {
+      // assert has required permission
+      Dexter.checkPermission(new EmptyPermissionListener() {
+        @Override
+        public void onPermissionGranted(PermissionGrantedResponse r) {
+          cloneRepository(repository);
+        }
+      }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+  }
+
+  private void cloneRepository(Repository repository) {
     // check for pre v1 repos that can be imported
     if (repositoriesManager.canPreV1RepoBeImported(repository)) {
       new MaterialDialog
