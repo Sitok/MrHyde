@@ -169,6 +169,7 @@
                         android:hint="@string/commit_message_default"
                         android:visibility="gone"
                         android:textCursorDrawable="@null"
+                        android:inputType="textCapSentences"
                         style="@style/Text"
                         />
 
