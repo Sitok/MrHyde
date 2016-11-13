@@ -217,6 +217,10 @@ public final class TextEditorActivity extends AbstractActivity {
 			case R.id.action_insert_markdown:
 				showMarkdownInsertionDialog();
 				return true;
+
+      case R.id.action_share:
+        fileUtils.shareRepositoryFile(file);
+        return true;
     }
     return super.onOptionsItemSelected(item);
   }
