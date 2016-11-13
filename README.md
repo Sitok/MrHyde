@@ -18,6 +18,10 @@ Setting up the android client is fairly straight forward. The only things that's
 <resources>
     <string name="gitHubClientSecret">YOUR_GITHUB_CLIENT_SECRET</string>
     <string name="gitHubClientId">YOU_GITHUB_ID</string>
+    
+    <string name="bitbucketClientSecret">YOUR_BITBUCKET_SECRET</string>
+    <string name="bitbucketClientId">YOUR_BITBUCKET_CLIENT_ID</string>
+    
     <string name="jekyllServerClientSecret">CLIENT_SECRET_FOR_MRHYDE_SERVER</string>
 </resources>
 ```
