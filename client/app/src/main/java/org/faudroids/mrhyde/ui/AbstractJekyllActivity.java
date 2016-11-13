@@ -194,6 +194,12 @@ abstract class AbstractJekyllActivity<T extends AbstractJekyllContent & Comparab
 
 
   @Override
+  public void onShare(T item) {
+    fileUtils.shareRepositoryFile(item.getFile());
+  }
+
+
+  @Override
   public void onDelete(final T item) {
     new MaterialDialog.Builder(this)
         .title(R.string.delete_file_title)

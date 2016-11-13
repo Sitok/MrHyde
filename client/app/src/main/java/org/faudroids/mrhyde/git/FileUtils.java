@@ -1,9 +1,13 @@
 package org.faudroids.mrhyde.git;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.common.io.Files;
 
+import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.utils.ObservableUtils;
 
 import java.io.DataInputStream;
@@ -27,8 +31,11 @@ public class FileUtils {
 
 	private static final int FIRST_FEW_BYTES = 8000;
 
+  private final Context context;
 	@Inject
-	FileUtils() { }
+	FileUtils(Context context) {
+    this.context = context;
+  }
 
 
   /**
@@ -165,6 +172,25 @@ public class FileUtils {
       }
     }
     return files;
+  }
+
+
+  /**
+   * Opens the intent picker for sharing a file in a repository.
+   */
+  public void shareRepositoryFile(File file) {
+    Uri fileUri = Uri.fromFile(file);
+    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+    String mimeType = "text/*";
+    try {
+      if (isBinary(file)) mimeType = "application/octet-stream";
+    } catch (IOException e) {
+      Timber.e(e, "Failed to check if file is binary");
+    }
+    if (isImage(file.getName())) mimeType = context.getContentResolver().getType(fileUri);
+    sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+    sendIntent.setType(mimeType);
+    context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.open_with)));
   }
 
 
