@@ -61,6 +61,11 @@ class DirActionModeListener implements ActionMode.Callback {
   @Override
   public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
     switch (item.getItemId()) {
+      case R.id.action_share:
+        selectionListener.onShare(selectedFile);
+        stopActionMode();
+        return true;
+
       case R.id.action_edit:
         selectionListener.onEdit(selectedFile);
         stopActionMode();
@@ -95,6 +100,7 @@ class DirActionModeListener implements ActionMode.Callback {
 
   public interface ActionSelectionListener {
 
+    void onShare(File file);
     void onDelete(File file);
     void onEdit(File file);
     void onRename(File file);

@@ -34,6 +34,7 @@ import org.faudroids.mrhyde.utils.ErrorActionBuilder;
 import org.faudroids.mrhyde.utils.HideSpinnerAction;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -98,7 +99,7 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
       photoPickerIntent.setType("image/*");
 
       // if below v16 start immediately
-      if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+      if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
         startActivityForResult(photoPickerIntent, REQUEST_SELECT_PHOTO);
 
       } else {
@@ -275,6 +276,23 @@ public final class DirActivity extends AbstractDirActivity implements DirActionM
                 )
         ))
         .show();
+  }
+
+
+  @Override
+  public void onShare(File file) {
+    Uri fileUri = Uri.fromFile(file);
+    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+    String mimeType = "text/*";
+    try {
+      if (fileUtils.isBinary(file)) mimeType = "application/octet-stream";
+    } catch (IOException e) {
+      Timber.e(e, "Failed to check if file is binary");
+    }
+    if (fileUtils.isImage(file.getName())) mimeType = getContentResolver().getType(fileUri);
+    sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+    sendIntent.setType(mimeType);
+    startActivity(Intent.createChooser(sendIntent, getString(R.string.open_with)));
   }
 
 

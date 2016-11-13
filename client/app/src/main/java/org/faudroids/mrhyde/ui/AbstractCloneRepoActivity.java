@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
@@ -99,18 +98,13 @@ abstract class AbstractCloneRepoActivity
 
   @Override
   public void onRepositorySelected(Repository repository) {
-    // if below v16 start immediately
-    if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-      cloneRepository(repository);
-    } else {
-      // assert has required permission
-      Dexter.checkPermission(new EmptyPermissionListener() {
-        @Override
-        public void onPermissionGranted(PermissionGrantedResponse r) {
-          cloneRepository(repository);
-        }
-      }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
+    // assert has required permission
+    Dexter.checkPermission(new EmptyPermissionListener() {
+      @Override
+      public void onPermissionGranted(PermissionGrantedResponse r) {
+        cloneRepository(repository);
+      }
+    }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
   }
 
   private void cloneRepository(Repository repository) {

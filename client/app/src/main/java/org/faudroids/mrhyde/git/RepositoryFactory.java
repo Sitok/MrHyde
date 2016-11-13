@@ -1,6 +1,7 @@
 package org.faudroids.mrhyde.git;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.google.common.base.Optional;
 
@@ -37,7 +38,7 @@ public class RepositoryFactory {
     String name = gitHubRepo.getName();
     RepositoryOwner owner = fromGitHubUser(gitHubRepo.getOwner());
     File rootDir = new File(
-        context.getExternalFilesDir(null),
+        new File(Environment.getExternalStorageDirectory(), "MrHyde"),
         String.format("%s/%s/%s", PATH_REPOS_GITHUB, owner.getUsername(), name)
     );
 
