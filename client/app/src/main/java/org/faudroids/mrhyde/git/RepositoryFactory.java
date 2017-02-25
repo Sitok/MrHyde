@@ -23,10 +23,6 @@ import javax.inject.Singleton;
 @Singleton
 public class RepositoryFactory {
 
-  private static final String PATH_REPOS_GITHUB = "github";
-  private static final String PATH_REPOS_BITBUCKET = "bitbucket";
-  private static final String PATH_REPOS_GITLAB = "gitlab";
-
   private final Context context;
 
   @Inject
@@ -37,11 +33,7 @@ public class RepositoryFactory {
   public Repository fromGitHubRepository(org.eclipse.egit.github.core.Repository gitHubRepo) {
     String name = gitHubRepo.getName();
     RepositoryOwner owner = fromGitHubUser(gitHubRepo.getOwner());
-    File rootDir = new File(
-        new File(Environment.getExternalStorageDirectory(), "MrHyde"),
-        String.format("%s/%s/%s", PATH_REPOS_GITHUB, owner.getUsername(), name)
-    );
-
+    File rootDir = getRootDir(GitHostingProvider.GITHUB, owner, name);
     return new Repository(
         name,
         gitHubRepo.getCloneUrl(),
@@ -63,11 +55,7 @@ public class RepositoryFactory {
   public Repository fromBitbucketRepository(BitbucketRepository bitbucketRepo) {
     String name = bitbucketRepo.getName();
     RepositoryOwner owner = fromBitbucketUser(bitbucketRepo.getOwner());
-    File rootDir = new File(
-        context.getFilesDir(),
-        String.format("%s/%s/%s", PATH_REPOS_BITBUCKET, owner.getUsername(), name)
-    );
-
+    File rootDir = getRootDir(GitHostingProvider.BITBUCKET, owner, name);
     String cloneUrl = null;
     for (BitbucketLink link : bitbucketRepo.getLinks().getClone()) {
       if (link.getName().equals("https")) {
@@ -101,11 +89,7 @@ public class RepositoryFactory {
   public Repository fromGitLabProject(GitLabProject gitLabProject) {
     String name = gitLabProject.getName();
     RepositoryOwner owner = fromGitLabUser(gitLabProject.getOwner());
-    File rootDir = new File(
-        context.getFilesDir(),
-        String.format("%s/%s/%s", PATH_REPOS_GITLAB, owner.getUsername(), name)
-    );
-
+    File rootDir = getRootDir(GitHostingProvider.GITLAB, owner, name);
     return new Repository(
         name,
         gitLabProject.getHttpUrlToRepo(),
@@ -119,5 +103,12 @@ public class RepositoryFactory {
 
   public RepositoryOwner fromGitLabUser(GitLabProjectOwner gitLabUser) {
     return new RepositoryOwner(gitLabUser.getName(), Optional.absent());
+  }
+
+  private File getRootDir(GitHostingProvider hostingProvider, RepositoryOwner owner, String repoName) {
+    return new File(
+        new File(Environment.getExternalStorageDirectory(), "MrHyde"),
+        String.format("%s/%s/%s", hostingProvider.getRootDirName(), owner.getUsername(), repoName)
+    );
   }
 }

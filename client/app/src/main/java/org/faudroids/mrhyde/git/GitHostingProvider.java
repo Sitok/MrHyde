@@ -9,19 +9,19 @@ import org.faudroids.mrhyde.R;
  */
 public enum GitHostingProvider {
 
-  GITHUB(R.string.github) {
+  GITHUB(R.string.github, "github") {
     @Override
     public <P, R> R accept(GitHostingProviderVisitor<P, R> visitor, P param) {
       return visitor.visitGitHub(param);
     }
   },
-  BITBUCKET(R.string.bitbucket) {
+  BITBUCKET(R.string.bitbucket, "bitbucket") {
     @Override
     public <P, R> R accept(GitHostingProviderVisitor<P, R> visitor, P param) {
       return visitor.visitBitbucket(param);
     }
   },
-  GITLAB(R.string.gitlab) {
+  GITLAB(R.string.gitlab, "gitlab") {
     @Override
     public <P, R> R accept(GitHostingProviderVisitor<P, R> visitor, P param) {
       return visitor.visitGitLab(param);
@@ -29,15 +29,21 @@ public enum GitHostingProvider {
   };
 
   @StringRes private final int nameRes;
+  private final String rootDirName;
 
-  GitHostingProvider(@StringRes int nameRes) {
+  GitHostingProvider(@StringRes int nameRes, String rootDirName) {
     this.nameRes = nameRes;
+    this.rootDirName = rootDirName;
   }
 
   public abstract <P, R> R accept(GitHostingProviderVisitor<P, R> visitor, P param);
 
   public int getNameRes() {
     return nameRes;
+  }
+
+  public String getRootDirName() {
+    return rootDirName;
   }
 
 }
