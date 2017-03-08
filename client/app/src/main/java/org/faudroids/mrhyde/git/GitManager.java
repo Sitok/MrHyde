@@ -13,6 +13,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.lib;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -86,11 +87,20 @@ public class GitManager {
           gitClient.add().addFilepattern(".").call();
 
           // commit
+          Config cfg = repository.getConfig();
+          string userName = cfg.getString("user", null, "name");
+          string userEmail = cfg.getString("user", null, "email");
           Account account = loginManager.getAccount(repository);
+          if (userName == null || userName.isEmpty()) {
+            userName = account.getLogin();
+          }
+          if (userEmail == null || userEmail.isEmpty()) {
+            userEmail = account.getEmail();
+          }
           gitClient
               .commit()
               .setMessage(commitMsg)
-              .setCommitter(account.getLogin(), account.getEmail())
+              .setCommitter(userName, userEmail)
               .call();
 
           return null;
