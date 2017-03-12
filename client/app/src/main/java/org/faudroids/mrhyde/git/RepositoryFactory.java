@@ -6,6 +6,7 @@ import android.os.Environment;
 import com.google.common.base.Optional;
 
 import org.eclipse.egit.github.core.User;
+import org.faudroids.mrhyde.R;
 import org.faudroids.mrhyde.bitbucket.BitbucketLink;
 import org.faudroids.mrhyde.bitbucket.BitbucketRepository;
 import org.faudroids.mrhyde.bitbucket.BitbucketUser;
@@ -107,7 +108,7 @@ public class RepositoryFactory {
 
   private File getRootDir(GitHostingProvider hostingProvider, RepositoryOwner owner, String repoName) {
     return new File(
-        new File(Environment.getExternalStorageDirectory(), "MrHyde"),
+        new File(Environment.getExternalStorageDirectory(), context.getString(R.string.app_name)),
         String.format("%s/%s/%s", hostingProvider.getRootDirName(), owner.getUsername(), repoName)
     );
   }
