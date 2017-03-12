@@ -5,7 +5,10 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -71,6 +74,14 @@ public class Repository implements Serializable {
 
   public File getRootDir() {
     return rootDir;
+  }
+
+  public org.eclipse.jgit.lib.Repository toJgitRepository() throws IOException {
+    FileRepositoryBuilder builder = new FileRepositoryBuilder();
+    return builder.setGitDir(new File(rootDir, ".git"))
+        .readEnvironment()
+        .findGitDir()
+        .build();
   }
 
   /**
