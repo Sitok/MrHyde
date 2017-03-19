@@ -14,7 +14,10 @@
 
     <string name="gitlab_login_token_hint">Plak je token hier</string>
     <string name="gitlab_login_help_title">Maak je persoonlijke GitLab token</string>
-    <string name="gitlab_login_help_msg">MrHyde heeft een persoonlijke GitLab token nodig om een lijst van repositories te maken en verschillen te pushen.\n\nMaak je persoonlijke token nu en plak het hieronder.</string>
+    <string name="gitlab_login_help_msg">MrHyde heeft een persoonlijke GitLab token nodig om een lijst van repositories te maken en verschillen te pushen.\n\n
+        Maak je persoonlijke token nu en plak het hieronder.\n\n
+        Important: make sure you enable the two scopes "api" and "read_user"!
+    </string>
 
     <string name="welcome_text">Welkom in \n MrHyde</string>
 

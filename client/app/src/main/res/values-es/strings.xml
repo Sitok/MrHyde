@@ -14,7 +14,9 @@
     <string name="gitlab_login_token_hint">Pega tu token aquí</string>
     <string name="gitlab_login_help_title">Crea tu token de acceso personal</string>
     <string name="gitlab_login_help_msg">MrHyde necesita un token de acceso personal de GitLab para poder listar 
-        los repositorios y cambios realizados.\n\nPor favor crea tu token ahora y pégalo abajo.</string>
+        los repositorios y cambios realizados.\n\nPor favor crea tu token ahora y pégalo abajo.\n\n
+        Important: make sure you enable the two scopes "api" and "read_user"!
+    </string>
 
     <string name="welcome_text">Bienvenido a \n MrHyde</string>
 

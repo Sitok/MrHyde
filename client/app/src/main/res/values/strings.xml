@@ -15,7 +15,9 @@
     <string name="gitlab_login_token_hint">Paste your token here</string>
     <string name="gitlab_login_help_title">Create your personal access token</string>
     <string name="gitlab_login_help_msg">MrHyde needs a GitLab personal access token in order to
-        list repositories and push changes.\n\nPlease create your token now and paste it below.</string>
+        list repositories and push changes.\n\nPlease create your token now and paste it below.\n\n
+        Important: make sure you enable the two scopes "api" and "read_user"!
+    </string>
 
     <string name="welcome_text">Welcome to \n MrHyde</string>
 
